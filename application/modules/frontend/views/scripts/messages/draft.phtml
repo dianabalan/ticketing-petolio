@@ -1,0 +1,57 @@
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->title ? $this->translate->_("Drafts"). ": {$this->title}" : $this->translate->_("Drafts"); ?></h1>
+		<?php if(isset($this->drafts) && count($this->drafts) > 0): ?>
+			<br />
+			<div class="left">
+				<input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'messages', 'action'=>'compose'), 'default', true); ?>');" type="button" value="<?php echo $this->translate->_("Compose a New Message"); ?>" id="submit" name="compose" style="margin: 0px 5px 0px 0px;" />
+				<input type="button" value="<?php echo $this->translate->_("Delete"); ?>" id="submit" name="delete" style="margin: 0px 5px 0px 0px;" />
+				<div class="clear"></div>
+			</div>
+			<div class="clear tenpx"></div>
+			<?php echo $this->paginationControl($this->drafts, 'Elastic', 'pagination-controls.phtml', array('pos' => 'top')); ?>
+			<table cellspacing="0" cellpadding="5" class="grid">
+			<col width="23" /><col width="17" /><col width="180" /><col /><col width="170" /><col width="1" />
+				<tr>
+					<th><input type="checkbox" class="master" style="width: auto; margin: 0px;"/></th>
+					<th></th>
+					<th><a href="<?php echo $this->url(array('order' => 'to', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("To"); ?><?php if($this->order == 'to'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+					<th><a href="<?php echo $this->url(array('order' => 'subject', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Subject"); ?><?php if($this->order == 'subject'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+					<th><a href="<?php echo $this->url(array('order' => 'date', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Date"); ?><?php if($this->order == 'date'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+					<th></th>
+				</tr>
+				<?php foreach($this->drafts as $msg): ?>
+					<tr>
+						<td><input type="checkbox" class="slave" rel="<?php echo $msg['id']; ?>" style="width: auto; margin: 0px;" /></td>
+						<td><img src="/images/old.png" style="display: block;" /></td>
+						<td><?php echo isset($msg['combinedusers']) ? $msg['combinedusers'] : $this->translate->_("No destination"); ?></td>
+						<td><a href="<?php echo $msg['parent_message_id'] == 0 ? $this->url(array('controller'=>'messages', 'action'=>'compose', 'draft' => $msg['id']), 'default', true) : $this->url(array('controller'=>'messages', 'action'=>'reply', 'id' => $msg['parent_message_id'], 'draft' => $msg['id']), 'default', true); ?>"><?php echo isset($msg['subject']) ? $msg['subject'] : $this->translate->_("No subject"); ?></a></td>
+						<td><?php echo Petolio_Service_Util::formatDate(isset($msg['date_modified']) ? $msg['date_modified'] : $msg['date_created'], null, true, true); ?></td>
+						<td align="right" nowrap="nowrap"><a class="icon_link delete reqconf" title="<?php echo $this->translate->_("Delete Draft"); ?>?" href="<?php echo $this->url(array('controller'=>'messages', 'action'=>'delete', 'id' => $msg['id']), 'default', true); ?>"><span><?php echo $this->translate->_("Delete"); ?></span></a></td>
+					</tr>
+				<?php endforeach; ?>
+			</table>
+			<?php echo $this->paginationControl($this->drafts, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot')); ?>
+			<div class="clear tenpx"></div>
+			<div class="left">
+				<input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'messages', 'action'=>'compose'), 'default', true); ?>');" type="button" value="<?php echo $this->translate->_("Compose a New Message"); ?>" id="submit" name="compose" style="margin: 0px 5px 0px 0px;" />
+				<input type="button" value="<?php echo $this->translate->_("Delete"); ?>" id="submit" name="delete" style="margin: 0px 5px 0px 0px;" />
+				<div class="clear"></div>
+			</div>
+			<div class="clear"></div>
+		<?php else: ?>
+			<br />
+			<b class="red bigger"><?php echo $this->translate->_("No messages found."); ?></b>
+		<?php endif; ?>
+	</div>
+</div>
+<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/msgint.js'); ?>"></script>
+<script type="text/javascript">
+READY(function() {
+	Msgint.init({
+		error: '<?php echo $this->translate->_("Please select some messages first."); ?>',
+		reqconf: '<?php echo $this->translate->_("Delete the selected messages?"); ?>'
+	});
+});
+</script>

@@ -1,0 +1,48 @@
+<?php
+// urls
+$url = $this->url(array('controller'=>'services', 'action'=>'view', 'service' => $this->data["id"]), 'default', true);
+$reviews_title = sprintf(ngettext("%s review", "%s reviews", $this->data["reviews_count"]), $this->data["reviews_count"]);
+$profile = $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $this->data["user_id"]), 'default', true);
+$products = $this->url(array('controller'=>'products', 'action'=>'index', 'owner' => $this->data["user_name"]), 'default', true);
+$products_title = sprintf(ngettext("%s product", "%s products", $this->data["products_count"]), $this->data["products_count"]);
+$contact = $this->url(array('controller'=>'services', 'action'=>'contact', 'service' => $this->data["id"]), 'default', true);
+$services = $this->url(array('controller'=>'marketplace', 'action'=>'index', 'owner_id' => $this->data["user_id"]), 'default', true);
+$services_title = sprintf(ngettext("%s service", "%s services", $this->data["services_count"]), $this->data["services_count"]);
+?>
+<div class="service-item" rel="<?php echo $this->data["id"]; ?>">
+	<a class="cluetip" href="<?php echo $url; ?>" rel="<?php echo '#service_' . $this->data["id"]; ?>">
+		<?php
+			$image = "/images/no-pet.jpg";
+			if($this->data["picture"] && strlen($this->data["picture"]) > 0)
+				$image = "/images/userfiles/services/{$this->data["id"]}/thumb_{$this->data["picture"]}";
+		?>
+		<img src="<?php echo $image ?>" alt="<?php echo $this->data["name"]; ?>" />
+	</a>
+	<table class="tooltipinfo" style="display: none;" cellpadding="0" cellspacing="0" id="<?php echo 'service_' . $this->data["id"]; ?>">
+		<tr>
+			<th valign="top"><?php echo $this->translate->_('Title'); ?></th>
+			<td><?php echo $this->data["name"]; ?></td>
+		</tr>
+		<tr>
+			<th valign="top"><?php echo $this->translate->_('Type'); ?></th>
+			<td><?php echo Petolio_Service_Util::title_case(Petolio_Service_Util::Tr($this->data["type"])); ?></td>
+		</tr>
+		<tr>
+			<th valign="top"><?php echo $this->translate->_('Owner'); ?></th>
+			<td><?php echo $this->data["user_name"]; ?></td>
+		</tr>
+	</table>
+	<ul class="links">
+		<li><a href="<?php echo $services; ?>" title="<?php echo $services_title; ?>"><?php echo $services_title; ?></a></li>
+		<li><a href="<?php echo $url; ?>#reviews" title="<?php echo $reviews_title; ?>"><?php echo $reviews_title; ?></a></li>
+		<li><a href="<?php echo $products; ?>" title="<?php echo $products_title; ?>"><?php echo $products_title; ?></a></li>
+	</ul>
+	<div class="clear fivepx"></div>
+	<a class="service-name ellipsis" href="<?php echo $url; ?>" title="<?php echo $this->data["name"]; ?>"><?php echo $this->data["name"]; ?></a>
+	<span class="service-desc ellipsis"><?php echo $this->data["description"]; ?></span>
+	<span>
+		<a style="float: left;" href="<?php echo $url; ?>" title="<?php echo $this->data["name"]; ?>"><?php echo $this->translate->_("view page"); ?></a>
+		<a style="float: right;" href="<?php echo $contact; ?>" title="<?php echo $this->data["user_name"]; ?>"><?php echo $this->translate->_("contact owner"); ?></a>
+	</span>
+	<div class="clear fivepx"></div>
+</div>

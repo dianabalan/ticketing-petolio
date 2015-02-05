@@ -1,0 +1,26 @@
+<?php
+
+// object or array
+$avatar = "/images/no-avatar.jpg";
+if ( isset($this->for) && strcasecmp($this->for, "profile") == 0 ) {
+	$avatar = "/images/new/common/noavatar.png";
+}
+$user = is_array($this->user) ? $this->user : $this->user->toArray();
+
+// avatar control
+if(!is_null($user['avatar'])) {
+	if ( !(isset($this->for) && (strcasecmp($this->for, "dashboard") == 0 || strcasecmp($this->for, "profile") == 0)) ) {
+		$user['avatar'] = 'thumb_'.$user['avatar'];
+	}
+	$ds = DIRECTORY_SEPARATOR;
+	$image = "..{$ds}data{$ds}userfiles{$ds}avatars{$ds}{$user['id']}{$ds}{$user['avatar']}";
+
+	// get cache
+	if(is_file($image)) {
+		$cache = filemtime($image);
+		$avatar = "/images/userfiles/avatars/{$user['id']}/{$user['avatar']}?{$cache}";
+	}
+}
+
+// output our avatar
+echo $avatar;

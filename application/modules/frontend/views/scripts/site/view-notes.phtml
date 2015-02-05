@@ -1,0 +1,545 @@
+<?php if ($this->hasIdentity): ?>
+	<style type="text/css">
+		label.notes {
+			width: auto !important;
+			float: right !important;
+			font-size: inherit !important;
+			padding: 7px 35px 7px 10px !important;
+			cursor: pointer;
+		}
+
+		label.notes > input {
+			display: block;
+			float: right !important;
+			width: auto !important;
+			margin: 2px 5px 0px 0px !important;
+			position: inherit !important;
+			font-size: inherit !important;
+			border: none !important;
+			border-radius: 0 !important;
+			padding: 0 !important;
+		}
+
+		label.notes > i {
+			display: block;
+			float: right;
+			font-style: normal;
+			color: green;
+			margin-top: 2px;
+			letter-spacing: 0em;
+			font-size: 12px;
+			font-weight: normal;
+			line-height: 16px;
+		}
+	</style>
+	<?php
+		$iconlist = array(
+			'diary' => array($this->translate->_('Diary Record'), '/images/notes/m_diary.png'),
+			'medical' => array($this->translate->_('Medical Record'), '/images/notes/m_medical.png'),
+			'shot' => array($this->translate->_('Shot Record'), '/images/notes/m_shot.png'),
+			'todo' => array($this->translate->_('To-Do'), '/images/notes/m_todo.png')
+		);
+	?>
+	<div id="right" style="min-height: 550px;">
+		<div class="rightbox">
+			<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+			<h1><?php echo $this->method == 'all' ? $this->translate->_("All Notes") : $this->translate->_("My Notes"); ?></h1>
+			<div class="cl"></div>
+			<div class="left" style="padding: 5px 0px 0px 7px;">
+				<select class="chzn-select" name="select_view" style="width: 125px;">
+					<option value="mine" <?php echo $this->method == 'mine' ? 'selected="selected"' : ''; ?>><?php echo $this->translate->_("Show My Entries"); ?></option>
+					<option value="all" <?php echo $this->method == 'all' ? 'selected="selected"' : ''; ?>><?php echo $this->translate->_("Show Other Entries"); ?></option>
+				</select>
+			</div>
+			<?php if($this->method == 'mine'): ?>
+				<div class="left" style="padding: 5px 0px 0px 7px;">
+					<select class="chzn-select" name="select_pet" style="width: 150px;">
+						<option value="all"><?php echo $this->translate->_("All Pets"); ?></option>
+						<?php foreach($this->pets as $pet): ?>
+							<option value="<?php echo $pet['id']; ?>" <?php echo $this->filter_pet && $this->filter_pet == $pet['id'] ? 'selected="selected"' : ''; ?>><?php echo $pet['name']; ?></option>
+						<?php endforeach; ?>
+					</select>
+				</div>
+			<?php else: ?>
+				<div class="left" style="padding: 5px 0px 0px 7px;">
+					<input type="text" class="chzn-select chzn-custom" name="select_a_pet" id="select_a_pet" 
+							title="<?php echo $this->translate->_("All Pets"); ?>" style="width: 250px;" 
+							value="<?php echo (isset($this->filter_pet) ? $this->filter_pet["id"]."|".$this->filter_pet["name"] : ""); ?>" />
+					<input class="magni-search" type="button" value="" />
+				</div>
+				<script type="text/javascript">
+					READY(function() {
+						var x = $("input.chzn-custom");
+					
+						if(x.attr('title'))
+							x.data('placeholder', x.attr('title'));
+					
+						x.chosen({
+							translate: Petolio.translateChosen(),
+							max_choices: 1,
+							ajax: {
+					        	url: SITE_URL + "pets/find-by-criteria",
+								min_search: 3,
+								req_param: "name",
+								res_value: "value",
+								res_text: "text",
+								res_html: "text",
+								success_callback: function(v){
+									return v.results;
+								}
+							}
+						});
+					
+						x.next().css({float: 'left', marginLeft: '5px'});
+					});
+				</script>
+			<?php endif; ?>
+			<div class="right">
+				<h3 style="float: left; padding: 10px 10px 0px 0px;"><?php echo $this->translate->_("Create New"); ?></h3>
+				<a style="float: left;" title="<?php echo $this->translate->_("To-Do"); ?>" alt="<?php echo $this->translate->_("To-Do"); ?>" href="javascript:Calendar.Todo.addEditWindow({}, null);"><img src="/images/notes/add/todo.png" style="margin: 0px 5px 0px 0px;" /></a>
+				<a style="float: left;" title="<?php echo $this->translate->_("Diary Record"); ?>" alt="<?php echo $this->translate->_("Diary Record"); ?>" href="<?php echo $this->url(array('controller'=> 'diary', 'action' => 'add'), 'default', true); ?>"><img src="/images/notes/add/diary.png" style="margin: 0px 5px 0px 0px;" /></a>
+				<a style="float: left;" title="<?php echo $this->translate->_("Medical Record"); ?>" alt="<?php echo $this->translate->_("Medical Record"); ?>" href="<?php echo $this->url(array('controller'=> 'medical', 'action' => 'add'), 'default', true); ?>"><img src="/images/notes/add/medical.png" style="margin: 0px 5px 0px 0px;" /></a>
+				<a style="float: left;" title="<?php echo $this->translate->_("Shot Record"); ?>" alt="<?php echo $this->translate->_("Shot Record"); ?>" href="<?php echo $this->url(array('controller'=> 'shot', 'action' => 'add'), 'default', true); ?>"><img src="/images/notes/add/shot.png" /></a>
+			</div>
+			<div class="cl"></div>
+			<?php if(isset($this->records) && count($this->records) > 0): ?>
+				<?php echo $this->paginationControl($this->records, 'Elastic', 'pagination-controls.phtml', array('pos' => 'top')); ?>
+					<table cellspacing="0" cellpadding="0" class="grid" style="border: none;">
+						<tr>
+							<th style="text-align: center;"><?php echo $this->translate->_("Pet"); ?></th>
+							<th style="text-align: center;"><?php echo $this->translate->_("Type"); ?></th>
+							<th><?php echo $this->translate->_("Description"); ?></th>
+							<th style="text-align: center;"><?php echo $this->translate->_("Actions"); ?></th>
+						</tr>
+						<?php
+							$current_type = ""; 
+							$current_pet_id = "";
+							foreach($this->records as $idx => $record): ?>
+							<tr>
+								<td style="width: 1%; <?php echo $this->records->getCurrentItemCount () != $idx + 1 ? "border-color: #ccc;" : "border-color: #fff;"; ?>">
+									<?php if(!$this->filter_pet || (!is_null($record['pet']) && $current_pet_id != $record['pet']['id'])): ?>
+										<?php $current_pet_id = $record['pet']['id']; ?>
+										<?php if(!is_null($record['pet'])): ?>
+											<div id="pin-container" class="notes">
+												<?php echo $this->partial('pet-template.phtml', array(
+										        	'translate' => $this->translate,
+										        	'pet' => $record['pet'],
+											    	'sp' => false,
+										    		'allow' => true,
+									    			'links' => array(),
+													'notes' => true
+										    	)); ?>
+									    		<div class="cl"></div>
+											</div>
+										<?php else: ?>
+											<img src="/images/no-pet.jpg" style="background: #fff; border: 1px solid #a2a2a2; padding: 1px; border-radius: 4px;" />
+										<?php endif; ?>
+									<?php endif; ?>
+								</td>
+								<td style="padding: 20px 20px 20px 20px; width: 1%; 
+									<?php echo $this->records->getCurrentItemCount () != $idx + 1 ? "border-color: #ccc;" : "border-color: #fff;"; ?>">
+									<?php
+									if(!$this->filter_pet || $record['type'] != $current_type):
+										$current_type = $record['type'];
+									?>
+										<img src="<?php echo $iconlist[$record['type']][1]; ?>" title="<?php echo $iconlist[$record['type']][0]; ?>" 
+												alt="<?php echo $iconlist[$record['type']][0]; ?>" />
+									<?php endif; ?>
+								</td>
+								<td style="padding: 20px 0px 20px 5px; <?php echo $this->records->getCurrentItemCount () != $idx + 1 ? "border-color: #ccc;" : "border-color: #fff;"; ?> line-height: 16px;" valign="top">
+									<?php if($record['type'] == 'todo'): ?>
+										<div style="width: auto; word-wrap: break-word; line-height: 18px;">
+											<a href="javascript:void(0);" name="note_view" id="<?php echo $record['id']; ?>"><b><?php echo $record['done'] == 1 ? '<del>' : ''; ?><?php echo $record['title']; ?><?php echo $record['done'] == 1 ? '</del>' : ''; ?></b></a><br /><br />
+											<?php echo Petolio_Service_Parse::do_limit(strip_tags($record["description"]), 250, true, true); ?>
+											<?php if($record["description"]): ?><br /><br /><?php endif; ?>
+											<b><?php echo $this->translate->_("Deadline:"); ?></b>&nbsp;&nbsp;<span class="red"><?php echo $record['deadline']; ?></span><br />
+											<?php if(isset($record["related"][1])): ?><b><?php echo $this->translate->_("Related to:"); ?></b>&nbsp;&nbsp;<a href="<?php echo $this->url(array('controller'=>$record["related"][0], 'action'=>'view', 'id' => $record["related"][1]), 'default', true); ?>"><?php echo $record["related"][2]; ?></a><?php endif; ?>
+										</div>
+									<?php else: ?>
+										<div style="width: auto; word-wrap: break-word; line-height: 18px;">
+											<a href="<?php echo $this->url(array('controller'=>$record['type'], 'action'=>'view', 'id' => $record["id"]), 'default', true); ?>"><b><?php echo $record['title']; ?></b></a><br /><br />
+											<?php echo Petolio_Service_Parse::do_limit(strip_tags($record["description"]), 250, true, true); ?>
+											<br /><br />
+											<a href="<?php echo $this->url(array('controller'=>$record['type'], 'action'=>'export', 'id' => $record["id"]), 'default', true); ?>" class="icon_link pdf" title="<?php echo $this->translate->_("Export"); ?>"><span><?php echo $this->translate->_("Export"); ?></span></a>&nbsp;
+											<a href="<?php echo $this->url(array('controller'=>$record['type'], 'action'=>'send', 'id' => $record["id"]), 'default', true); ?>" class="icon_link send" title="<?php echo $this->translate->_("Send"); ?>"><span><?php echo $this->translate->_("Send"); ?></span></a>
+										</div>
+									<?php endif; ?>
+								</td>
+								<td style="padding: 20px 20px 20px 20px; width: 1%; <?php echo $this->records->getCurrentItemCount () != $idx + 1 ? "border-color: #ccc;" : "border-color: #fff;"; ?>">
+									<?php if($record['type'] == 'todo'): ?>
+										<input name="note_view" data-id="<?php echo $record['id']; ?>" type="button" value="<?php echo $this->translate->_("Details"); ?>" id="submit" name="prev" style="width: 110px; margin: 5px;">
+										<?php if($record['owner'] == true): ?>
+											<input name="note_delete" data-id="<?php echo $record['id']; ?>" 
+											type="button" value="<?php echo $this->translate->_("Delete"); ?>" 
+											id="submit" name="prev" class="delete_button"
+											style="background-position: <?php echo strcasecmp($this->translate->getLocale(), 'de') == 0 ? '6px' : '11px'; ?> 3px; width: 110px;" />
+										<?php endif; ?>
+									<?php else: ?>
+										<input onclick="Petolio.go('<?php echo $this->url(array('controller'=>$record['type'], 'action'=>'view', 'id' => $record["id"]), 'default', true); ?>');" type="button" value="<?php echo $this->translate->_("Details"); ?>" id="submit" name="prev" style="width: 110px; margin: 5px;">
+										<?php if($record['owner'] == true): ?>
+											<input 
+												href="<?php echo $this->url(array('controller'=>$record['type'], 'action'=>'delete', 'id' => $record["id"]), 'default', true); ?>" 
+												type="button" value="<?php echo $this->translate->_("Delete"); ?>" 
+												id="submit" name="prev" class="delete_button reqconf" 
+												style="background-position: <?php echo strcasecmp($this->translate->getLocale(), 'de') == 0 ? '6px' : '11px'; ?> 3px; width: 110px;" />
+											<input type="button" value="<?php echo $this->translate->_("Access Rights"); ?>" 
+												id="submit" class="rights_button" record-type="<?php echo $record["type"]; ?>" record-id="<?php echo $record["id"]; ?>"
+												style="width: 110px; margin-top: 5px;" />
+										<?php endif; ?>
+									<?php endif; ?>
+									<?php if($record['type'] == 'todo' && $record['owner'] == true): ?>
+										<label class="notes" name="note_done" for="done_<?php echo $record['id']; ?>"><i><?php echo $this->translate->_("Done"); ?></i><input type="checkbox" id="done_<?php echo $record['id']; ?>" <?php echo $record['done'] == 1 ? "checked='checked'" : ""; ?> /></label>
+									<?php endif; ?>
+								</td>
+							</tr>
+						<?php endforeach; ?>
+					</table>
+				<?php echo $this->paginationControl($this->records, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot')); ?>
+			<?php else: ?>
+				<b class="red bigger"><?php echo $this->translate->_("No records found."); ?></b>
+			<?php endif; ?>
+		</div>
+	</div>
+	<?php include_once "../application/modules/frontend/views/scripts/calendar/init.phtml"; ?>
+	<script type="text/javascript">
+		var Notes = function() {
+			store = {
+
+			// the binder
+			}, bind = function() {
+				// select view
+				$("div.rightbox").delegate('select[name="select_view"]', 'change', function(e) {
+					var d = $(this).val();
+
+					if(d == 'all') Petolio.go('/site/view-all-notes');
+					else Petolio.go('/site/view-notes');
+				});
+
+				// select pet
+				$("div.rightbox").delegate('select[name="select_pet"]', 'change', function(e) {
+					var d = $(this).val();
+
+					if(d == 'all') Petolio.go('/site/view-notes');
+					else Petolio.go('/site/view-notes/pet/'+ d);
+				});
+
+				// submit search
+				$("div.rightbox").delegate('input.magni-search', 'click', function(e) {
+					//if ($("#select_a_pet_chzn_shadow").val() != null) {
+						var d = $("#select_a_pet_chzn_shadow").val();
+						if(d == 'all' || d == null || d[0] == 'all') Petolio.go('/site/view-all-notes');
+						else Petolio.go('/site/view-all-notes/pet/'+ d[0]);
+					//}
+				});
+
+				// on done click
+				$("div.rightbox").delegate('label[name="note_done"]', 'click', function(e) {
+					e.stopPropagation();
+					e.preventDefault();
+
+					// get some stuff
+					var i = $(this).find('input'),
+						k = i.attr('id').split('_');
+
+					// prevent spam
+					if(i.is(':disabled'))
+						return false;
+
+					i.attr('disabled', 'disabled');
+					Petolio.ajax({
+						url: 'calendar/mark',
+						type: 'post',
+						data: {id: k[1], ajax: 1},
+						cache: false,
+						success: function (d) {
+							i.removeAttr('disabled');
+
+							// mark as done
+							if(d.value) {
+								$("b", i.closest('tr').find('a[name="note_view"]')).wrapInner('<del />');
+								i.attr('checked', 'checked');
+
+							// mark as not done
+							} else {
+								$("b", i.closest('tr').find('a[name="note_view"]')).html($("del", i.closest('tr').find('a[name="note_view"]')).html());
+								i.removeAttr('checked');
+							}
+						}
+					});
+				});
+
+				// view bind
+				$("div.rightbox").delegate('a[name="note_view"], input[name="note_view"]', 'click', function(e) {
+					e.preventDefault();
+
+					var id = $(this).attr('id');
+					if(id == 'submit')
+						id = $(this).data('id');
+
+					Petolio.showLoading();
+			    	Petolio.ajax({
+						url: 'events/view',
+						type: 'post',
+						data: {id: id},
+						cache: false,
+						success: function (d) {
+							Petolio.hideLoading();
+							Calendar.eventClick(d.event);
+						}
+					});
+				});
+
+				// delete bind
+				$("div.rightbox").delegate('input[name="note_delete"]', 'click', function(e) {
+					e.preventDefault();
+					var id = $(this).data('id');
+
+					// show confirm
+					Petolio.showConfirm(CalendarData.translate.notice[4].replace('%s', CalendarData.types[1]), function() {
+						Petolio.go(SITE_URL + 'calendar/delete/id/' + id);
+					});
+				});
+
+			// constructor
+			}, __construct = function() {
+				bind();
+			};
+
+			// public, yay
+			return {
+				init: __construct
+			};
+		}();
+
+		READY(Notes.init);
+	</script>
+	<?php include "chat_online.phtml"; ?>
+<?php else: include "notloggedin.phtml"; endif; ?>
+<script type="text/javascript">
+var NoteRights = function() {
+
+	var page = 1,
+		translate = {
+			title: '<?php echo $this->translate->_("Modify allowed users"); ?>',
+			view: '<?php echo $this->translate->_("View allowed users"); ?>',
+			close: '<?php echo $this->translate->_("Close"); ?>',
+			modify: '<?php echo $this->translate->_("Modify"); ?>',
+			save: '<?php echo $this->translate->_("Save"); ?>',
+		},
+		type, id;
+	
+	function bind() {
+		// select view
+		$("div.rightbox").delegate('input.rights_button', 'click', function(e) {
+			e.preventDefault();
+			var type = $(this).attr('record-type'),
+				id = $(this).attr('record-id');
+
+			_view(type, id);
+		});
+	};
+
+	function _modify(x, type, id) {
+		var identity = "modify-access-rights";
+		$('<div id="'+ identity +'" title="'+ translate.title +'" class="ui-state-highlight">'+
+				'<div style="position: relative; margin: 8px 0px 3px 0px; overflow: hidden;">' +
+					(x.html ? x.html : '') +
+				'</div>'+
+			'</div>').dialog({
+			resizable: false,
+			modal: true,
+			width: 550,
+			minHeight: 350,
+			buttons: [{
+				text: translate.save,
+				click: function() {
+					// check for user error
+					if($("input[name='access_value']:checked").val() == 4 && !$("#multi_item_4").find('select').val())
+						return $("#multi_item_4").find('ul.chzn-choices').css({ borderColor: 'red' });
+
+					Petolio.showLoading();
+			    	Petolio.ajax({
+			    		url: type + '/rights',
+						type: 'post',
+						data: $("#rights").serialize() + '&id='+ id,
+						cache: false,
+						success: function (x) {
+							Petolio.hideLoading();
+							$("#" + identity).dialog("close");
+						}
+					});
+				}
+			}, {
+				text: translate.close,
+				click: function() {
+					$(this).dialog("close");
+				}
+			}],
+			close: function() {
+				$("#"+ identity).remove();
+				_view(type, id);
+			},
+			open: function() {
+				_chooser();
+				_decide();
+
+				$('div#'+ identity +' input[type="radio"]').blur().click(_decide);
+			}
+		});
+	};
+
+	function _chooser() {
+		var x = $(".chzn-select");
+
+		$.each(x, function(s, i){
+			var y = $(i),
+				o = {translate: Petolio.translateChosen()},
+				a = {ajax: {
+	            	url: SITE_URL + "pets/find-user",
+					min_search: 3,
+					req_param: "user",
+					res_value: "value",
+					res_text: "text",
+					res_html: "text",
+					success_callback: function(v){
+						return v.results;
+					}
+	            }};
+
+			if(y.attr('title'))
+				y.data('placeholder', y.attr('title'));
+
+			if(y.is("input"))
+				$.extend(o, a);
+
+			y.chosen(o);
+		});
+
+		$('td > div[id*="multi_"]').css({ position: 'relative' });
+
+		return;
+
+		$("#multi_partners_chzn").css({ zIndex: '1495' });
+		$("#multi_friends_chzn").css({ zIndex: '1493' });
+		$("#multi_users_chzn").css({ zIndex: '1491' });
+	}
+
+	function _dialog(x, p, c, type, id) {
+    	var identity = 'dialog-access-right';
+
+    	$("#"+ identity).remove();
+
+		var bbuttons = [];
+			bbuttons.push({
+				text: translate.modify,
+				click: function() {
+					$(this).dialog("close");
+			    	Petolio.showLoading();
+			    	Petolio.ajax({
+						url: type + '/rights',
+						type: 'post',
+						data: {id: id},
+						cache: false,
+						success: function (x) {
+							Petolio.hideLoading();
+							_modify(x, type, id);
+						}
+					});
+				}
+			});
+
+		bbuttons.push({
+			text: translate.close,
+			click: function() {
+				$(this).dialog("close");
+			}
+		});
+
+    	$('<div id="'+ identity +'" title="'+ translate.view +'" class="ui-state-highlight">'+
+			'<div style="position: relative; margin: 8px 0px 3px 0px;">' +
+				(x.text ? x.text : '') +
+				(x.html ? x.html : '') +
+			'</div>'+
+		'</div>').dialog({
+			resizable: false,
+			modal: true,
+			width: 500,
+			minHeight: 50,
+			buttons: bbuttons,
+			close: function() {
+				$("#"+ identity).remove();
+				if(c)
+					c.apply(this, Array.prototype.slice.call(arguments, 4));
+			},
+			open: function() {
+				$("#"+ identity).find('[class="rating_pagination"] a').click(function() {
+					var p = parseInt($(this).attr('rel'));
+
+					// only numbers allowed
+					if(!isNaN(p))
+						page = p;
+
+					_view(type, id);
+				});
+				$("#"+ identity).find('a').blur();
+			}
+		});
+	};
+	
+	// view access rights
+	function _view(type, id) {
+    	Petolio.showLoading();
+    	Petolio.ajax({
+			url: type + '/users',
+			type: 'post',
+			data: {id: id, page: page},
+			cache: false,
+			success: function (x) {
+				Petolio.hideLoading();
+				_dialog(x, null, function(){
+					page = 1;
+				}, type, id);
+			}
+		});
+	};
+
+	function enable(i) {
+		var p = $(i).attr('id'),
+			w = $('div[id="multi_'+ p +'_block"]');
+
+		if(w.length)
+			w.remove();
+	};
+
+	function disable(i, s) {
+		var p = $(i).attr('id'),
+			a = $('div[id="multi_'+ p +'"]'),
+			w = $('div[id="multi_'+ p +'_block"]'),
+			z = 500 - s;
+
+		if(!a.length || w.length)
+			return;
+
+		a.append('<div id="multi_'+ p +'_block" style="position: absolute; margin-top: -2px; width: 100%; height: 100%; background: #eeeeee; opacity: 0.6; top: 0px; left: 0px; z-index: '+ z +';" />');
+	};
+
+	function _decide(e) {
+		$.each($('input[type="radio"]'), function(s, i){
+			if(i.checked) enable(i);
+			else disable(i, s + 1 * s);
+		});
+	};
+	
+	// constructor
+	function __construct() {
+		bind();
+	};
+
+	// public, yay
+	return {
+		init: __construct
+	};
+}();
+
+READY(NoteRights.init);
+</script>

@@ -1,0 +1,48 @@
+<?php
+
+// jsonp
+$base = "/";
+$href = null;
+if($this->jsonp) {
+	$base = PO_BASE_URL;
+	$href = "data-petolio='true'";
+}
+
+// pet url
+$url = $this->url(array('controller'=>'index', 'action'=>'view', 'pet' => $this->pet["id"]), 'distribution', true);
+
+?>
+<div class="picture" rel="<?php echo $this->pet["id"]; ?>">
+	<a <?php echo $href; ?> class="cluetip" href="<?php echo $url; ?>" rel="<?php echo '#pet_' . $this->pet["id"]; ?>">
+		<?php
+			$image = "background: #fff url('{$base}images/no-pet.jpg') center center no-repeat";
+			if($this->pet["picture"] && strlen($this->pet["picture"]) > 0)
+				$image = "background: #000 url('{$base}images/userfiles/pets/{$this->pet["id"]}/gallery/thumb_{$this->pet["picture"]}') center center no-repeat";
+		?>
+		<span class="img" style="<?php echo $image ?>;"></span>
+	</a>
+	<?php if(!$this->jsonp) { ?>
+		<table class="tooltipinfo" style="display: none;" cellpadding="0" cellspacing="0" id="<?php echo 'pet_' . $this->pet["id"]; ?>">
+			<tr>
+				<th valign="top"><?php echo $this->translate->_('Name'); ?></th>
+				<td><?php echo $this->pet["name"]; ?></td>
+			</tr>
+			<tr>
+				<th valign="top"><?php echo $this->translate->_('Species'); ?></th>
+				<td><?php echo $this->pet["type"]; ?></td>
+			</tr>
+			<?php if(strlen($this->pet["breed"]) > 0): ?>
+				<tr>
+					<th valign="top"><?php echo $this->translate->_('Breed'); ?></th>
+					<td><?php echo $this->pet["breed"]; ?></td>
+				</tr>
+			<?php endif; ?>
+		</table>
+	<?php } ?>
+	<span class="name ellipsis">
+		<a <?php echo $href; ?> href="<?php echo $url; ?>"><?php echo $this->pet["name"]; ?></a>
+	</span>
+	<span class="info ellipsis multiline">
+		<?php echo $this->pet["type"]; ?><?php echo strlen($this->pet["breed"]) > 0 ? " - {$this->pet["breed"]}" : null; ?>
+	</span>
+</div>

@@ -1,0 +1,47 @@
+<script type="text/javascript">
+	var __imgswOpt = {
+		paths: {
+			image: '<?php echo $imgsw_path['image']; ?>',
+			audio: '<?php echo $imgsw_path['audio']; ?>',
+			video: '<?php echo $imgsw_path['video']; ?>'
+		},
+		translate: {
+			link: '<?php echo $this->translate->_("Link"); ?>',
+			view_picture: '<?php echo $this->translate->_("View Picture"); ?>',
+			view_audio: '<?php echo $this->translate->_("View Audio"); ?>',
+			view_video: '<?php echo $this->translate->_("View Video"); ?>',
+			load_social: '<?php echo $this->translate->_("Loading Social Plugins..."); ?>',
+			close: '<?php echo $this->translate->_("Close"); ?>',
+			progress: '<?php echo $this->translate->_('%1$s out of %2$s'); ?>',
+
+			play: '<?php echo $this->translate->_("Play"); ?>',
+			pause: '<?php echo $this->translate->_("Pause"); ?>',
+			stop: '<?php echo $this->translate->_("Stop"); ?>',
+			mute: '<?php echo $this->translate->_("Mute"); ?>',
+			unmute: '<?php echo $this->translate->_("Unmute"); ?>',
+			max_volume: '<?php echo $this->translate->_("Max Volume"); ?>',
+			repeat: '<?php echo $this->translate->_("Repeat"); ?>',
+			repeat_off: '<?php echo $this->translate->_("Repeat Off"); ?>',
+			update: '<?php echo $this->translate->_("To play the media you will need to either update your browser to a recent version or update your <a href=\"http://get.adobe.com/flashplayer/\" target=\"_blank\">Flash plugin</a>"); ?>',
+		}
+	};
+</script>
+<?php if($this->frame): ?>
+	<script type="text/javascript">
+		READY(function() {
+			var f = parent.window;
+
+			f.Petolio.loadJs('imgsw.js');
+			f.Petolio.loadJs('social/base.js');
+			f.ImgSw.init(__imgswOpt, 1);
+		});
+	</script>
+<?php else: ?>
+	<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/imgsw.js'); ?>"></script>
+	<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/social/base.js'); ?>"></script>
+	<script type="text/javascript">
+		READY(function() {
+			ImgSw.init(__imgswOpt);
+		});
+	</script>
+<?php endif; ?>

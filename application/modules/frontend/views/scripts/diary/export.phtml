@@ -1,0 +1,113 @@
+<?php function strip_html_special($a) {
+	return strip_tags(htmlspecialchars_decode($a), '<br><br /><br/>');
+} ?>
+<?php $pet_name = ucfirst($this->pet_attr['name']->getAttributeEntity()->getValue()); ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<style type="text/css">
+		a {
+			outline: none;
+			color: #047E00;
+			text-decoration: none;
+		}
+
+		a:hover, a:active, a:focus {
+			color: #73A900;
+			text-decoration: underline;
+		}
+		table.list {
+			margin: 5px auto 0px auto;
+			border: 1px solid #eee;
+			border-bottom: none;
+		}
+			table.list th {
+				font-weight: bold;
+				vertical-align: top;
+				border-bottom: 1px solid #eee;
+				text-align: left; /* stupid IE */
+			}
+
+			table.list td {
+				vertical-align: top;
+				border-bottom: 1px solid #eee;
+			}
+			h1 {
+				margin: 2px 0px 0px 5px;
+				padding: 0;
+				font: bold 30px Arial, Helvetica, sans-serif;
+				color: #ccdbcc;
+				letter-spacing: -2px;
+				text-align: left;
+			}
+			h2 {
+				margin: 0px;
+				padding: 5px 0px 0px 10px;
+				font: bold 16px Arial, Helvetica, sans-serif;
+				color: #333;
+				background-color: #F8F8F8;
+				border: 1px solid #eee;
+			}
+			h3 {
+				margin: 2px 0px 0px 5px;
+				padding: 0;
+				font: bold 16px Arial, Helvetica, sans-serif;
+				color: #004b00;
+				letter-spacing: -1px;
+			}
+	</style>
+</head>
+<body>
+	<h1><?php echo $this->translate->_('Diary Record'); ?></h1>
+    <h2><?php echo $this->translate->_("Pet Details"); ?></h2>
+    <br />
+    <table cellspacing="0" cellpadding="3" border="0" class="list" width="100%">
+		<?php
+			if($this->pet_attr['name']->getAttributeEntity()->getValue() && strlen($this->pet_attr['name']->getAttributeEntity()->getValue()) > 0)
+        		echo "<tr><th>".$this->translate->_('Pet name')."</th>";
+        		echo "<td><a href=\"{$this->url(array('controller'=>'pets', 'action'=>'view', 'pet' => $this->diary_record->getPetId()), 'default', true)}\">{$pet_name}</a></td></tr>";
+        	$val = "";
+        	if(is_array($this->pet_attr['breed']->getAttributeEntity())) {
+        		$src = reset($this->pet_attr['breed']->getAttributeEntity());
+        		$val = $src->getValue();
+        	}
+        	echo "<tr><th>".$this->translate->_('Breed')."</th><td>{$val}</td></tr>";
+			if($this->pet_attr['gender']->getAttributeEntity()->getValue() && strlen($this->pet_attr['gender']->getAttributeEntity()->getValue()) > 0)
+        		echo "<tr><th>".$this->translate->_('Gender')."</th><td>{$this->pet_attr['gender']->getAttributeEntity()->getValue()}</td></tr>";
+			if($this->pet_attr['dateofbirth']->getAttributeEntity()->getValue() && strlen($this->pet_attr['dateofbirth']->getAttributeEntity()->getValue()) > 0)
+        		echo "<tr><th>".$this->translate->_('Date of birth')."</th><td>{$this->pet_attr['dateofbirth']->getAttributeEntity()->getValue()}</td></tr>";
+		?>
+    </table>
+    <br />
+	<h2><?php echo $this->diary_record->getTitle(); ?></h2>
+	<br />
+	<table cellspacing="0" cellpadding="3" border="0" class="list" width="100%">
+		<col width="25%"/>
+		<col width="75%"/>
+		<tr>
+			<th><?php echo $this->translate->_('Written by:')?></th>
+			<td><a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $this->owner->getId()), 'default', true); ?>"><?php echo $this->owner->getName(); ?></a></td>
+		</tr>
+		<tr>
+			<th><?php echo $this->translate->_('Description:')?></th>
+			<td><?php echo strip_html_special($this->diary_record->getDescription()); ?></td>
+		</tr>
+	</table>
+	<?php if(isset($this->subentries) && count($this->subentries) > 0): ?>
+		<?php foreach($this->subentries as $subentry): ?>
+			<br />
+			<table cellspacing="0" cellpadding="3" border="0" class="list">
+				<col width="10%"/>
+				<col width="40%"/>
+				<tr>
+					<th colspan="2"><h2><?php echo Petolio_Service_Util::formatDate($subentry->getDate(), Petolio_Service_Util::MEDIUMDATE, false); ?></h2></th>
+				</tr>
+				<tr>
+					<th><?php echo $this->translate->_('Description:')?></th>
+					<td><?php echo strip_html_special($subentry->getDescription()); ?></td>
+				</tr>
+			</table>
+		<?php endforeach; ?>
+	<?php endif; ?>
+</body>
+</html>

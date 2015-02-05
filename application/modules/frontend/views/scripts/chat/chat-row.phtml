@@ -1,0 +1,55 @@
+<div class="chat-row" id="chat_<?php echo $this->chat['id']; ?>">
+	<span>
+		<?php if (strcasecmp($this->status, "live") == 0): ?>
+		<img src="/images/broadcast_small.png" alt="<?php echo $this->status?>" />
+		<?php else: ?>
+		<img src="/images/hourglass.png" alt="<?php echo $this->status?>" />
+		<?php endif; ?>
+	</span>
+	<div class="chat-owner">
+		<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $this->chat['user_id']), 'default', true); ?>" 
+				title="<?php echo $this->chat['user_name']; ?>"><?php
+				$avatar = "/images/no-avatar.jpg";
+				if ( isset($this->chat['user_avatar']) && strlen($this->chat['user_avatar']) > 0 ) {
+					$avatar = $this->chat['user_avatar'];
+				}
+			?><img src="<?php echo $avatar; ?>" /></a>
+		<a class="ellipsis" href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $this->chat['user_id']), 'default', true); ?>" 
+				title="<?php echo $this->chat['user_name']; ?>">
+			<?php echo $this->chat['user_name']; ?>
+		</a>
+	</div>
+	<div class="chat-details">
+		<a href="#" class="chat_name ellipsis"><?php echo $this->chat['title']; ?></a>
+		<span class="chat-date"><?php echo $this->chat['formatted_start']; ?></span>
+	</div>
+	<div class="attendees-list">&nbsp;
+		<a href="#" class="attendees-count">
+			<?php
+			if($this->chat['attendees_count'] > 0): 
+				printf($this->translate->ngettext("%s user invited", "%s users invited", $this->chat['attendees_count']), $this->chat['attendees_count']);
+			endif;
+			?>
+		</a>
+		<div class="cl"></div>
+		<?php foreach ($this->chat['attendees'] as $one): ?>
+		<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $one['id']), 'default', true); ?>" 
+				title="<?php echo $one['name']; ?>"><?php
+				$avatar = "/images/no-avatar.jpg";
+				if ( isset($one['avatar']) && strlen($one['avatar']) > 0 ) {
+					$avatar = "/images/userfiles/avatars/{$one['id']}/thumb_{$one['avatar']}";
+				}
+			?><img src="<?php echo $avatar; ?>" /></a>
+		<?php endforeach; ?>
+	</div>
+	<div class="chat-buttons">
+		<input type="button" class="submit chat_name" value="<?php echo $this->translate->_("Details"); ?>" />
+		<div class="clear"></div>
+		<div class="fivepx"></div>
+		<div class="clear"></div>
+		<?php if (strcasecmp($this->status, "live") == 0): ?>
+		<input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'chat', 'action' => 'view', 'id' => $this->chat['id']), 'default', true) ?>')"
+				type="button" class="submit" value="<?php echo $this->translate->_("Join"); ?>" />
+		<?php endif; ?>
+	</div>
+</div>

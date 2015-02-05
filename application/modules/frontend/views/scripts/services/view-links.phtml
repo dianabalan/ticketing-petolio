@@ -1,0 +1,370 @@
+<?php 
+	include "menu.phtml"; 
+	$service_name = ucfirst($this->attributes['name']->getAttributeEntity()->getValue());
+	$this->headTitle($service_name);
+	$this->headMeta()->appendProperty('og:title', $service_name);
+?>
+<div id="right">
+	<div class="rightbox">
+		<?php if($this->flagged): ?>
+			<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+			<h1><?php echo $this->translate->_("Service:"); ?> <?php echo $service_name; ?></h1>
+			<br />
+			<div class="c_error">
+				<div><b><?php echo $this->translate->_("Cannot display this service because it was flagged by the community."); ?></b></div>
+				<ul>
+					<?php foreach(array_unique($this->flagged) as $item): ?>
+						<li><?php echo $item; ?></li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+		<?php else: ?>
+			<div class="context"><div class="in">
+				<a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a>
+			</div></div>
+			
+			<div>
+				<div class="left"><img src="/images/new/large/market_place.png" alt="<?php echo $service_name; ?>" /></div>
+				<ul class="title-menu">
+					<li><h3 class="ellipsis"><?php echo $this->translate->_("Services"); ?></h3></li>
+					<li><a href="<?php echo $this->url(array('controller'=>'products', 'action'=>'index'), 'default', true); ?>">
+						<?php echo $this->translate->_("Products"); ?></a></li>
+					<li><a href="<?php echo $this->url(array('controller'=>'adoption', 'action'=>'index'), 'default', true); ?>">
+						<?php echo $this->translate->_("Adoptions"); ?></a></li>
+					<li>
+						<?php
+							echo $this->partial("marketplace/search.phtml", array(
+								"request" => $this->request,
+								"translate" => $this->translate,
+								"types" => $this->types
+							));
+						?>
+					</li>
+				</ul>
+			</div>
+			<div class="clear tenpx"></div>
+
+			<div>
+				<h3 class="green left"><?php echo $service_name; ?></h3>
+				<?php if ($this->admin): ?>
+				<a href="<?php echo $this->url(array('controller'=>'services', 'action'=>'edit', 'service'=>$this->service->getId()), 'default', true); ?>" 
+						class="edit-link" style="height: 35px; margin-left: 10px;">
+					<span></span>
+				</a>
+				<?php endif; ?>
+			</div>
+			<div class="clear"></div>
+			
+			<?php if($this->auth->hasIdentity()): ?>
+				<div class="rightbox">
+					<?php if ($this->service_type == 1): ?>
+						<?php if (isset($this->accepted_members_users) && count($this->accepted_members_users) > 0): ?>
+						<h3><?php echo $this->translate->_("Members"); ?></h3>
+						<br />
+						<table cellspacing="0" cellpadding="5" class="grid">
+							<?php if ($this->admin): ?><col width="18" /><?php endif; ?><col /><col width="400" />
+							<tr>
+								<?php if ($this->admin): ?>
+								<th><input type="checkbox" name="select_all" value="1" style="width: 13px;" /></th>
+								<?php endif; ?>
+								<th><?php echo $this->translate->_("User name"); ?></th>
+								<th></th>
+							</tr>
+							<?php foreach($this->accepted_members_users as $member_user): $the_members[] = $member_user->getUserId()."|".addcslashes($member_user->getMemberUser()->getName(), "\000\n\r\\'\"\032"); ?>
+								<tr>
+									<?php if ($this->admin): ?>
+									<td><input type="checkbox" name="select_this" value="<?php echo $member_user->getUserId(); ?>" style="width: 13px;" /></td>
+									<?php endif; ?>
+									<td>
+										<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $member_user->getUserId()), 'default', true); ?>">
+											<?php echo $member_user->getMemberUser()->getName(); ?>
+										</a>
+									</td>
+									<td align="right" nowrap="nowrap">
+										<?php if ($this->admin): ?>
+											<a class="icon_link send" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'send-message', 'user' => $member_user->getUserId(), 'service' => $this->service->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Send message"); ?>">
+												<span><?php echo $this->translate->_("Message"); ?></span>
+											</a>
+											<a class="icon_link appointment" href="javascript:void(0);" rel="<?php echo "member,{$member_user->getUserId()}|{$member_user->getMemberUser()->getName()}"; ?>" id="service_link_<?php echo $member_user->getId(); ?>" title="<?php echo $this->translate->_('Ask for appointment'); ?>">
+												<span><?php echo $this->translate->_('Appointment'); ?></span>
+											</a>
+											<a class="icon_link delete reqconf" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'remove-membership', 'link' => $member_user->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Cancel membership"); ?>?">
+												<span><?php echo $this->translate->_("Cancel"); ?></span>
+											</a>
+										<?php elseif ($member_user->getUserId() == $this->auth->getIdentity()->id): ?>
+											<a class="icon_link send" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'send-message', 'user' => $this->service->getUserId(), 'service' => $this->service->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Send message"); ?>">
+												<span><?php echo $this->translate->_("Message"); ?></span>
+											</a>
+											<a class="icon_link appointment" href="javascript:void(0);" rel="<?php echo "member_service,".$this->service->getOwner()->getId()."|".addcslashes($this->service->getOwner()->getName(), "\000\n\r\\'\"\032").",".$this->service->getId()."|".addcslashes($service_name, "\000\n\r\\'\"\032"); ?>" id="service_link_<?php echo $member_user->getId(); ?>" title="<?php echo $this->translate->_('Ask for appointment'); ?>">
+												<span><?php echo $this->translate->_('Appointment'); ?></span>
+											</a>
+											<a class="icon_link delete reqconf" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'remove-membership', 'link' => $member_user->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Cancel membership"); ?>?">
+												<span><?php echo $this->translate->_("Cancel"); ?></span>
+											</a>
+										<?php endif; ?>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+						</table>
+						<?php if($this->admin): ?>
+							<div class="tenpx"></div>
+							<input onclick="MassMessages.compose();" type="button" value="<?php echo $this->translate->_('Send mass message'); ?>" id="submit" name="compose" style="margin: 0px 5px 0px 0px;">
+							<input rel="member,<?php echo implode(',', $the_members); ?>" name="service_app_<?php echo $this->service->getId(); ?>" type="button" value="<?php echo $this->translate->_('Create Event'); ?>" id="submit" style="margin: 0px 0px 0px 0px;">
+						<?php endif; ?>
+					<?php endif; ?>
+					<?php else: ?>
+						<?php if (isset($this->accepted_members_pets) && count($this->accepted_members_pets) > 0): ?>
+						<h3><?php echo $this->translate->_("Partners"); ?></h3>
+						<br />
+						<table cellspacing="0" cellpadding="5" class="grid" border="0">
+							<?php if ($this->admin): ?><col width="18" /><?php endif; ?>
+							<col />
+							<col width="145" />
+							<col width="130" />
+							<col width="115" />
+							<col width="250" />
+							<tr>
+								<?php if ($this->admin): ?>
+								<th><input type="checkbox" name="select_all" value="1" style="width: 13px;" /></th>
+								<?php endif; ?>
+								<th><?php echo $this->translate->_("Owner"); ?></th>
+								<th><?php echo $this->translate->_("Pet"); ?></th>
+								<th><?php echo $this->translate->_("Breed"); ?></th>
+								<th><?php echo $this->translate->_("Date of birth"); ?></th>
+								<th></th>
+							</tr>
+							<?php foreach($this->accepted_members_pets as $member_pet): $the_members_pets[] = $member_pet->getMemberPet()->getOwner()->getId()."|".addcslashes($member_pet->getMemberPet()->getOwner()->getName(), "\000\n\r\\'\"\032")."#".$member_pet->getPetId()."|".addcslashes($member_pet->getMemberPet()->getName(), "\000\n\r\\'\"\032"); ?>
+								<tr>
+									<?php if ($this->admin): ?>
+									<td><input type="checkbox" name="select_this" value="<?php echo $member_pet->getMemberPet()->getOwner()->getId(); ?>" style="width: 13px;" /></td>
+									<?php endif; ?>
+									<td><a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $member_pet->getMemberPet()->getOwner()->getId()), 'default', true); ?>"><?php echo $member_pet->getMemberPet()->getOwner()->getName(); ?></a></td>
+									<td><a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'view', 'pet' => $member_pet->getPetId()), 'default', true); ?>"><?php echo $member_pet->getMemberPet()->getName(); ?></a></td>
+									<td><?php echo $member_pet->getMemberPet()->getBreed(); ?></td>
+									<td><?php echo Petolio_Service_Util::formatDate($member_pet->getMemberPet()->getDateOfBirth(), null, false); ?></td>
+									<td align="right" nowrap="nowrap">
+										<?php if ($this->admin): ?>
+											<a class="icon_link send" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'send-message', 'user' => $member_pet->getMemberPet()->getOwner()->getId(), 'service' => $this->service->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Send message"); ?>">
+												<span><?php echo $this->translate->_("Message"); ?></span>
+											</a>
+											<a class="icon_link appointment" href="javascript:void(0);" rel="<?php echo "partner,{$member_pet->getMemberPet()->getOwner()->getId()}|{$member_pet->getMemberPet()->getOwner()->getName()}#{$member_pet->getPetId()}|{$member_pet->getMemberPet()->getName()}"; ?>" id="service_link_<?php echo $member_pet->getId(); ?>" title="<?php echo $this->translate->_('Ask for appointment'); ?>">
+												<span><?php echo $this->translate->_('Appointment'); ?></span>
+											</a>
+											<a class="icon_link delete reqconf" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'remove-partnership', 'link' => $member_pet->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Cancel partnership"); ?>?">
+												<span><?php echo $this->translate->_("Cancel"); ?></span>
+											</a>
+										<?php elseif ( $member_pet->getMemberPet()->getUserId() == $this->auth->getIdentity()->id ): ?>
+											<a class="icon_link send" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'send-message', 'user' => $this->service->getUserId(), 'service' => $this->service->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Send message"); ?>">
+												<span><?php echo $this->translate->_("Message"); ?></span>
+											</a>
+											<a class="icon_link appointment" href="javascript:void(0);" rel="<?php echo "partner_service,".$this->service->getOwner()->getId()."|".addcslashes($this->service->getOwner()->getName(), "\000\n\r\\'\"\032").",".$this->service->getId()."|".addcslashes($service_name, "\000\n\r\\'\"\032"); ?>" id="service_link_<?php echo $member_pet->getId(); ?>" title="<?php echo $this->translate->_('Ask for appointment'); ?>">
+												<span><?php echo $this->translate->_('Appointment'); ?></span>
+											</a>
+											<a class="icon_link delete reqconf" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'remove-partnership', 'link' => $member_pet->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Cancel partnership"); ?>?">
+												<span><?php echo $this->translate->_("Cancel"); ?></span>
+											</a>
+										<?php endif; ?>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+						</table>
+						<?php if($this->admin): ?>
+							<div class="tenpx"></div>
+							<input onclick="javascript:MassMessages.compose();" type="button" value="<?php echo $this->translate->_('Send mass message'); ?>" id="submit" name="compose" style="margin: 0px 5px 0px 0px;">
+							<input rel="partner,<?php echo implode(',', $the_members_pets); ?>" name="service_app_<?php echo $this->service->getId(); ?>" type="button" value="<?php echo $this->translate->_('Create Event'); ?>" id="submit" style="margin: 0px 0px 0px 0px;">
+						<?php endif; ?>
+						<?php endif; ?>
+					<?php endif; ?>
+					<div class="clear"></div>
+				</div>
+				<?php if($this->admin): ?>
+					<div class="rightbox">
+						<?php if ($this->service_type == 1): ?>
+							<div class="left" style="width: 391px;">
+								<?php if (isset($this->requested_members_users) && count($this->requested_members_users) > 0): ?>
+								<h3><?php echo $this->translate->_("Membership Requests"); ?></h3>
+								<br />
+								<table cellspacing="0" cellpadding="5" class="grid">
+									<col width="200" /><col width="145" />
+									<tr>
+										<th><?php echo $this->translate->_("User name"); ?></th>
+										<th></th>
+									</tr>
+									<?php foreach($this->requested_members_users as $member_user): ?>
+										<tr>
+											<td>
+												<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $member_user->getUserId()), 'default', true); ?>">
+													<?php echo $member_user->getMemberUser()->getName(); ?>
+												</a>
+											</td>
+											<td align="right" nowrap="nowrap">
+												<a class="icon_link accept" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'accept-membership', 'link' => $member_user->getId()), 'default', true); ?>"><span><?php echo $this->translate->_("Accept"); ?></span></a>
+												<a class="icon_link deny" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'decline-membership', 'link' => $member_user->getId()), 'default', true); ?>"><span><?php echo $this->translate->_("Decline"); ?></span></a>
+											</td>
+										</tr>
+									<?php endforeach; ?>
+								</table>
+								<?php endif; ?>
+							</div>
+							<div class="right" style="width: 391px;">
+								<?php if (isset($this->declined_members_users) && count($this->declined_members_users) > 0): ?>
+								<h3><?php echo $this->translate->_("Declined Memberships"); ?></h3>
+								<br />
+								<table cellspacing="0" cellpadding="5" class="grid">
+									<col width="200" /><col width="145" />
+									<tr>
+										<th><?php echo $this->translate->_("User name"); ?></th>
+										<th></th>
+									</tr>
+									<?php foreach($this->declined_members_users as $member_user): ?>
+										<tr>
+											<td>
+												<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $member_user->getUserId()), 'default', true); ?>">
+													<?php echo $member_user->getMemberUser()->getName(); ?>
+												</a>
+											</td>
+											<td align="right" nowrap="nowrap">
+												<a class="icon_link accept" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'accept-membership', 'link' => $member_user->getId()), 'default', true); ?>"><span><?php echo $this->translate->_("Accept"); ?></span></a>
+												<a class="icon_link delete reqconf" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'remove-membership', 'link' => $member_user->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Remove"); ?>?"><span><?php echo $this->translate->_("Remove"); ?></span></a>
+											</td>
+										</tr>
+									<?php endforeach; ?>
+								</table>
+								<?php endif; ?>
+							</div>
+						<?php else: // service type == 1 if else ?>
+							<div class="left" style="width: 391px;">
+								<?php if (isset($this->requested_members_pets) && count($this->requested_members_pets) > 0): ?>
+								<h3><?php echo $this->translate->_("Partnership Requests"); ?></h3>
+								<br />
+								<table cellspacing="0" cellpadding="5" class="grid" border="0">
+									<col width="117" /><col width="118" /><col width="110" />
+									<tr>
+										<th><?php echo $this->translate->_("Owner"); ?></th>
+										<th><?php echo $this->translate->_("Pet"); ?></th>
+										<th></th>
+									</tr>
+									<?php foreach($this->requested_members_pets as $member_pet): ?>
+										<tr>
+											<td>
+												<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $member_pet->getMemberPet()->getOwner()->getId()), 'default', true); ?>">
+													<?php echo $member_pet->getMemberPet()->getOwner()->getName(); ?>
+												</a>
+											</td>
+											<td>
+												<a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'view', 'pet' => $member_pet->getPetId()), 'default', true); ?>">
+													<?php echo $member_pet->getMemberPet()->getName(); ?>
+												</a>
+											</td>
+											<td align="right" nowrap="nowrap">
+												<a class="icon_link accept" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'accept-partnership', 'link' => $member_pet->getId()), 'default', true); ?>"><span><?php echo $this->translate->_("Accept"); ?></span></a>
+												<a class="icon_link deny" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'decline-partnership', 'link' => $member_pet->getId()), 'default', true); ?>"><span><?php echo $this->translate->_("Decline"); ?></span></a>
+											</td>
+										</tr>
+									<?php endforeach; ?>
+								</table>
+								<?php endif; ?>
+							</div>
+							<div class="right" style="width: 391px;">
+								<?php if (isset($this->declined_members_pets) && count($this->declined_members_pets) > 0): ?>
+								<h3><?php echo $this->translate->_("Declined Partnerships"); ?></h3>
+								<br />
+								<table cellspacing="0" cellpadding="5" class="grid">
+									<col width="117" /><col width="118" /><col width="110" />
+									<tr>
+										<th><?php echo $this->translate->_("Owner"); ?></th>
+										<th><?php echo $this->translate->_("Pet"); ?></th>
+										<th></th>
+									</tr>
+									<?php foreach($this->declined_members_pets as $member_pet): ?>
+										<tr>
+											<td>
+												<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $member_pet->getMemberPet()->getOwner()->getId()), 'default', true); ?>">
+													<?php echo $member_pet->getMemberPet()->getOwner()->getName(); ?>
+												</a>
+											</td>
+											<td>
+												<a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'view', 'pet' => $member_pet->getPetId()), 'default', true); ?>">
+													<?php echo $member_pet->getMemberPet()->getName(); ?>
+												</a>
+											</td>
+											<td align="right" nowrap="nowrap">
+												<a class="icon_link accept" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'accept-partnership', 'link' => $member_pet->getId()), 'default', true); ?>">
+													<span><?php echo $this->translate->_("Accept"); ?></span>
+												</a>
+												<a class="icon_link delete reqconf" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'remove-partnership', 'link' => $member_pet->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Remove"); ?>?">
+													<span><?php echo $this->translate->_("Remove"); ?></span>
+												</a>
+											</td>
+										</tr>
+									<?php endforeach; ?>
+								</table>
+								<?php endif; ?>
+							</div>
+						<?php endif; // service type == 1 if endif ?>
+						<div class="clear"></div>
+					</div>
+					<div class="rightbox" style="padding: 0px; border: 0px;">
+						<?php if ($this->service->getAttributeSet()->getType() == 0): ?>
+							<div class="left"><input type="button" value="<?php echo $this->translate->_("Invite potential clients for this service"); ?>" id="submit" name="invite_partners" style="margin: 0px;"><div class="clear"></div></div>
+						<?php else: ?>
+							<div class="left"><input type="button" value="<?php echo $this->translate->_("Invite potential clients for this service"); ?>" id="submit" name="invite_members" style="margin: 0px;"><div class="clear"></div></div>
+						<?php endif; ?>
+						<div class="clear"></div>
+					</div>
+				<?php endif; // is admin ?>
+			<?php endif; // is logged in ?>
+		<?php endif; ?>
+	</div>
+</div>
+<script type="text/javascript">
+var MassMessages = function() {
+	var url = '<?php echo $this->url(array('controller'=>'services', 'action'=>'send-message', 'service' => $this->service->getId()), 'default', true); ?>';
+	
+	var _bind = function() {
+		$("input[name=select_all]").click(function(e) {
+			if ( $(this).is(':checked') ) {
+				$("input[name=select_this]").each(function(index, element) {
+					$(element).attr("checked", true);
+				});
+			} else {
+				$("input[name=select_this]").each(function(index, element) {
+					$(element).attr("checked", false);
+				});
+			}
+		});
+	}, _compose = function() {
+
+		var jForm = $(document.createElement('form'));
+	    jForm.attr('action', url);
+	    jForm.attr('method', 'post');
+	    
+		var users = '';
+		$("input[name=select_this]").each(function(index, element) {
+			if ($(element).is(':checked')) {
+		        var jInput = $("<input>");
+		        jInput.attr('name', 'user[]');
+		        jInput.attr('type', 'hidden');
+		        jInput.attr('value', $(element).val());
+		        jForm.append(jInput);
+				users += '/user/' + $(element).val();
+			}
+		});
+		if (users.length > 0) {
+			$("body").append(jForm);
+			jForm.submit();
+		} else {
+			alert('<?php echo $this->translate->_("Please select at least one user."); ?>');
+		}
+	}, __construct = function() {
+		_bind();
+	};
+
+	return {
+		init: __construct,
+		compose: _compose
+	};
+}();
+
+READY(MassMessages.init);
+</script>

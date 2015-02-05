@@ -1,0 +1,30 @@
+<?php include "menu.phtml"; $this->render('accounts/profile-picture.phtml'); ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Edit Email Notifications"); ?></h1>
+		<br />
+		<?php echo $this->form; ?>
+	</div>
+</div>
+<script type="text/javascript">
+	$(function() {
+		$('.rightbox label').css({width: 155});
+		$('.rightbox label.description').css({width: 400});
+		$('label.description').each(function() {
+			var self = $(this);
+
+			// add tooltip
+			if(self.html() == '{{legend}}')
+				self.html(
+					'<img rel="#help_other_notification" src="/images/icons/question.png" class="cluetip" style="margin-top: -2px;" />'+
+					'<table class="tooltipinfo" style="display: none;" cellpadding="0" cellspacing="0" id="help_other_notification">'+
+					'<tbody>'+
+					'<tr>'+
+						'<td><?php echo $this->translate->_('Receive email notification like new friend request, opinion question answered etc.'); ?></td>'+
+					'</tr>'+
+				'</tbody></table>');
+		});
+		
+	});
+</script>

@@ -1,0 +1,47 @@
+<table cellspacing="0" cellpadding="5" class="grid">
+<?php if($this->per_row == 2): ?>
+	<col width="68" /><col width="252" /><col width="76" /><col width="68" /><col width="252" /><col width="76" />
+<?php else: ?>
+	<col width="68" /><col />
+<?php endif; ?>
+	<?php
+		$blank = null; $count = $numrows = 0; foreach ($this->data as $item) $numrows++; $surplus = $this->per_row - ($numrows - ($this->per_row * (ceil($numrows / $this->per_row) - 1))); for($i_surplus = 1; $i_surplus <= $surplus; $i_surplus ++)
+			$blank .= "<td colspan='3'>&nbsp;</td>"; $blank .= "</tr>";
+
+		foreach($this->data as $idx => $user): if ($count == 0) echo "<tr>"; $count++;
+			// avatar control
+			$avatar = $this->partial('avatar.phtml', array(
+				'user' => $user
+			)); ?>
+				<td align="right"><a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $user["id"]), 'default', true); ?>"><img src="<?php echo $avatar; ?>" style="display: block; padding: 3px; border: 1px solid #B3B3B3; background: white;" alt="<?php echo $this->translate->_("Profile Picture"); ?>" /></a></td>
+				<td class="small">
+					<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $user["id"]), 'default', true); ?>"><?php echo $user["name"]; ?></a>
+					(<?php if(isset($user['micro'])): ?><a href="javascript:void(0);" class="microsite" style="font-size: 12px;" rel="<?php echo $user['micro']; ?>"><?php echo $this->translate->_($this->usertypes[$user["type"]]); ?></a><?php else: ?><?php echo $this->translate->_($this->usertypes[$user["type"]]); ?><?php endif; ?>)
+					<div class="cl"></div><div class="cl"></div>
+					<span class="grey"><?php echo $user["type"] == 1 ? $user["gender"] : $user["category_id"]; ?><br /></span>
+					<?php if($this->translate->getLocale() == 'en'): ?>
+						<span class="grey"><?php echo $user["address"]; ?> </span>
+						<span class="grey"><?php echo $user["location"]; ?> </span>
+						<span class="grey"><?php echo $user["zipcode"]; ?> </span>
+						<span class="grey"><?php echo $user["country_id"]; ?></span>
+					<?php else: ?>
+						<span class="grey"><?php echo $user["zipcode"]; ?> </span>
+						<span class="grey"><?php echo $user["address"]; ?> </span>
+						<span class="grey"><?php echo $user["location"]; ?> </span>
+						<span class="grey"><?php echo $user["country_id"]; ?></span>
+					<?php endif; ?>
+				</td>
+				<?php if($this->links == "plus"): ?>
+					<?php if($this->identity && $this->identity->type == 2 && $user['id'] != $this->identity->id): ?>
+						<td align="right" <?php if ($count % $this->per_row != 0) echo 'class="border-right"'; ?>><a href='javascript:void(0);' class='icon_link plus' data-owner="<?php echo $user['id']; ?>" data-owner_name="<?php echo $user['name']; ?>" title='<?php echo $this->translate->_('Invite member for Membership / Partnership'); ?>'><span><?php echo $this->translate->_("Invite"); ?></span></a></td>
+					<?php else: ?>
+						<td align="right" <?php if ($count % $this->per_row != 0) echo 'class="border-right"'; ?>></td>
+					<?php endif; ?>
+				<?php elseif ($this->links == "remove"): ?>
+					<td align="right" <?php if ($count % $this->per_row != 0) echo 'class="border-right"'; ?>><a href="<?php echo $this->url(array('controller'=>'friends', 'action'=>'remove', 'id' => $user['id']), 'default', true); ?>" class="icon_link delete reqconf" title="<?php echo $this->translate->_("Remove from Friends"); ?>?"><span><?php echo $this->translate->_("Remove"); ?></span></a></td>
+				<?php elseif ($this->links == "add"): ?>
+					<td align="right" <?php if ($count % $this->per_row != 0) echo 'class="border-right"'; ?>><a href="<?php echo $this->url(array('controller'=>'friends', 'action'=>'invite', 'id' => $user['id']), 'default', true); ?>" class="icon_link accept"><span><?php echo $this->translate->_("Add to Friends"); ?></span></a></td>
+				<?php endif; ?>
+	<?php if(($count == $this->per_row) || ($user == end($this->data))) $count = 0; endforeach; echo $blank; ?>
+</table>
+<?php if($this->links == "plus") include "../application/modules/frontend/views/scripts/plus.phtml"; ?>

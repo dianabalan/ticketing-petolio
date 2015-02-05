@@ -1,0 +1,225 @@
+<?php 
+	$pet_name = ucfirst($this->attributes['name']->getAttributeEntity()->getValue());
+	$this->headTitle($pet_name);
+?>
+<div id="right" class="distribution-container">
+	<div class="rightbox">
+		<?php if($this->flagged): ?>
+			<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+			<h3><?php echo $this->translate->_("Pet:"); ?> <?php echo $pet_name; ?></h3>
+			<br />
+			<div class="c_error">
+				<div><b><?php echo $this->translate->_("Cannot display this pet because it was flagged by the community."); ?></b></div>
+				<ul>
+					<?php foreach(array_unique($this->flagged) as $item): ?>
+						<li><?php echo $item; ?></li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+		<?php else: ?>
+			<?php
+				// picture control
+				$big_image = "/images/no-pet.jpg";
+				if (count($this->gallery) > 0)
+					$big_image = "/images/userfiles/pets/{$this->pet->getId()}/gallery/" . reset($this->gallery);
+			?>
+			<div>
+				<div class="left"><img src="/images/new/large/pets.png" alt="<?php echo $pet_name; ?>" /></div>
+				<ul class="title-menu">
+					<li><h3 class="ellipsis"><?php echo $pet_name; ?></h3></li>
+				</ul>
+			</div>
+			<div class="clear tenpx"></div>
+			
+			<div class="pet-info">
+				<h2><?php echo $this->translate->_("Pet Details"); ?></h2>
+				<?php
+					$sci = false; $description = array();
+					foreach ($this->attributes as $attr):
+			    		$src = is_array($attr->getAttributeEntity()) ? reset($attr->getAttributeEntity()) : $attr->getAttributeEntity();
+						$val = $src->getValue();
+						if(strpos($attr->getCode(), '_description') !== false) {
+							$description = array($this->Tr($attr->getLabel()), $val);
+							continue;
+						}
+						
+						if (isset($val) && strlen($val) > 0) {
+							echo "<p>";
+							echo $this->Tr($attr->getLabel()).": ".$val;
+							
+							// no description for the price fields
+							if ($attr->getDescription() && strlen($attr->getDescription()) > 0 
+										&& !($attr->getCurrencyId() && intval($attr->getCurrencyId()) > 0)) {
+								echo "&nbsp;".$attr->getDescription();
+							}
+							echo "</p>";
+						}
+						
+						// show the latin name if it's any
+						if ($attr->getAttributeInputType()->getType() == 'select')
+						if ($src->getLatin() && strlen($src->getLatin()) > 0)
+							$sci = $src->getLatin();
+						
+					endforeach;
+					
+					if($sci) {
+						echo "<p>".$this->translate->_('Species').": ".$sci."</p>";
+					}
+				?>
+				<div class="clear tenpx"></div>
+				<div style="border: 1px solid #ccc; position: relative;">
+					<?php $url = urlencode($this->url(array('controller'=>'pets', 'action'=>'view-mobile', 'pet'=>$this->pet->getId()), 'default', true)); ?>
+					<img style="display: block;" src="https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=<?php echo $url; ?>&choe=UTF-8" alt="<?php echo $this->translate->_("QR Code"); ?>" />
+					<ul class="leftsubmenu" style="position:absolute; width: 200px; top:50%; right: 10px; height:60px; margin-top:-30px;">
+						<li style="width: 100%;"><a target="_blank" href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'download-qr', 'pet'=>$this->pet->getId()), 'default', true); ?>" class="lm-pets_sm" title="<?php echo $this->translate->_("Download QR Code"); ?>"><?php echo $this->translate->_("Download QR Code"); ?></a></li>
+						<li style="width: 100%;"><a target="_blank" href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'print-qr', 'pet'=>$this->pet->getId()), 'default', true); ?>" class="lm-pets_sm" title="<?php echo $this->translate->_("Print QR Code"); ?>"><?php echo $this->translate->_("Print QR Code"); ?></a></li>
+					</ul>
+				</div>
+				
+			</div>
+			<div class="pet-image">
+				<?php
+					$owner_profile = $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $this->pet->getUserId()), 'default', true);
+				?>
+				<div>
+					<div class="ribbon">
+						<?php $avatar = $this->partial('avatar.phtml', array('user' => $this->owner, 'for' => 'profile')); ?>
+						<img alt="<?php echo $this->owner->getName(); ?>" src="<?php echo $avatar; ?>" />
+						<a href="<?php echo $owner_profile; ?>" target="_blank"><span><?php echo $this->owner->getName(); ?></span></a>
+					</div>
+					<img alt="<?php echo $pet_name; ?>" src="<?php echo $big_image; ?>" />
+					<div>
+						<h5><?php echo $pet_name; ?></h5>
+						<a href="<?php echo $owner_profile; ?>" 
+								class="left" target="_blank">
+							<?php echo $this->translate->_("owner's profile"); ?>
+						</a>
+						<a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'pedigree', 'pet' => $this->pet->getId()), 'default', true); ?>" 
+								class="right" target="_blank">
+							<?php echo $this->translate->_("view pedigree"); ?>
+						</a>
+						<div class="clear"></div>
+					</div>
+				</div>
+			</div>
+		
+			<?php if(strlen($description[1]) > 0): ?>
+				<div class="clear tenpx"></div>
+				<div style="font-size: 12px; line-height: 18px;">
+					<h3><?php echo $description[0]; ?></h3>
+					<div class="fivepx"></div>
+					<div class="reset"><?php echo $description[1]; ?></div>
+				</div>
+			<?php endif; ?>
+			<div class="clear"></div>
+
+			<?php if(count($this->gallery) > 0): ?>
+			<div class="green-box">
+				<h2><?php echo $this->translate->_("Pictures"); ?></h2>
+				<?php if(count($this->gallery) > 0): ?>
+				    <div class="pictures">
+						<?php foreach($this->gallery as $idx => $pic): ?>
+							<div class="pic">
+								<span onclick="window.open('<?php echo $this->url(array('controller'=>'pets', 'action'=>'view', 'pet' => $this->pet->getId()), 'default', true)."#img/".$idx; ?>');" class="img" rel="<?php echo $idx; ?>" style="background: #000 url('/images/userfiles/pets/<?php echo $this->pet->getId(); ?>/gallery/small_<?php echo $pic; ?>') center center no-repeat;"></span>
+							</div>
+						<?php endforeach; ?>
+						<div class="clear"></div>
+					</div>
+				    <div class="clear"></div>
+				<?php else: ?>
+					<b class="red bigger"><?php echo $this->translate->_("Sorry, nothing here pal :("); ?></b>
+				<?php endif; ?>
+				<div class="clear"></div>
+			</div>
+			<?php endif; ?>
+			
+			<?php if(count($this->audios) > 0): ?>
+			<div class="green-box">
+				<h2><?php echo $this->translate->_("Audios"); ?></h2>
+				<?php if(count($this->audios) > 0): ?>
+				    <div class="pictures">
+						<?php foreach($this->audios as $idx => $aud): ?>
+							<div class="pic">
+								<span onclick="window.open('<?php echo $this->url(array('controller'=>'pets', 'action'=>'view', 'pet' => $this->pet->getId()), 'default', true)."#aud/".$idx; ?>');" class="aud" rel="<?php echo $idx; ?>"></span>
+								<span class="name ellipsis" title="<?php echo pathinfo($aud, PATHINFO_FILENAME); ?>"><?php echo pathinfo($aud, PATHINFO_FILENAME); ?></span>
+							</div>
+						<?php endforeach; ?>
+						<div class="clear"></div>
+					</div>
+				    <div class="clear"></div>
+				<?php else: ?>
+					<b class="red bigger"><?php echo $this->translate->_("Sorry, nothing here pal :("); ?></b>
+				<?php endif; ?>
+				<div class="clear"></div>
+			</div>
+			<?php endif; ?>
+			
+			<?php if(count($this->videos) > 0): ?>
+			<div class="green-box">
+				<h2><?php echo $this->translate->_("Videos"); ?></h2>
+				<?php if(count($this->videos) > 0): ?>
+				    <div class="pictures">
+						<?php foreach($this->videos as $video): ?>
+							<?php
+								// get video entity
+								$entity = $video->getMapper();
+
+								// get video thumbnail
+								$thumbs = $entity->getVideoThumbnails();
+								$thumbnail = $thumbs[1]['url'];
+
+								// get video duration
+								$duration = date("i:s", $entity->getVideoDuration());
+							?>
+							<div class="pic">
+								<span onclick="window.open('<?php echo $this->url(array('controller'=>'pets', 'action'=>'view', 'pet' => $this->pet->getId()), 'default', true)."#vid/".$video->getId(); ?>');" class="vid" rel="<?php echo $video->getId(); ?>" style="background: #000 url('<?php echo $thumbnail; ?>') center center no-repeat;"></span>
+								<span class="duration"><?php echo $duration; ?></span>
+							</div>
+						<?php endforeach; ?>
+						<div class="clear"></div>
+					</div>
+					<div class="clear"></div>
+				<?php else: ?>
+					<b class="red bigger"><?php echo $this->translate->_("Sorry, nothing here pal :("); ?></b>
+				<?php endif; ?>
+				<div class="clear"></div>
+			</div>
+			<?php endif; ?>
+			
+			<?php if(count($this->pet_emergency_contacts) > 0): ?>
+				<br />
+				<h3><?php echo $this->translate->_("Emergency Contacts"); ?></h3>
+				<?php if(count($this->pet_emergency_contacts) > 0): ?>
+					<table cellspacing="0" cellpadding="5" class="grid" id="contacts">
+						<col width="160"><col width="160"><col width="160"><col width="160"><col width="160">
+						<tr>
+							<th class="no_link"><?php echo $this->translate->_("First Name"); ?></th>
+							<th class="no_link"><?php echo $this->translate->_("Last Name"); ?></th>
+							<th class="no_link"><?php echo $this->translate->_("Service Type"); ?></th>
+							<th class="no_link"><?php echo $this->translate->_("Phone"); ?></th>
+							<th class="no_link"><?php echo $this->translate->_("E-Mail"); ?></th>
+						</tr>
+						<?php foreach($this->pet_emergency_contacts as $one): ?>
+							<tr>
+								<td><?php echo $one->getFirstName(); ?></td>
+								<td><?php echo $one->getLastName(); ?></td>
+								<td><?php echo $this->service_types[$one->getCategory()]; ?></td>
+								<td><?php echo $one->getPhone(); ?></td>
+								<td><?php echo $one->getEmail(); ?></td>
+							</tr>
+						<?php endforeach; ?>
+					</table>
+				<?php else: ?>
+					<div class="fivepx"></div>
+					<b class="red bigger"><?php echo $this->translate->_("No contacts found."); ?></b>
+				<?php endif; ?>
+			<?php endif; ?>
+		<?php endif; ?>
+		<div>
+			<?php if(isset($_SERVER['HTTP_REFERER'])): ?>
+				<div class="left"><input onclick="window.location.href='<?php echo $_SERVER['HTTP_REFERER']; ?>';" type="button" value="<?php echo $this->translate->_("< Back to List"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+				<div class="clear"></div>
+			<?php endif; ?>
+		</div>
+	</div>
+</div>

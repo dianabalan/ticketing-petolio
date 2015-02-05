@@ -1,0 +1,80 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<div>
+			<div class="left"><img src="/images/new/large/adoption.png" alt="<?php echo $this->title; ?>" /></div>
+			<ul class="title-menu">
+				<li><h3><?php echo $this->title; ?></h3></li>
+				<li>
+					<?php
+						echo $this->partial("adoption/search.phtml", array(
+							"request" => $this->request,
+							"translate" => $this->translate,
+							"country_list" => $this->country_list,
+							"category_list" => $this->category_list,
+							"types" => $this->types,
+							"action" => $this->url(array('controller'=>'adoption', 'action'=>'interested'), 'default', true)
+						));
+					?>
+				</li>
+			</ul>
+		</div>
+		<div class="clear"></div>
+		<?php if(isset($this->pets) && count($this->pets) > 0): ?>
+			<div id="pin-container">
+				<?php foreach($this->pets as $pet): ?>
+					<?php
+						if($this->stats[$pet['id']]["status"] == 1) {
+							$links = array(array(
+				    			'class' => 'deny reqconf',
+				    			'title' => $this->translate->_("Deny")." {$pet['name']} ?",
+				    			'url' => $this->url(array('controller'=>'adoption', 'action'=>'deny', 'pet' => $pet["id"]), 'default', true)
+				    		), array(
+				    			'class' => 'accept reqconf',
+				    			'title' => $this->translate->_("Accept")." {$pet['name']} ?",
+								'url' => $this->url(array('controller'=>'adoption', 'action'=>'accept', 'pet' => $pet["id"]), 'default', true)
+				    		));
+						} else {
+							$links = array(array(
+				    			'class' => 'delete reqconf',
+				    			'title' => $this->translate->_("Remove interest?"),
+				    			'url' => $this->url(array('controller'=>'adoption', 'action'=>'remove', 'pet' => $pet["id"]), 'default', true)
+				    		));
+						}
+					?>
+				    <?php echo $this->partial('pet-template.phtml', array(
+			        	'translate' => $this->translate,
+			        	'pet' => $pet,
+				    	'sp' => ($this->identity && $this->identity->type == 2 && $pet['user_id'] != $this->identity->id),
+			    		'allow' => true,
+			    		'links' => $links,
+				    	'alternate' => $this->url(array('controller'=>'adoption', 'action'=>'view', 'pet' => $pet["id"]), 'default', true)
+			    	)); ?>
+				<?php endforeach; ?>
+				<div class="clear"></div>
+			</div>
+			<div class="clear"></div>
+		<?php else: ?>
+			<b class="red bigger"><?php echo $this->translate->_("No pets found."); ?></b>
+		<?php endif; ?>
+	</div>
+</div>
+<?php include "../application/modules/frontend/views/scripts/plus.phtml"; ?>
+<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/jquery/masonry.pkgd.min.js'); ?>"></script>
+<script type="text/javascript">
+	READY(function() {
+		var $container = $('#pin-container');
+
+		// initialize
+		$container.masonry({
+			itemSelector: '.pet-item',
+			gutter: 7,
+		});
+
+		// redraw the layout after all the images were loaded
+		$(window).load(function() {
+			$container.masonry();
+		});
+	});
+</script>

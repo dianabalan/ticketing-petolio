@@ -1,0 +1,70 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->answer ? $this->translate->_("Answer Files") : $this->translate->_("Question Files"); ?></h1>
+		<br />
+		<span class="bigger green"><?php echo $this->translate->_("All image files are accepted as well as pdf files"); ?></span>
+		<div class="tenpx"></div>
+		<?php if(isset($this->up['errors']) && count($this->up['errors']) > 0):?>
+			<div class="c_error">
+				<?php foreach($this->up['errors'] as $idx => $error): ?>
+					<div><b><?php echo $idx; ?></b></div>
+					<ul>
+						<?php foreach($error as $item): ?>
+							<li><?php echo $item; ?></li>
+						<?php endforeach; ?>
+					</ul>
+				<?php endforeach; ?>
+			</div>
+			<br />
+		<?php endif; ?>
+		<?php if(isset($this->up['success']) && count($this->up['success']) > 0):?>
+			<div class="c_success">
+				<ul>
+					<?php foreach($this->up['success'] as $idx => $success): ?>
+						<li><?php echo $idx; ?> <?php echo $this->translate->_("was successfully uploaded"); ?>.</li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+			<br />
+		<?php endif; ?>
+		<?php echo $this->form; ?>
+		<?php if(count($this->gallery) > 0) :?>
+			<hr />
+			<div class="gallery">
+				<?php foreach($this->gallery as $idx => $picture): ?>
+					<?php
+						$url = $this->url(array('controller'=>'pets', 'action'=>'files', 'download' => $picture->getId()), 'default', true);
+						if($this->answer) $del_url = $this->url(array('controller'=>'help', 'action'=>'files', 'answer'=>$this->answer['id'], 'remove'=>$picture->getId()), 'default', true);
+						else $del_url = $this->url(array('controller'=>'help', 'action'=>'files', 'question'=>$this->question->getId(), 'remove'=>$picture->getId()), 'default', true);
+					?>
+					<div class="picture" rel="<?php echo $picture->getId(); ?>">
+						<a href="<?php echo $url; ?>" target="_parent">
+							<?php if($picture->getType() == 'pdf'): ?><span class="img" style="background: #000 url('/images/acro.png') center center no-repeat;">
+							<?php else: ?><span class="img" style="background: #000 url('/images/userfiles/help/<?php echo $this->question->getId(); ?>/thumb_<?php echo $picture->getFile(); ?>') center center no-repeat;">
+							<?php endif; ?>
+							</span>
+						</a>
+						<span class="name ellipsis">
+							<a href="<?php echo $url; ?>" target="_parent"><?php echo pathinfo($picture->getDescription(), PATHINFO_FILENAME); ?></a>
+						</span>
+						<span class="links">
+							<a href='<?php echo $del_url; ?>' class='icn delete reqconf' title='<?php echo $this->translate->_("Delete File"); ?>?'>&nbsp;</a>
+						</span>
+					</div>
+				<?php endforeach; ?>
+				<div class="clear"></div>
+			</div>
+			<div class="clear"></div>
+		<?php endif; ?>
+		<hr />
+		<div class="left"><input onclick="Petolio.go(window.location.href.replace('files', 'edit'));" type="button" value="<?php echo $this->translate->_("< Go Back to Previous Step"); ?>" id="submit" name="prev" style="margin: 0px;" /><div class="clear"></div></div>
+		<?php if($this->answer): ?>
+			<div class="right"><input onclick="Petolio.go(window.location.href.replace('files', 'finish'));" type="button" value="<?php echo $this->translate->_("Finish >"); ?>" id="submit" name="next"><div class="clear"></div></div>
+		<?php else: ?>
+			<div class="right"><input onclick="Petolio.go(window.location.href.replace('files', 'videos'));" type="button" value="<?php echo $this->translate->_("Skip &amp; Go to Videos >"); ?>" id="submit" name="next"><div class="clear"></div></div>
+		<?php endif; ?>
+		<div class="clear"></div>
+	</div>
+</div>

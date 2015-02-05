@@ -1,0 +1,238 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->answer ? $this->translate->_("Edit Answer") : $this->translate->_("Edit Question"); ?></h1>
+		<br />
+		<?php echo $this->form; ?>
+	</div>
+</div>
+<?php if(!$this->answer): ?>
+	<script type="text/javascript">
+	$.fn.extend({
+	    getText: function() {
+	        return this.contents().filter(function() { return this.nodeType == 3; }).text();
+	    }
+	});
+
+	var Manage = function() {
+		var store,
+			med,
+			<?php if($this->medical): ?>
+				saved = {
+					id: <?php echo $this->medical[0]; ?>,
+					text: "<?php echo $this->medical[1]; ?>"
+				},
+			<?php endif; ?>
+			translate = {
+				link: '<?php echo $this->translate->_('Link Medical Record'); ?>',
+				nope: '<?php echo $this->translate->_('No Medical Records found for the selected Pet.'); ?>',
+				title: '<?php echo $this->translate->_('Link Medical Record'); ?>',
+				text: '<?php echo $this->translate->_('Please choose a Medical Record. The Medical Record permissions will be changed to public.'); ?>',
+				empty: '<?php echo $this->translate->_('Select Medical Record'); ?>',
+				add: '<?php echo $this->translate->_('Link'); ?>',
+				cancel: '<?php echo $this->translate->_('Cancel'); ?>',
+				nothing: '<?php echo $this->translate->_('No Medical Record was selected.'); ?>',
+				removelink: '<?php echo $this->translate->_('Remove Medical Record Link?'); ?>',
+				remove: '<?php echo $this->translate->_('Unlink'); ?>',
+				chars: '<?php echo $this->translate->_('characters remaining'); ?>'
+			},
+
+		// transform legends
+		legends = function() {
+			// go through each legend
+			$('label.description').each(function() {
+				var self = $(this),
+					txt = self.getText();
+
+				// add char limit
+				if(txt == '{{char_limit}}')
+					self.html('<span id="char_limit" class="smaller">200 '+ translate.chars +'</span>');
+
+				// add tooltip
+				if(txt == '{{legend}}')
+					self.html(
+						'<img rel="#help_types" src="/images/icons/question.png" class="cluetip" style="margin-top: -2px;" />'+
+						'<table class="tooltipinfo" style="display: none;" cellpadding="0" cellspacing="0" id="help_types">'+
+						'<tbody>'+
+						'<tr>'+
+							'<th valign="top"><?php echo $this->translate->_('Species'); ?></th>'+
+							'<td><?php echo $this->translate->_('All'); ?>, <?php echo implode(', ', $this->types); ?></td>'+
+						'</tr>'+
+					'</tbody></table>');
+
+				// add medical record
+				if(txt == '{{link_medical_record}}') {
+					self.html('<div id="medical"></div>');
+					med = $('#medical');
+				}
+			});
+
+		// add medical record
+		}, add = function() {
+			Petolio.showLoading();
+	    	Petolio.ajax({
+	    		url: 'medical/find',
+				type: 'post',
+				data: {x: $("#pet_id").val()},
+				cache: false,
+				success: function (x) {
+					Petolio.hideLoading();
+
+					// no results?
+					if(x.results.length == 0)
+						return Petolio.showMessage(translate.nope);
+
+					// handle options
+					var options = '';
+					$.each(x.results, function(k, v){
+						options += '<option value="' + k + '">' + v + '</option>';
+					});
+
+					// create window
+					var identity = 'dialog-medical';
+					$('<div id="'+ identity +'" title="' + translate.title + '" class="ui-state-highlight">'+
+							'<div style="margin: 8px 0px 2px 0px; line-height: 18px;">' +
+								translate.text +'<br><div class="fivepx"></div>' +
+								'<select class="chzn-select" name="medical_id" id="medical_id" style="width:270px;">' +
+									'<option value="">'+ translate.empty +'</option>' +
+									options +
+								'</select>'+
+							'</div>'+
+						'</div>').dialog({
+							resizable: false,
+							autoOpen: false,
+							modal: true,
+							width: 300,
+							minHeight: 350,
+			    			buttons: [{
+								text: translate.add,
+								click: function() {
+			    					var val = $("#medical_id").val();
+			    					if(!val.length > 0)
+			    						return Petolio.showMessage(translate.nothing);
+
+									// set value in html and close window
+									set(val, $("#medical_id option:selected").text());
+									$(this).dialog("close");
+			    				}
+							}, {
+								text: translate.cancel,
+								click: function() {
+									$(this).dialog("close");
+			    				}
+							}],
+			    			close: function() {
+			    				$("#"+ identity).remove();
+			    			}
+						});
+
+					$("#medical_id").chosen({translate: Petolio.translateChosen()});
+					$("#"+ identity).dialog('open');
+				}
+			});
+
+		// set medical id
+		}, set = function(id, text) {
+			med.html(text + ' '+
+				'<input type="hidden" name="pet_medical_id" value="'+ id +'" />'+
+				'<a href="javascript:void(0);" id="delete" class="icon_link delete" style="font-size: 12px;" title="'+ translate.removelink +'"><span>'+ translate.remove +'</span></a>'
+			);
+
+		// unlink
+		}, unlink = function() {
+			med.html('<a href="javascript:void(0);" id="add" style="font-size: 12px;">'+ translate.link +'</a>');
+
+		// limit
+		},	limit = function(e) {
+			var count = $('#char_limit'),
+				who = count.parent().siblings("input");
+
+			// limit chars
+			if (who.val().length > 200) {
+			    who.val(who.val().substring(0, 200));
+			} else
+			    count.html((200 - who.val().length) + ' ' + translate.chars);
+
+		// binder
+		}, bind = function() {
+			var t = $('#char_limit').parent().siblings("input");
+
+			// limit chars
+			t.keyup(limit);
+			t.keydown(limit);
+
+			// link function
+			var link = function(val) {
+				if(val.length > 0) med.html('<a href="javascript:void(0);" id="add" style="font-size: 12px;">'+ translate.link +'</a>');
+				else med.html('');
+			};
+
+			// autolink
+			if(typeof saved != 'undefined') set(saved.id, saved.text);
+			else link($("#pet_id").val());
+
+			// on pet change, switch links around
+			$("#pet_id").bind('change', function() {
+				link($(this).val());
+			});
+
+			// on add / delete medical record click
+			med.delegate('#add', 'click', add);
+			med.delegate('#delete', 'click', unlink);
+
+		// constructor
+		}, __construct = function() {
+			var x = $("input.chzn-custom");
+
+			// set default title
+			if(x.attr('title'))
+				x.data('placeholder', x.attr('title'));
+
+			// create chosen
+			x.chosen({
+				translate: Petolio.translateChosen(),
+				ajax: {
+					url: SITE_URL + "site/find/attribute/" + x.attr('attribute_id') + "/addall/true",
+					min_search: 2,
+					req_param: "search",
+					res_value: "value",
+					res_text: "text",
+					res_html: "text",
+					success_callback: function(v){
+						return v.results;
+					}
+				}
+			});
+
+			// if we select all delete everything and leave just all
+			$("#product_species_chzn_shadow").change(function(e) {
+				var data = $("#product_species_chzn_shadow").val();
+				if(data && data.length > 0 && data.indexOf('0') > -1) {
+					$("#product_species_chzn_shadow").val(["0"]);
+					$("#product_species_chzn_shadow").trigger("liszt:updated");
+				}
+			});
+
+			// add the missing margin
+			x.next().css({float: 'left', marginLeft: '5px'});
+
+			// manage legends
+			legends();
+
+			// count it
+			limit();
+
+			// bind
+			bind();
+		};
+
+		// public, yay
+		return {
+			init: __construct
+		}
+	}();
+
+	READY(Manage.init);
+	</script>
+<?php endif; ?>

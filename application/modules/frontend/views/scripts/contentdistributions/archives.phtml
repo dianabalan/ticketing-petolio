@@ -1,0 +1,34 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_('Content Distributions Archives'); ?></h1>
+		<?php if(isset($this->archived) && count($this->archived) > 0): ?>
+			<table cellspacing="0" cellpadding="5" class="grid">
+				<col width="35%" /><col width="25%" /><col width="20%" /><col width="20%" />
+				<tr>
+					<th><a href="<?php echo $this->url(array('order' => 'name', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Name"); ?><?php if($this->order == 'name'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+					<th><a href="<?php echo $this->url(array('order' => 'targetplace', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Target place"); ?><?php if($this->order == 'targetplace'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+					<th><a href="<?php echo $this->url(array('order' => 'date', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Date"); ?><?php if($this->order == 'date'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+					<th></th>
+				</tr>
+				<?php foreach($this->archived as $content_distribution): ?>
+					<tr>
+						<td><?php echo $content_distribution["name"]; ?></td>
+						<td><?php echo $content_distribution["targetplace"]; ?></td>
+						<td><?php echo Petolio_Service_Util::formatDate($content_distribution["date_created"], null, true, true); ?></td>
+						<td align="right" nowrap="nowrap">
+							<a href='<?php echo $this->url(array('controller'=>'contentdistributions', 'action'=>'restore', 'distribution'=> $content_distribution["id"]), 'default', true); ?>' class='icon_link restore reqconf' title="<?php echo sprintf($this->translate->_('Are you sure you want to restore the %s distribution?'), $content_distribution['name']); ?>">
+								<span><?php echo $this->translate->_('Restore'); ?></span>
+							</a>
+						</td>
+					</tr>
+				<?php endforeach; ?>
+			</table>
+			<?php echo $this->paginationControl($this->archived, 'Elastic', 'pagination-controls.phtml'); ?>
+		<?php else: ?>
+			<br />
+			<b class="red bigger"><?php echo $this->translate->_("You don't have any content distribution archived."); ?></b>
+		<?php endif; ?>
+	</div>
+</div>

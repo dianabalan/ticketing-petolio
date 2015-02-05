@@ -1,0 +1,23 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Create Microsite"); ?></h1>
+		<br />
+		<?php echo $this->form; ?>
+	</div>
+</div>
+<script type="text/javascript">
+	var Comply = function() {
+		function __construct() {
+			$('label.description').css({width: 'auto'});
+			$('label.description').css({marginLeft: '130px'});
+		};
+
+		return {
+			init: __construct
+		}
+	}();
+
+	READY(Comply.init);
+</script>

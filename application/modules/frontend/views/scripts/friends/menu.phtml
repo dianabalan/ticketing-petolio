@@ -1,0 +1,32 @@
+<?php
+
+$accounts = array(
+	array(
+		'link' => $this->url(array('controller'=>'friends', 'action'=>'index'), 'default', true),
+		'name' => $this->translate->_("Overview"),
+		'class' => 'lm-friends_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'friends', 'action'=>'add'), 'default', true),
+		'name' => $this->translate->_("Add Friends"),
+		'class' => 'lm-friends_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'friends', 'action'=>'google'), 'default', true),
+		'name' => $this->translate->_("Import from Google Contacts"),
+		'class' => 'lm-friends_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'friends', 'action'=>'recommend'), 'default', true),
+		'name' => $this->translate->_("Recommend Petolio to Friends"),
+		'class' => 'lm-friends_sm'
+	)
+);
+
+$links = null;
+foreach($accounts as $link)
+	$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+
+$this->placeholder('sidebar')
+     ->append("<h3>".$this->translate->_("Friends")."</h3>
+     	<ul class=\"leftsubmenu fullwidth\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");

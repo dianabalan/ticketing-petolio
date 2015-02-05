@@ -1,0 +1,37 @@
+<?php
+
+// pet links
+$accounts = array(
+	array(
+		'link' => $this->url(array('controller'=>'dashboard', 'action'=>'index'), 'default', true),
+		'name' => $this->translate->_("My Entries"),
+		'class' => 'lm-dashboard_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'dashboard', 'action'=>'news'), 'default', true),
+		'name' => $this->translate->_("Friends Entries"),
+		'class' => 'lm-dashboard_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'dashboard', 'action'=>'all'), 'default', true),
+		'name' => $this->translate->_("All Entries"),
+		'class' => 'lm-dashboard_sm'
+	)
+);
+
+$links = null;
+foreach($accounts as $link) {
+	if ( isset($link['class']) && strlen($link['class']) > 0 ) {
+		$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+	} else {
+		$links .= "<li><a href='{$link['link']}'>{$link['name']}</a></li>";
+	}
+}
+
+if (!is_null($this->identity)) {
+	$this->placeholder('sidebar')
+	     ->append("<h3>".$this->translate->_("Small Talk")."</h3>
+	     	<ul class=\"leftsubmenu\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
+}
+
+?>

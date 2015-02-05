@@ -1,0 +1,73 @@
+<?php
+
+switch ($this->question['rights']) {
+	case '1': $right = 'friends'; $translate = $this->translate->_('Friends'); break;
+	case '2': $right = 'services'; $translate = $this->translate->_('Service Providers'); break;
+	default: $right = 'all'; $translate = $this->translate->_('All'); break;
+}
+
+$types = array('1' => $this->translate->_('Pet Owner'), '2' => $this->translate->_('Service Provider'));
+$url = $this->url(array('controller'=>'help', 'action'=>'view', 'question' => $this->question["id"]), 'default', true);
+
+?>
+<?php if($this->key != 0): ?>
+	<tr><td colspan="3" style="border: none; padding: 5px 0px 5px 0px;"></td></tr>
+<?php endif; ?>
+<tr<?php if($this->question['archived'] == 1): ?> style="background: #e3ebd4;"<?php endif; ?>>
+	<td align="center" style="border-right: none;"><a href="<?php echo $url; ?>" class="<?php echo $this->question["answers"] == 0 ? 'greyred' : 'darkgreen'; ?>"><span class="even_bigger"><?php echo $this->question["answers"]; ?></span><br /><?php echo $this->question["answers"] == 1 ? $this->translate->_('Answer') : $this->translate->_('Answers'); ?></a></td>
+ 	<td align="center" style="border-right: none;"><a href="<?php echo $url; ?>" class="grey"><span class="even_bigger"><?php echo $this->question["views"]; ?></span><br /><?php echo $this->question["views"] == 1 ? $this->translate->_('View') : $this->translate->_('Views'); ?></a></td>
+ 	<td style="border-right: none;">
+		<a style="font-size: 13px; font-weight: bold; line-height: 16px;" href="<?php echo $url; ?>"><?php echo Petolio_Service_Parse::do_limit($this->question["title"], 160, true, true); ?></a>
+		<div class="fivepx"></div>
+		<?php $ids = explode(', ', $this->question['species_ids']); foreach(explode(', ', $this->question['species']) as $idx => $spec): ?>
+			<a href="<?php echo $this->url(array('controller'=>'help', 'action'=>'index', 'species' => $ids[$idx]), 'default', true); ?>" class="tag"><?php echo $spec; ?></a>
+		<?php endforeach; ?>
+		<div class="left addressed <?php echo $right; ?>" title="<?php echo $translate; ?>"></div>
+		<div class="clear"></div>
+	</td>
+	<td class="relative" style="text-align: right; <?php if(isset($this->links)): ?>vertical-align: top;<?php endif; ?>">
+		<?php if(isset($this->links)): ?>
+			<div>
+				<div class="links">
+					<?php foreach($this->links as $link): ?>
+						<a href='<?php echo $link['url']; ?>' class='icn <?php echo $link['class']; ?>' title='<?php echo $link['title']; ?>'>&nbsp;</a>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		<?php else:
+			// avatar control
+			$avatar = $this->partial('avatar.phtml', array(
+				'user' => $this->question['user']
+			));
+		?>
+			<table cellspacing="0" cellpadding="5" style="width: 100%;">
+			<col width="63"><col />
+				<tr>
+					<td style="border: none; padding: 0px 5px 0px 0px;" align="right">
+						<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $this->question['user']["id"]), 'default', true); ?>">
+							<img src="<?php echo $avatar; ?>" style="display: block; padding: 3px; border: 1px solid #B3B3B3; background: white;" alt="<?php echo $this->translate->_("Profile Picture"); ?>" />
+						</a>
+					</td>
+					<td colspan="2" style="border: none; padding: 0px;" class="small">
+						<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $this->question['user']["id"]), 'default', true); ?>"><?php echo $this->question['user']["name"]; ?></a>
+						(<?php if(isset($this->question['user']['micro'])): ?><a href="javascript:void(0);" class="microsite" style="font-size: 11px;" rel="<?php echo $this->question['user']['micro']; ?>"><?php echo $this->translate->_($types[$this->question['user']["type"]]); ?></a><?php else: ?><?php echo $this->translate->_($types[$this->question['user']["type"]]); ?><?php endif; ?>)
+						<div class="cl"></div><div class="cl"></div>
+						<span class="grey"><?php echo $this->question['user']["type"] == 1 ? $this->question['user']["gender"] : $this->question['user']["category_id"]; ?><br /></span>
+						<?php if($this->translate->getLocale() == 'en'): ?>
+							<span class="grey"><?php echo $this->question['user']["address"]; ?> </span>
+							<span class="grey"><?php echo $this->question['user']["location"]; ?> </span>
+							<span class="grey"><?php echo $this->question['user']["zipcode"]; ?> </span>
+							<span class="grey"><?php echo $this->question['user']["country_id"]; ?></span>
+						<?php else: ?>
+							<span class="grey"><?php echo $this->question['user']["zipcode"]; ?> </span>
+							<span class="grey"><?php echo $this->question['user']["address"]; ?> </span>
+							<span class="grey"><?php echo $this->question['user']["location"]; ?> </span>
+							<span class="grey"><?php echo $this->question['user']["country_id"]; ?></span>
+						<?php endif; ?>
+					</td>
+				</tr>
+			</table>
+		<?php endif; ?>
+		<div class="clear"></div>
+	</td>
+</tr>

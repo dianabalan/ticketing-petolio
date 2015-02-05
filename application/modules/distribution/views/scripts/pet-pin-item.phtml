@@ -1,0 +1,59 @@
+<?php
+	// picture control
+	$image = "/images/small_no-pet.jpg";
+	if ($this->pet["picture"] && strlen($this->pet["picture"]) > 0) {
+		$image = "/images/userfiles/pets/{$this->pet["id"]}/gallery/thumb_{$this->pet["picture"]}";
+	}
+	
+	// jsonp
+	$base = "/";
+	$href = null;
+	if($this->jsonp) {
+		$base = PO_BASE_URL;
+		$href = "data-petolio='true'";
+	}
+	
+	// pet url
+	$url = $this->url(array('controller'=>'index', 'action'=>'view', 'pet' => $this->pet["id"]), 'distribution', true);
+?>
+<div class="pin">
+	<a <?php echo $href; ?> class="cluetip" href="<?php echo $url; ?>" rel="<?php echo '#pet_' . $this->pet["id"]; ?>">
+		<img src="<?php echo $image; ?>" alt="<?php echo $this->translate->_("Pet Picture"); ?>" />
+	</a>
+	<?php if(!$this->jsonp) { ?>
+		<table class="tooltipinfo" style="display: none;" cellpadding="0" cellspacing="0" id="<?php echo 'pet_' . $this->pet["id"]; ?>">
+			<tr>
+				<th valign="top"><?php echo $this->translate->_('Name'); ?></th>
+				<td><?php echo $this->pet["name"]; ?></td>
+			</tr>
+			<tr>
+				<th valign="top"><?php echo $this->translate->_('Species'); ?></th>
+				<td><?php echo $this->pet["type"]; ?></td>
+			</tr>
+			<?php if(strlen($this->pet["breed"]) > 0): ?>
+				<tr>
+					<th valign="top"><?php echo $this->translate->_('Breed'); ?></th>
+					<td><?php echo $this->pet["breed"]; ?></td>
+				</tr>
+			<?php endif; ?>
+		</table>
+	<?php } ?>
+	<span>
+		<?php 
+			printf($this->translate->_('%1$s by %2$s'), 
+				'<a href="'.$url.'" title="'.$this->pet["name"].'">'.$this->pet["name"].'</a>', 
+				$this->pet["user_name"]);
+
+			if($this->pet["dateofbirth"]) {
+				echo '<br/>'.Petolio_Service_Util::formatTime(strtotime($this->pet["dateofbirth"]), true);
+			}
+			
+			echo '<br/>'.$this->Tr($this->pet["breed"]);
+			if($this->pet["gender"]) {
+				echo strlen($this->Tr($this->pet["breed"])) > 0 ? ', ' : '';
+				echo $this->Tr($this->pet["gender"]);
+			}
+						
+		?>
+	</span>
+</div>

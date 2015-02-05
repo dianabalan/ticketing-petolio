@@ -1,0 +1,78 @@
+<div class="star_rating_translate" style="display: none;"><?php echo json_encode(array(
+	'view_ratings' => $this->translate->_("View Ratings"),
+	'slf_ratings_1' => $this->translate->_("You rated this."),
+	'non_ratings_1' => $this->translate->ngettext('%1$s %2$s rated this.', '%1$s %2$s rated this.', 1),
+	'all_ratings_1' => $this->translate->ngettext('You and %1$s %2$s rated this.', 'You and %1$s %2$s rated this.', 1),
+	'slf_ratings_2' => $this->translate->_("You rated this."),
+	'non_ratings_2' => $this->translate->ngettext('%1$s %2$s rated this.', '%1$s %2$s rated this.', 2),
+	'all_ratings_2' => $this->translate->ngettext('You and %1$s %2$s rated this.', 'You and %1$s %2$s rated this.', 2),
+	'person' => $this->translate->_('person'),
+	'people' => $this->translate->_('people'),
+	'close' => $this->translate->_("Close"),
+	'not_logged_in' => $this->translate->_('You must be logged in to be able to rate this.')
+)); ?>
+</div>
+<?php if ($this->hasIdentity): ?>
+	<?php if($this->plugin->self): ?>
+		<div class="rating_remove">
+	<?php else: ?>
+		<div class="rating_add">
+	<?php endif; ?>
+<?php else: ?>
+	<div class="no_rating">
+<?php endif; ?>
+	<div>
+		<?php
+			echo $this->translate->_("Rating:")."&nbsp;";
+			if($this->plugin->rating_count > 0) {
+				echo '<a href="javascript:void(0);" class="rating_view">';
+				printf(
+					ngettext('%1$s/5 from %2$s rating', '%1$s/5 from %2$s ratings', $this->plugin->rating_count), 
+					$this->plugin->rating, 
+					$this->plugin->rating_count);
+				echo '</a>';
+			} else {
+				echo $this->translate->_("no rating yet");
+			}
+		?>
+	</div>
+	<div class="starRate">
+		<div><b></b></div>
+		<ul>
+			<li>
+				<a href="javascript:void(0);" star="5">
+					<span><?php printf(ngettext("Give it %s star", "Give it %s stars", 5), 5); ?></span>
+					<?php echo $this->plugin->rating == 5 ? '<b></b>' : ''; ?>
+				</a>
+			</li>
+			<li>
+				<a href="javascript:void(0);" star="4">
+					<span><?php printf(ngettext("Give it %s star", "Give it %s stars", 4), 4); ?></span>
+					<?php echo $this->plugin->rating == 4 ? '<b></b>' : ''; ?>
+				</a>
+			</li>
+			<li>
+				<a href="javascript:void(0);" star="3">
+					<span><?php printf(ngettext("Give it %s star", "Give it %s stars", 3), 3); ?></span>
+					<?php echo $this->plugin->rating == 3 ? '<b></b>' : ''; ?>
+				</a>
+			</li>
+			<li>
+				<a href="javascript:void(0);" star="2">
+					<span><?php printf(ngettext("Give it %s star", "Give it %s stars", 2), 2); ?></span>
+					<?php echo $this->plugin->rating == 2 ? '<b></b>' : ''; ?>
+				</a>
+			</li>
+			<li>
+				<a href="javascript:void(0);" star="1">
+					<span><?php printf(ngettext("Give it %s star", "Give it %s stars", 1), 1); ?></span>
+					<?php echo $this->plugin->rating == 1 ? '<b></b>' : ''; ?>
+				</a>
+			</li>
+		</ul>
+	</div>
+</div>
+<!-- 
+<a href="javascript:void(0);" class="rating_remove" style="padding: 2px 5px; border: 1px solid #ccc; background: white;" rel="<?php //echo $this->plugin->self->getId(); ?>"><?php echo $this->translate->_("Unlike"); ?></a>
+<a href="javascript:void(0);" class="rating_add" style="padding: 2px 5px; border: 1px solid #ccc; background: white;"><?php echo $this->translate->_("Like"); ?></a>
+ -->

@@ -1,0 +1,48 @@
+<?php if ($this->hasIdentity): ?>
+	<div id="right" style="min-height: 550px;">
+		<?php echo $this->partial('site/notification-board.phtml', array(
+		        	'translate' => $this->translate,
+					'new_messages' => $this->new_messages,
+					'new_events' => $this->new_events,
+					'new_answers' => $this->new_answers,
+					'new_friend_requests' => $this->new_friend_requests
+	    		)); ?>
+		<div class="rightbox">
+			<?php include "menu.phtml"; ?>
+			<h1><?php echo $this->translate->_("All Entries"); ?></h1>
+			<br />
+			<div class="disabler"></div>
+			<div class="post_entry" style="float: left;">
+				<?php echo $this->partial('dashboard/post.phtml', array(
+		        	'translate' => $this->translate
+	    		)); ?>
+			</div>
+			<div class="context smalltalk-context">
+				<div class="in">
+					<a href="javascript:void(0);" id="context_menu" class="icon_link the_down dash"><span></span></a>
+				</div>
+			</div>
+			<div class="cl"></div>
+			<div class="new_entries">
+				<?php echo $this->partial('dashboard/new.phtml'); ?>
+			</div>
+			<div class="entries">
+				<?php echo $this->partial('dashboard/feed.phtml', array(
+		        	'translate' => $this->translate,
+					'privacy' => $this->privacy,
+		        	'results' => $this->results,
+					'more' => $this->more,
+					'identity' => $this->identity,
+					'switch' => "2"
+	    		)); ?>
+			</div>
+		</div>
+	</div>
+	<?php $imgsw_path = array(
+		'image' => "{custom}",
+		'audio' => "{custom}",
+		'video' => "http://www.youtube.com/embed/{video}"
+	); include "../application/modules/frontend/views/scripts/imgsw.phtml"; ?>
+	<?php $dashboard_location = "all"; include "../application/modules/frontend/views/scripts/dashboard/init.phtml"; ?>
+	<?php include "chat_online.phtml"; ?>
+<?php else: include "notloggedin.phtml"; endif; ?>

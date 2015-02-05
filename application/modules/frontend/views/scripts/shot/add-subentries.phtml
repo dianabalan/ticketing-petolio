@@ -1,0 +1,281 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo sprintf($this->translate->_("New Subentry in %s"), ucfirst(Petolio_Service_Util::Tr($this->record->getSickness()))); ?></h1>
+		<br />
+		<?php echo $this->form; ?>
+	</div>
+	<div class="rightbox" style="padding: 0px; border: 0px;">
+		<?php if(isset($_SERVER['HTTP_REFERER'])): ?>
+			<div class="left"><input onclick="Petolio.go('<?php echo $_SERVER['HTTP_REFERER']; ?>');" type="button" value="<?php echo $this->translate->_("< Back to List"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+			<div class="clear"></div>
+		<?php else: ?>
+			<div class="left"><input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'shot', 'action'=>'view', 'id'=> $this->record->getId()), 'default', true) ?>');" type="button" value="<?php echo $this->translate->_("< Back to List"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+			<div class="clear"></div>
+		<?php endif; ?>
+	</div>
+</div>
+<script type="text/javascript">
+	var Transform = function() {
+		var store = {
+
+		}, bind = function() {
+			$('input[name="immunization"]').replaceWith(
+				'<select class="chzn-select" name="immunization" id="immunization" rel="#immunization-select">'+
+					'<option value="Initial immunization"><?php echo Petolio_Service_Util::Tr('Initial immunization'); ?></option>'+
+					'<option value="Revaccination"><?php echo Petolio_Service_Util::Tr('Revaccination'); ?></option>'+
+				'</select>'
+			);
+
+			Petolio.handleSelects();
+
+		}, __construct = function() {
+			bind();
+		};
+
+		return {
+			init: __construct
+		};
+	}();
+
+	READY(Transform.init);
+
+	var ShotRecordSubentry = function() {
+		var record_id = <?php echo $this->record->getId(); ?>, // current record id
+			translate = {
+				title: '<?php echo $this->translate->_("Modify allowed users"); ?>',
+				view: '<?php echo $this->translate->_("View allowed users"); ?>',
+				close: '<?php echo $this->translate->_("Close"); ?>',
+				modify: '<?php echo $this->translate->_("Modify"); ?>',
+				save: '<?php echo $this->translate->_("Save"); ?>',
+				savenoty: '<?php echo $this->translate->_("Save without Notification"); ?>',
+				savesub: '<?php echo $this->translate->_('Save Subentry'); ?>',
+			}, page = 1;
+
+		function _modify(x) {
+			var identity = "modify-access-rights";
+			$('<div id="'+ identity +'" title="'+ translate.title +'" class="ui-state-highlight">'+
+					'<div style="position: relative; margin: 8px 0px 3px 0px;">' +
+						(x.html ? x.html : '') +
+					'</div>'+
+				'</div>').dialog({
+				resizable: false,
+				modal: true,
+				width: 550,
+				minHeight: 350,
+				buttons: [{
+					text: translate.save,
+					click: function() {
+						// check for user error
+						if($("input[name='access_value']:checked").val() == 4 && !$("#multi_item_4").find('select').val())
+							return $("#multi_item_4").find('ul.chzn-choices').css({ borderColor: 'red' });
+
+						Petolio.showLoading();
+				    	Petolio.ajax({
+				    		url: 'shot/rights',
+							type: 'post',
+							data: $("#rights").serialize() + '&id='+ record_id,
+							cache: false,
+							success: function (x) {
+								Petolio.hideLoading();
+								$("#" + identity).dialog("close");
+							}
+						});
+					}
+				}, {
+					text: translate.close,
+					click: function() {
+						$(this).dialog("close");
+					}
+				}],
+				close: function() {
+					$("#"+ identity).remove();
+					_view();
+				},
+				open: function() {
+					_chooser();
+					_decide();
+
+					$('div#'+ identity +' input[type="radio"]').blur().click(_decide);
+				}
+			});
+		};
+
+		function _chooser() {
+			var x = $(".chzn-select");
+
+			$.each(x, function(s, i){
+				var y = $(i),
+					o = {translate: Petolio.translateChosen()},
+					a = {ajax: {
+		            	url: SITE_URL + "pets/find-user",
+						min_search: 3,
+						req_param: "user",
+						res_value: "value",
+						res_text: "text",
+						res_html: "text",
+						success_callback: function(v){
+							return v.results;
+						}
+		            }};
+
+				if(y.attr('title'))
+					y.data('placeholder', y.attr('title'));
+
+				if(y.is("input"))
+					$.extend(o, a);
+
+				y.chosen(o);
+			});
+
+			$('td > div[id*="multi_"]').css({ position: 'relative' });
+
+			return;
+
+			$("#multi_partners_chzn").css({ zIndex: '1495' });
+			$("#multi_friends_chzn").css({ zIndex: '1493' });
+			$("#multi_users_chzn").css({ zIndex: '1491' });
+		}
+
+		function _dialog(x, p, c) {
+	    	var identity = 'dialog-access-right',
+	        	notify = x.notify ? x.notify : 0;
+
+	    	$("#"+ identity).remove();
+
+			var bbuttons = [];
+			<?php if($this->admin): ?>
+				bbuttons.push({
+					text: translate.modify,
+					click: function() {
+						$(this).dialog("close");
+				    	Petolio.showLoading();
+				    	Petolio.ajax({
+							url: 'shot/rights',
+							type: 'post',
+							data: {id: record_id},
+							cache: false,
+							success: function (x) {
+								Petolio.hideLoading();
+								_modify(x);
+							}
+						});
+					}
+				});
+			<?php endif; ?>
+
+			bbuttons.push({
+				text: translate.save,
+				click: function() {
+					$(this).dialog("close");
+					$("#add_shot_record_subentry").submit();
+				}
+			});
+
+			if(notify != 0) {
+				bbuttons.push({
+					text: translate.savenoty,
+					click: function() {
+						$(this).dialog("close");
+						$("#send_notification").val("0");
+						$("#add_shot_record_subentry").submit();
+					}
+				});
+			}
+
+			bbuttons.push({
+				text: translate.close,
+				click: function() {
+					$(this).dialog("close");
+				}
+			});
+
+	    	$('<div id="'+ identity +'" title="'+ translate.view +'" class="ui-state-highlight">'+
+				'<div style="position: relative; margin: 8px 0px 3px 0px;">' +
+					(x.text ? x.text : '') +
+					(x.html ? x.html : '') +
+				'</div>'+
+			'</div>').dialog({
+				resizable: false,
+				modal: true,
+				width: 500,
+				minHeight: 50,
+				buttons: bbuttons,
+				close: function() {
+					$("#"+ identity).remove();
+					if(c)
+						c.apply(this, Array.prototype.slice.call(arguments, 4));
+				},
+				open: function() {
+					$("#"+ identity).find('[class="rating_pagination"] a').click(p);
+					$("#"+ identity).find('a').blur();
+				}
+			});
+		};
+
+		function _pagination() {
+			var p = parseInt($(this).attr('rel'));
+
+			// only numbers allowed
+			if(!isNaN(p))
+				page = p;
+
+			_view();
+		};
+
+		function _view() {
+	    	Petolio.showLoading();
+	    	Petolio.ajax({
+				url: 'shot/users',
+				type: 'post',
+				data: {id: record_id, page: page, modify: 'edit'},
+				cache: false,
+				success: function (x) {
+					Petolio.hideLoading();
+					_dialog(x, _pagination, function(){
+						page = 1;
+					});
+				}
+			});
+		};
+
+		function enable(i) {
+			var p = $(i).attr('id'),
+				w = $('div[id="multi_'+ p +'_block"]');
+
+			if(w.length)
+				w.remove();
+		};
+
+		function disable(i, s) {
+			var p = $(i).attr('id'),
+				a = $('div[id="multi_'+ p +'"]'),
+				w = $('div[id="multi_'+ p +'_block"]'),
+				z = 500 - s;
+
+			if(!a.length || w.length)
+				return;
+
+			a.append('<div id="multi_'+ p +'_block" style="position: absolute; margin-top: -2px; width: 100%; height: 100%; background: #eeeeee; opacity: 0.6; top: 0px; left: 0px; z-index: '+ z +';" />');
+		};
+
+		function _decide(e) {
+			$.each($('input[type="radio"]'), function(s, i){
+				if(i.checked) enable(i);
+				else disable(i, s + 1 * s);
+			});
+		};
+
+		function __construct() {
+			$("#save_sr").val(translate.savesub); // nice bug
+			$("#save_sr").click(_view);
+		};
+
+		return {
+			init: __construct
+		};
+	}();
+
+	READY(ShotRecordSubentry.init);
+</script>

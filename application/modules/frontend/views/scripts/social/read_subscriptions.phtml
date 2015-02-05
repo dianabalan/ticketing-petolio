@@ -1,0 +1,8 @@
+<?php if ($this->hasIdentity): ?>
+	<?php if($this->plugin->subscription): ?>
+		<a href="javascript:void(0);" class="subscription_remove" style="padding: 2px 5px; border: 1px solid #ccc; background: white;" rel="<?php echo $this->plugin->subscription->getId(); ?>"><?php echo $this->translate->_("Unsubscribe"); ?></a>
+	<?php else: ?>
+		<a href="javascript:void(0);" class="subscription_add" style="padding: 2px 5px; border: 1px solid #ccc; background: white;"><?php echo $this->translate->_("Subscribe"); ?></a>
+	<?php endif; ?>
+	&nbsp;&bull;&nbsp;
+<?php endif; ?>

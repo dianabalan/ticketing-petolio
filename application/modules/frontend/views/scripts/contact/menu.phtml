@@ -1,0 +1,50 @@
+<?php
+
+$accounts = array(
+	'index' => array(
+		'link' => $this->url(array('controller'=>'contact', 'action'=>'index'), 'default', true),
+		'name' => $this->translate->_("Contact Form"),
+		'class' => 'lm-messages_sm'
+	),
+	'terms' => array(
+		'link' => $this->url(array('controller'=>'contact', 'action'=>'terms'), 'default', true),
+		'name' => $this->translate->_("Terms & Conditions"),
+		'class' => 'lm-messages_sm'
+	),
+	'data' => array(
+		'link' => $this->url(array('controller'=>'contact', 'action'=>'data'), 'default', true),
+		'name' => $this->translate->_("Data Protection"),
+		'class' => 'lm-messages_sm'
+	),
+	'faq' => array(
+		'link' => $this->url(array('controller'=>'contact', 'action'=>'faq'), 'default', true),
+		'name' => $this->translate->_("Frequently Asked Questions"),
+		'class' => 'lm-messages_sm'
+	),
+	'cookies' => array(
+		'link' => $this->url(array('controller'=>'contact', 'action'=>'cookies'), 'default', true),
+		'name' => $this->translate->_("Cookie Policy"),
+		'class' => 'lm-messages_sm'
+	)
+);
+
+// advertising only for german
+if(strcasecmp($this->translate->getLocale(), 'de') == 0)
+	$accounts['advertising'] = array(
+		'link' => $this->url(array('controller'=>'contact', 'action'=>'advertising'), 'default', true),
+		'name' => $this->translate->_("Advertising"),
+		'class' => 'lm-messages_sm'
+	);
+
+$links = null;
+foreach($accounts as $link) {
+	if ( isset($link['class']) && strlen($link['class']) > 0 ) {
+		$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+	} else {
+		$links .= "<li><a href='{$link['link']}'>{$link['name']}</a></li>";
+	}
+}
+
+$this->placeholder('sidebar')
+     ->append("<h3>".$this->translate->_("Contact Us")."</h3>
+     	<ul class=\"leftsubmenu fullwidth\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");

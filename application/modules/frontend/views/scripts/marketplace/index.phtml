@@ -1,0 +1,36 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<?php if(!(isset($this->services) && count($this->services) > 0)): ?>
+			<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<?php endif; ?>
+		<div>
+			<div class="left"><img src="/images/new/large/market_place.png" alt="<?php echo $this->title; ?>" /></div>
+			<ul class="title-menu">
+				<li><h3><?php echo $this->title; ?></h3></li>
+				<li><a href="<?php echo $this->url(array('controller'=>'products', 'action'=>'index'), 'default', true); ?>">
+					<?php echo $this->translate->_("Products"); ?></a></li>
+				<li><a href="<?php echo $this->url(array('controller'=>'adoption', 'action'=>'index'), 'default', true); ?>">
+					<?php echo $this->translate->_("Adoptions"); ?></a></li>
+				<li>
+					<?php
+						echo $this->partial("marketplace/search.phtml", array(
+							"request" => $this->request,
+							"translate" => $this->translate,
+							"types" => $this->types
+						));
+					?>
+				</li>
+			</ul>
+		</div>
+		<div class="clear tenpx"></div>
+		<?php if(isset($this->services) && count($this->services) > 0): ?>
+			<?php echo $this->paginationControl($this->services, 'Elastic', 'pagination-controls.phtml', array('pos' => 'top')); ?>
+			<?php include $this->list == 'grid' ? "grid-index.phtml" : "list-index.phtml"; ?>
+			<?php echo $this->paginationControl($this->services, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot')); ?>
+			<div class="clear"></div>
+		<?php else: ?>
+			<b class="red bigger"><?php echo $this->translate->_("No services found."); ?></b>
+		<?php endif; ?>
+	</div>
+</div>

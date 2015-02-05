@@ -1,0 +1,107 @@
+<?php
+$menu = array();
+$menu[] = array(
+	'url' => $this->url(array('controller'=>'pets', 'action'=>'mypets'), 'default', true),
+	'name' => $this->translate->_("My Pets"),
+	'class' => 'lm-pets'
+);
+
+$menu[] = array(
+	'url' => $this->url(array('controller'=>'friends', 'action'=>'index'), 'default', true),
+	'name' => $this->translate->_("Manage Friends"),
+	'class' => 'lm-friends'
+);
+
+$menu[] = array(
+	'url' => $this->url(array('controller'=>'messages', 'action'=>'inbox'), 'default', true),
+	'name' => $this->translate->_("Manage Messages"),
+	'class' => 'lm-messages'
+);
+
+if($this->identity->type == 2) {
+	$menu[] = array(
+		'url' => $this->url(array('controller'=>'services', 'action'=>'index'), 'default', true),
+		'name' => $this->translate->_("My Services"),
+		'class' => 'lm-services'
+	);
+
+	$menu[] = array(
+		'url' => $this->url(array('controller'=>'microsites', 'action'=>'index'), 'default', true),
+		'name' => $this->translate->_("Microsite"),
+		'class' => 'lm-microsite'
+	);
+} else {
+	$menu[] = array(
+		'url' => $this->url(array('controller'=>'services', 'action'=>'my-services'), 'default', true),
+		'name' => $this->translate->_("My Services"),
+		'class' => 'lm-services'
+	);
+}
+
+$menu[] = array(
+	'url' => $this->url(array('controller'=>'map', 'action'=>'choose'), 'default', true),
+	'name' => $this->translate->_("Map Register"),
+	'class' => 'lm-map'
+);
+
+$menu[] = array(
+	'url' => $this->url(array('controller'=>'calendar', 'action'=>'index'), 'default', true),
+	'name' => $this->translate->_("Manage Calendar"),
+	'class' => 'lm-calendar'
+);
+
+$menu[] = array(
+	'url' => $this->url(array('controller'=>'galleries', 'action'=>'mygalleries'), 'default', true),
+	'name' => $this->translate->_("My Galleries"),
+	'class' => 'lm-galleries'
+);
+
+$menu[] = array(
+	'url' => $this->url(array('controller'=>'help', 'action'=>'index'), 'default', true),
+	'name' => $this->translate->_("Help"),
+	'class' => 'lm-help'
+);
+
+$menu[] = array(
+	'url' => $this->url(array('controller'=>'contentdistributions', 'action'=>'index'), 'default', true),
+	'name' => $this->translate->_("Anywhere!"),
+	'class' => 'lm-contentdistribution'
+);
+
+$menu[] = array(
+	'url' => $this->url(array('controller'=>'products', 'action'=>'myproducts'), 'default', true),
+	'name' => $this->translate->_("My Products"),
+	'class' => 'lm-products'
+);
+
+?>
+
+<?php $this->placeholder('topbar')->captureStart(); ?>
+	<div class="topmenu">
+		<table cellpadding="0" cellspacing="0">
+			<col width="1%" />
+			<col width="50%" />
+			<col width="1%" />
+			<col width="50%" />
+			<tr>
+				<?php
+					$i = 0;
+					foreach($menu as $link) {
+						$i++;
+
+						$content = '&nbsp;';
+						if($link['class'] == "lm-messages" && isset($this->new_messages) && intval($this->new_messages) > 0)
+							$content = "<span>{$this->new_messages}</span>";
+
+						if($link['class'] == "lm-help")
+							$content = "<span>{$this->all_questions}</span>";
+
+						if($i % 2) echo "</tr><tr>";
+						echo "<td><div class='topbox'><ul class='topmenu' style='width: auto;'><li><a href='{$link['url']}' class='{$link['class']}' title='{$link['name']}'>{$content}</a></li></ul></div></td>
+							<td style='padding-right: 5px; padding-bottom: 4px;'><a href='{$link['url']}' title='{$link['name']}'>{$link['name']}</a></td>";
+					}
+				?>
+			</tr>
+		</table>
+	</div>
+<?php $this->placeholder('topbar')->captureEnd(); ?>

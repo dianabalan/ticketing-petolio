@@ -1,0 +1,117 @@
+<h1><a href="<?php echo $this->url(array("controller" => "advertising", "action" => "index"), "admin", true); ?>"><?php echo $this->translate->_("Advertising"); ?></a> &raquo; <?php echo $this->type == 1 ? $this->translate->_("List Pet Sponsoring Customers") : $this->translate->_("List Classical Advertising Customers"); ?></h1>
+<div class="rbcontent" id="search_fields">
+	<form name="search" action="<?php echo $this->url; ?>" method="get">
+	<input type="hidden" name="type" id="type" value="<?php echo $this->type; ?>" />
+	<input type="hidden" name="order" id="order" value="<?php echo $this->order; ?>" />
+	<input type="hidden" name="dir" id="dir" value="<?php echo $this->dir; ?>" />
+	<table>
+	<col width="50%" /><col width="50%" />
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Name"); ?>:</label>
+					<input type="text" name="name" value="<?php echo $this->name; ?>" />
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Email"); ?>:</label>
+					<input type="text" name="email" value="<?php echo $this->email; ?>" />
+				</div>
+			</td>
+			<td>
+				<div class="filter_item">
+					<label></label>
+					<input type="button" value="<?php echo $this->translate->_("Search"); ?>" data-type="submit" />
+					<input type="button" value="<?php echo $this->translate->_("Reset"); ?>" data-type="reset" />
+				</div>
+			</td>
+		</tr>
+	</table>
+	</form>
+</div>
+<?php if(count($this->customers) > 0): ?>
+	<?php echo $this->paginationControl($this->customers, 'Elastic', 'controls.phtml', array('translate' => $this->translate)); ?>
+	<?php if($this->type == 1): ?>
+		<table class="main">
+			<thead>
+				<tr>
+					<th class="<?php $col = "c.name"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Name"); ?></th>
+					<th class="<?php $col = "c.email"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Email"); ?></th>
+					<th class="<?php $col = "c.date_created"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Date created"); ?></th>
+					<th class="<?php $col = "c.start_date"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Start Date"); ?></th>
+					<th class="<?php $col = "c.end_date"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("End Date"); ?></th>
+					<th><?php echo $this->translate->_("Banners"); ?></th>
+					<th><?php echo $this->translate->_("Views"); ?></th>
+					<th><?php echo $this->translate->_("Clicks"); ?></th>
+					<th width="1%"></th>
+					<th width="1%"></th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php foreach($this->customers as $customer): ?>
+				<?php $banner_data = explode('#', $customer["banner_totals"]); ?>
+				<tr>
+					<td><a href="<?php echo $this->url(array('controller'=>'advertising', 'action'=>'edit-customer', 'id'=> $customer["id"], 'type'=> $customer["type"]), 'admin', true); ?>"><?php echo $customer["name"]; ?></a></td>
+					<td><a href="mailto:<?php echo $customer["email"]; ?>"><?php echo $customer["email"]; ?></a></td>
+					<td><?php echo Petolio_Service_Util::formatDate($customer["date_created"], null, true, true); ?></td>
+					<td><?php echo Petolio_Service_Util::formatDate($customer["start_date"], null, false); ?></td>
+					<td><?php echo Petolio_Service_Util::formatDate($customer["end_date"], null, false); ?></td>
+					<td><a href="<?php echo $this->url(array('controller'=>'advertising', 'action'=>'list-banners', 'customer-type'=> $this->type, 'customer' => $customer["id"]), 'admin', true); ?>"><?php echo $banner_data[0] ? $banner_data[0] : 0; ?></a></td>
+					<td><?php echo isset($banner_data[1]) ? $banner_data[1] : 0; ?></td>
+					<td><?php echo isset($banner_data[2]) ? $banner_data[2] : 0; ?></td>
+					<td nowrap="nowrap" align="center"><a href="<?php echo $this->url(array('controller'=>'advertising', 'action'=>'edit-customer', 'type'=> $customer["type"], 'id'=> $customer["id"]), 'admin', true); ?>"><?php echo $this->translate->_("Edit"); ?></a></td>
+					<td nowrap="nowrap" align="center"><a href="<?php echo $this->url(array('controller'=>'advertising', 'action'=>'delete-customer', 'type'=> $customer["type"], 'id'=> $customer["id"]), 'admin', true); ?>" class="reqconf" title="<?php echo $this->translate->_("Are you sure you want to delete this customer?"); ?>&#013;<?php echo $this->translate->_("This will delete all the existing campaigns and banners of this customer!"); ?>"><?php echo $this->translate->_("Delete"); ?></a></td>
+				</tr>
+			<?php endforeach; ?>
+			</tbody>
+		</table>
+	<?php else: ?>
+		<table class="main">
+			<thead>
+				<tr>
+					<th class="<?php $col = "c.name"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Name"); ?></th>
+					<th class="<?php $col = "c.email"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Email"); ?></th>
+					<th class="<?php $col = "c.date_created"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Date created"); ?></th>
+					<th class="<?php $col = "campaigns"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Campaigns"); ?></th>
+					<th><?php echo $this->translate->_("Banners"); ?></th>
+					<th><?php echo $this->translate->_("Views"); ?></th>
+					<th><?php echo $this->translate->_("Clicks"); ?></th>
+					<th width="1%"></th>
+					<th width="1%"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php foreach($this->customers as $customer): ?>
+					<?php $banner_data = explode('#', $customer["banner_totals"]); ?>
+					<tr>
+						<td><a href="<?php echo $this->url(array('controller'=>'advertising', 'action'=>'edit-customer', 'type'=> $customer["type"], 'id'=> $customer["id"]), 'admin', true); ?>"><?php echo $customer["name"]; ?></a></td>
+						<td><a href="mailto:<?php echo $customer["email"]; ?>"><?php echo $customer["email"]; ?></a></td>
+						<td><?php echo Petolio_Service_Util::formatDate($customer["date_created"], null, true, true); ?></td>
+						<td><a href="<?php echo $this->url(array('controller'=>'advertising', 'action'=>'list-campaigns', 'customer'=> $customer["id"]), 'admin', true); ?>"><?php echo $customer["campaigns"]; ?></a></td>
+						<td><a href="<?php echo $this->url(array('controller'=>'advertising', 'action'=>'list-banners', 'customer-type'=> $this->type, 'customer' => $customer["id"]), 'admin', true); ?>"><?php echo $banner_data[0] ? $banner_data[0] : 0; ?></a></td>
+						<td><?php echo isset($banner_data[1]) ? $banner_data[1] : 0; ?></td>
+						<td><?php echo isset($banner_data[2]) ? $banner_data[2] : 0; ?></td>
+						<td nowrap="nowrap" align="center"><a href="<?php echo $this->url(array('controller'=>'advertising', 'action'=>'edit-customer', 'type'=> $customer["type"], 'id'=> $customer["id"]), 'admin', true); ?>"><?php echo $this->translate->_("Edit"); ?></a></td>
+						<td nowrap="nowrap" align="center"><a href="<?php echo $this->url(array('controller'=>'advertising', 'action'=>'delete-customer', 'type'=> $customer["type"], 'id'=> $customer["id"]), 'admin', true); ?>" class="reqconf" title="<?php echo $this->translate->_("Are you sure you want to delete this customer?"); ?>&#013;<?php echo $this->translate->_("This will delete all the existing campaigns and banners of this customer!"); ?>"><?php echo $this->translate->_("Delete"); ?></a></td>
+						</tr>
+				<?php endforeach; ?>
+			</tbody>
+		</table>
+	<?php endif; ?>
+	<?php echo $this->paginationControl($this->customers, 'Elastic', 'controls.phtml', array('translate' => $this->translate)); ?>
+<?php else: ?>
+	<div class="error"><?php echo $this->translate->_("No records found."); ?></div>
+<?php endif; ?>
+<form style="background: #fff;">
+	<input type="button" onclick="document.location='<?php echo $this->url(array('action' => 'add-customer')); ?>';" class="submit" value="<?php echo $this->translate->_("Add customer"); ?>" />
+	<div class="clear"></div>
+</form>
+<script type="text/javascript">
+	READY(function() {
+		Admin.loadJs('filters/base.js');
+		Filters.load('/advertising/list-customers');
+	});
+</script>

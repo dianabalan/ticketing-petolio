@@ -1,0 +1,26 @@
+<?php
+
+// pet url
+$url = isset($this->alternate) ? $this->alternate : $this->url(array('controller'=>'pets', 'action'=>'view', 'pet' => $this->pet["id"]), 'default', true);
+
+?>
+<div class="picture" rel="<?php echo $this->pet["id"]; ?>">
+	<a class="cluetip<?php echo $this->allow ? null : " noclick"; ?>" href="<?php echo $this->allow ? $url : "javascript:void(0);"; ?>" rel="<?php echo '#pet_' . $this->pet["id"]; ?>">
+		<?php
+			$image = "background: #fff url('/images/no-pet.jpg') center center no-repeat";
+			if($this->pet["picture"] && strlen($this->pet["picture"]) > 0)
+				$image = "background: #000 url('/images/userfiles/pets/{$this->pet["id"]}/gallery/thumb_{$this->pet["picture"]}') center center no-repeat";
+		?>
+		<span class="img" style="<?php echo $image ?>;"></span>
+	</a>
+	<span class="name ellipsis">
+		<a class="<?php echo $this->allow ? null : " noclick"; ?>" href="<?php echo $this->allow ? $url : "javascript:void(0);"; ?>"><?php echo $this->pet["name"]; ?></a>
+	</span>
+	<span class="info ellipsis multiline">
+		<?php echo $this->pet["type"]; ?><?php echo strlen($this->pet["breed"]) > 0 ? " - {$this->pet["breed"]}" : null; ?>
+	</span>
+    <div class="select">
+    	<table style="margin: 0 auto;"><tr><td><input type="checkbox" class="data-check" name="pet[]" value="<?php echo $this->pet['id']; ?>" <?php if(in_array($this->pet['id'], $this->selected)) echo 'checked="checked"'; ?> /></td>
+   		<td style="padding-left: 3px;"><a href="javascript:void(0);" class="icon_link data-selection"><span><?php echo $this->translate->_('Select'); ?></span></a></td></tr></table>
+    </div>
+</div>

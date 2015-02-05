@@ -1,0 +1,6 @@
+<h1><a href="<?php echo $this->url(array("controller" => "advertising", "action" => "index"), "admin", true); ?>"><?php echo $this->translate->_("Advertising"); ?></a> &raquo; <?php
+	if($this->customer_type == 0) echo $this->translate->_("Add System Default Banner");
+	if($this->customer_type == 1) echo $this->translate->_("Add Pet Sponsoring Banner");
+	if($this->customer_type == 2) echo $this->translate->_("Add Classical Advertising Banner");
+?></h1>
+<?php echo $this->form; ?>

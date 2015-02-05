@@ -1,0 +1,62 @@
+<?php if ($this->hasIdentity): ?>
+	<?php
+		$iconlist = array(
+			'not_found' => '/images/leftmenu/microsite_sm.png',
+			'services' => '/images/leftmenu/services_sm.png',
+			'products' => '/images/leftmenu/products_sm.png',
+			'accounts' => '/images/leftmenu/user_sm.png',
+			'messages' => '/images/leftmenu/messages_sm.png',
+			'galleries' => '/images/leftmenu/galleries_sm.png',
+			'events' => '/images/leftmenu/calendar_sm.png',
+			'forum' => '/images/leftmenu/dashboard_sm.png',
+			'pets' => '/images/leftmenu/pets_sm.png',
+			'adoption' => '/images/leftmenu/pets_sm.png',
+			'help' => '/images/leftmenu/help_sm.png'
+		);
+	?>
+	<div id="right" style="min-height: 550px;">
+		<div class="rightbox">
+			<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+			<h1><?php echo $this->translate->_("Petolio's Activity"); ?></h1>
+			<br />
+			<?php if(isset($this->notifications) && count($this->notifications) > 0): ?>
+				<?php echo $this->paginationControl($this->notifications, 'Elastic', 'pagination-controls.phtml', array('pos' => 'top')); ?>
+					<table cellspacing="0" cellpadding="0" class="grid" style="border: none;">
+						<?php foreach($this->notifications as $notification):
+							// look for 2nd <a in message
+							$pos = strpos($notification['msg'], '<a', 1);
+							if($pos !== false) {
+								$pic = $iconlist['not_found'];
+								foreach($iconlist as $idx => $icon)
+									if(strpos($notification['link'], $idx, 1) !== false)
+										$pic = $icon;
+
+								$msg = substr($notification['msg'], 0, $pos);
+								$msg .= "<br /><table cellspacing='0' cellpadding='0' style='width: 500px; margin-bottom: -8px;'><tr><td style='border: none; padding: 0; width: 1%;'><img src='{$pic}' styke='display: block;' alt='Module' /></td>";
+								$msg .= "<td style='border: none; padding: 0;'>" . substr($notification['msg'], $pos) . "</td></tr></table>";
+							} else $msg = $notification['msg'];
+						?>
+							<tr>
+								<td style="padding: 10px 5px 10px 0px; width: 1%; border-color: #ccc;"><img src="<?php echo $notification['avatar']; ?>" style="display: block;" alt="Avatar" /></td>
+								<td style="padding: 10px 0px; border-color: #ccc;">
+									<div class="left"><?php echo $msg; ?></div>
+									<div class="right smaller grey" title="<?php echo $notification['date']['long']; ?>"><?php echo $notification['date']['short']; ?></div>
+									<div class="clear"></div>
+								</td>
+							</tr>
+						<?php endforeach; ?>
+					</table>
+				<?php echo $this->paginationControl($this->notifications, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot')); ?>
+			<?php else: ?>
+				<b class="red bigger"><?php echo $this->translate->_("No activity found."); ?></b>
+			<?php endif; ?>
+		</div>
+	</div>
+	<script type="text/javascript">
+		READY(function() {
+			// make authors bold
+			$('a:first', 'div.rightbox table div.left').css({fontWeight: 'bold'});
+		});
+	</script>
+	<?php include "chat_online.phtml"; ?>
+<?php else: include "notloggedin.phtml"; endif; ?>

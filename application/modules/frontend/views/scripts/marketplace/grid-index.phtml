@@ -1,0 +1,30 @@
+<div id="pin-container">
+	<?php
+		foreach($this->services as $service):
+		    echo $this->partial('service-template.phtml', array(
+	        	'translate' => $this->translate,
+	        	'data' => $service,
+	        	'links' => array(),
+	    		'allow' => true
+    		));
+		endforeach;
+	?>
+</div>
+<div class="clear"></div>
+<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/jquery/masonry.pkgd.min.js'); ?>"></script>
+<script type="text/javascript">
+	READY(function() {
+		var $container = $('#pin-container');
+
+		// initialize
+		$container.masonry({
+			itemSelector: '.service-item',
+			gutter: 7,
+		});
+
+		// redraw the layout after all the images were loaded
+		$(window).load(function() {
+			$container.masonry();
+		});
+	});
+</script>

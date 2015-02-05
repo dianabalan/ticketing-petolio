@@ -1,0 +1,109 @@
+<?php include "menu.phtml"; $userTypes = array("1" => $this->translate->_("Pet Owner"), "2" => $this->translate->_("Service Provider")); ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Import from Google Contacts"); ?></h1>
+		<br />
+		<?php if(isset($this->error)):?>
+			<div class="c_error">
+				<div><b><?php echo $this->translate->_("Unable to retrieve contact list"); ?>.</b></div>
+				<ul>
+					<li><?php echo $this->error->getMessage() ?></li>
+				</ul>
+			</div>
+			<br />
+		<?php endif; ?>
+		<?php echo $this->form; ?>
+		<?php if(isset($this->sent)): ?>
+			<br />
+			<?php if(isset($this->users) && count($this->users) > 0): ?>
+				<?php
+					echo $this->partial('user-template.phtml', array(
+						'translate' => $this->translate,
+						'usertypes' => $userTypes,
+						'data' => $this->users,
+						'identity' => $this->identity,
+						'links' => 'add',
+						'per_row' => 2
+					));
+				?>
+			<?php else: ?>
+				<b class="red bigger"><?php echo $this->translate->_("Sorry, currently there are no matches. Please try again later."); ?></b>
+			<?php endif; ?>
+		<?php endif; ?>
+		<?php if(isset($this->captcha)): ?>
+			<div id="the_captcha" style="display: none;">
+				<div>
+					<label for="captcha_picture">&nbsp;</label>
+					<img src="<?php echo $this->captcha; ?>" />
+					<div class="cls"></div>
+				</div>
+				<div>
+					<label for="captcha"><?php echo $this->translate->_("Captcha"); ?></label>
+					<input type="text" rel="#captcha-text" value="" id="captcha" name="captcha" title="">
+					<div class="cls"></div>
+				</div>
+				<input type="hidden" value="<?php echo $this->token; ?>" name="token" />
+			</div>
+		<?php endif; ?>
+	</div>
+</div>
+<script type="text/javascript">
+	var Privacy = function() {
+		function hideFields() {
+			$('[class*="private"], [class*="empty"]').each(function(s, i){
+				var td = $(i).parent().parent();
+				$(i).parent().remove();
+
+				if(!td.has('span').length > 0)
+					td.find('div').remove();
+			});
+		};
+
+		function __construct() {
+			hideFields();
+		};
+
+		return {
+			init: __construct
+		}
+	}();
+
+	READY(Privacy.init);
+</script>
+<?php if(isset($this->captcha)): ?>
+	<script type="text/javascript">
+		var GoogleAuth = function() {
+			var flag = false;
+
+			function addCaptcha() {
+				$('#submit').parent().before($('#the_captcha').html());
+			};
+
+			function bind() {
+				var captcha = $('#captcha');
+				$('#submit').click(function(e) {
+					if(!(captcha.val().length > 0)) {
+						e.preventDefault();
+						if(flag == false) {
+							captcha.after('<div style="width: 5px;" class="red-dot">*</div><ul id="captcha-text" class="errors" style="display: none;"><li>'+"<?php echo $this->translate->_("Value is required and can't be empty...."); ?>"+'</li></ul>');
+							ClueTip.init();
+							flag = true;
+						}
+					}
+				});
+			};
+
+			function __construct() {
+				addCaptcha();
+				bind();
+			};
+
+			return {
+				init: __construct
+			};
+		}();
+
+		READY(GoogleAuth.init);
+	</script>
+<?php endif; ?>

@@ -1,0 +1,37 @@
+<?php
+
+// begin info
+$info = "<table cellspacing='0' cellpadding='5' border='0' class='list info'>
+	<tr>
+		<th>". $this->translate->_("Owner") ."</th>
+        <td><a href='". $this->owner_url ."'>". $this->owner_name ."</a></td>
+	</tr>
+	<tr>
+      	<th>". $this->translate->_("Start date") ."</th>
+        <td>". $this->start ."</td>
+	</tr>";
+
+// got end date?
+if($this->end) {
+	$info .= "<tr>
+	    <th>". $this->translate->_("End date") ."</th>
+		<td>". $this->end ."</td>
+	</tr>";
+}
+
+// got description?
+if($this->description) {
+	$info .= "<tr>
+	    <th colspan='2'>". $this->translate->_("Description") ."</th>
+	</tr><tr>
+	    <td colspan='2'><div class='break'>". nl2br($this->description) ."</div></td>
+	</tr>";
+}
+
+// end table
+$info .= "</table>";
+
+// place it on the sidebar
+$this->placeholder('sidebar')
+     ->append("<h3>".$this->translate->_("Chat Channel Info")."</h3>
+     	<ul class=\"leftsubmenu fullwidth\" data-context=\"true\">{$info}</ul><div class=\"clear\"></div>");

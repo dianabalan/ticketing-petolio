@@ -1,0 +1,82 @@
+<?php
+
+// urls
+$url = $this->url(array('controller'=>'products', 'action'=>'view', 'product' => $this->data["id"]), 'default', true);
+$user = $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $this->data["user_id"]), 'default', true);
+
+?>
+<div class="product-item" rel="<?php echo $this->data["id"]; ?>">
+	<?php if(isset($this->data["pricing"])): ?>
+		<div class="ribbon rotate90cw">
+			<?php
+				$fontsize = 12;
+				$price = $this->data['pricing']['primary'];
+				if(strlen($price) == 12) {
+					$fontsize = 11;
+				} elseif(strlen($price) > 12) {
+					$fontsize = 10;
+				}
+				$price = str_ireplace(" ", "<br/>", $price);
+			?>
+			<span title="<?php echo implode(', ', $this->data["pricing"]); ?>" style="font-size: <?php echo $fontsize; ?>px;"><?php echo $price; ?></span>
+		</div>
+	<?php endif; ?>
+	<?php if(isset($this->data["condition"])): ?>
+		<div class="ribbon condition rotate90cw">
+			<span><?php echo $this->data["condition"]; ?></span>
+		</div>
+	<?php endif; ?>
+	<a class="cluetip<?php echo $this->allow ? null : " noclick"; ?>" href="<?php echo $this->allow ? $url : "javascript:void(0);"; ?>" rel="<?php echo '#product_' . $this->data["id"]; ?>">
+		<?php
+			$image = "/images/no-pet.jpg";
+			if($this->data["picture"] && strlen($this->data["picture"]) > 0)
+				$image = "/images/userfiles/products/{$this->data["id"]}/thumb_{$this->data["picture"]}";
+		?>
+		<img src="<?php echo $image ?>" alt="<?php echo $this->data["title"]; ?>" />
+	</a>
+	<table class="tooltipinfo" style="display: none;" cellpadding="0" cellspacing="0" id="<?php echo 'product_' . $this->data["id"]; ?>">
+		<tr>
+			<th valign="top"><?php echo $this->translate->_('Title'); ?></th>
+			<td><?php echo $this->data["title"]; ?></td>
+		</tr>
+		<tr>
+			<th valign="top"><?php echo $this->translate->_('Species'); ?></th>
+			<td><?php echo $this->data["species"]; ?></td>
+		</tr>
+		<?php if(isset($this->data["pricing"])): ?>
+			<tr>
+				<th valign="top"><?php echo $this->translate->_('Pricing'); ?></th>
+				<td><?php echo implode(', ', $this->data["pricing"]); ?></td>
+			</tr>
+		<?php endif; ?>
+		<?php if(!is_null($this->data["user_country_id"])): ?>
+			<tr>
+				<th valign="top"><?php echo $this->translate->_('Country'); ?></th>
+				<td><?php echo $this->countries[$this->data["user_country_id"]]; ?></td>
+			</tr>
+		<?php endif; ?>
+		<tr>
+			<th valign="top"><?php echo $this->translate->_('Owner'); ?></th>
+			<td><?php echo $this->data["user_name"]; ?></td>
+		</tr>
+	</table>
+	<div class="product-details">
+		<a class="name ellipsis <?php echo $this->allow ? null : " noclick"; ?>" href="<?php echo $this->allow ? $url : "javascript:void(0);"; ?>" 
+			title="<?php echo $this->data["title"]; ?>"><?php echo $this->data["title"]; ?></a>
+		<span>
+			<span><?php echo $this->data["species"]; ?></span>
+			<span><?php echo is_null($this->data["user_country_id"]) ? '&nbsp;' : $this->countries[$this->data["user_country_id"]]; ?></span>
+			<?php if($this->owner): ?>
+				<span><a class="right" href="<?php echo $user; ?>"><?php echo $this->data["user_name"]; ?></a></span>
+			<?php endif; ?>
+		</span>
+		<?php if(isset($this->links) && count($this->links) > 0): ?>
+		<span class="links">
+			<?php foreach($this->links as $link): ?>
+				<a href='<?php echo $link['url']; ?>' class='icn <?php echo $link['class']; ?>' title='<?php echo $link['title']; ?>'>&nbsp;</a>
+			<?php endforeach; ?>
+		</span>
+		<?php endif; ?>
+		<div class="clear"></div>
+	</div>
+</div>

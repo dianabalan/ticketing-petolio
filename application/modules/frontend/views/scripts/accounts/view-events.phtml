@@ -1,0 +1,113 @@
+<?php if(isset($this->your_events) && count($this->your_events) > 0): ?>
+	<div class="rightbox">
+		<h3><?php echo $this->translate->_("Upcoming Events"); ?></h3>
+		<br />
+		<?php echo $this->paginationControl($this->your_events, 'Elastic', 'accounts/view-events-controls.phtml', array('pos' => 'top')); ?>
+		<table cellspacing="0" cellpadding="5" class="grid">
+		<col width="270" /><col width="110" /><col width="160" /><col width="152" />
+			<tr>
+				<th><a href="<?php echo $this->url(array('event_order' => 'name', 'event_dir' => $this->event_rdir)); ?>"><?php echo $this->translate->_("Name"); ?><?php if($this->event_order == 'name'): ?>&nbsp;<img src="/images/order/<?php echo $this->event_dir; ?>.png" /><?php endif; ?></a></th>
+				<th><a href="<?php echo $this->url(array('event_order' => 'type', 'event_dir' => $this->event_rdir)); ?>"><?php echo $this->translate->_("Type"); ?><?php if($this->event_order == 'type'): ?>&nbsp;<img src="/images/order/<?php echo $this->event_dir; ?>.png" /><?php endif; ?></a></th>
+				<th><a href="<?php echo $this->url(array('event_order' => 'owner', 'event_dir' => $this->event_rdir)); ?>"><?php echo $this->translate->_("Created By"); ?><?php if($this->event_order == 'owner'): ?>&nbsp;<img src="/images/order/<?php echo $this->event_dir; ?>.png" /><?php endif; ?></a></th>
+				<th><a href="<?php echo $this->url(array('event_order' => 'date', 'event_dir' => $this->event_rdir)); ?>"><?php echo $this->translate->_("Date Start"); ?><?php if($this->event_order == 'date'): ?>&nbsp;<img src="/images/order/<?php echo $this->event_dir; ?>.png" /><?php endif; ?></a></th>
+			</tr>
+			<?php foreach($this->your_events as $event): ?>
+				<tr>
+					<td>
+						<a href="javascript:void(0);" id="event_<?php echo $event["pid"]; ?>"><?php echo $event["title"]; ?></a>
+						<?php echo isset($event["status"]) && $event["status"] != false ? " - <small>{$event["status"]}</small>" : null; ?>
+					</td>
+					<td><span class="type"><?php echo $event["type"]; ?></span></td>
+					<td><a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $event["user_id"]), 'default', true); ?>"><?php echo $event["user_name"]; ?></a></td>
+					<td><?php echo Petolio_Service_Util::formatDate($event["start"], Petolio_Service_Util::MEDIUMDATE, ($event['allDay'] != 1), true, true); ?></td>
+				</tr>
+			<?php endforeach; ?>
+		</table>
+		<?php echo $this->paginationControl($this->your_events, 'Elastic', 'accounts/view-events-controls.phtml', array('pos' => 'bot')); ?>
+	</div>
+<?php endif; ?>
+<?php include_once "../application/modules/frontend/views/scripts/calendar/init.phtml"; ?>
+<script type="text/javascript">
+var EventData = <?php echo json_encode(array_merge($this->your_events_json ? json_decode($this->your_events_json) : array(), $this->all_json ? json_decode($this->all_json) : array())); ?>;
+var Event = function() {
+	function type() {
+		$('span.type').each(function(s, i) {
+			var i = $(i);
+
+			i.css({color: Calendar.getOpt().colors[i.html()]});
+			i.html(Calendar.getOpt().types[i.html()]);
+		});
+	};
+
+	function glow() {
+		var	colors = ['#adddad', '#c6e7c6', '#d7eed7', '#e3f3e3', '#ebf7eb'],
+			now = new Date().getTime() / 1000,
+			loop = [],
+			x = 225;
+
+		for (var i = 1; i < 5; i++) {
+			x = x * 2;
+			loop.push({
+				time: x,
+				color: colors[i]
+			});
+		}
+
+		$('a[id^="event_"]').each(function(s, i) {
+			var i = $(i),
+				d = find(i.attr('id').substr(6)),
+				t = i.parent().parent();
+
+			if(d.start < now) {
+				t.css({background: colors[0]});
+			} else {
+				$.each(loop, function(s, i) {
+					if(d.start < now + i.time) {
+						t.css({background: i.color});
+						return false;
+					}
+				});
+			}
+		});
+
+		window.setTimeout(glow, 1000);
+	};
+
+	function hash() {
+		var h = parseInt(window.location.hash.substring(1));
+		if(isNaN(h))
+			return;
+
+		Calendar.eventClick(find(h));
+	};
+
+	function find(id) {
+		var f = null;
+		$.each(EventData, function(s, i){
+			if(i.pid == id) {
+				f = i;
+				return false;
+			}
+		});
+
+		return f;
+	};
+
+	function listen() {
+		type();
+		hash();
+		glow();
+
+		$('a[id^="event_"]').click(function(e) {
+			e.preventDefault();
+			Calendar.eventClick(find($(e.target).attr('id').substr(6)));
+    	});
+	};
+
+	return {
+		listen: listen
+	}
+}();
+
+READY(Event.listen);
+</script>

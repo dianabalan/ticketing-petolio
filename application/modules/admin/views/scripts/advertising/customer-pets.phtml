@@ -1,0 +1,115 @@
+<h1><a href="<?php echo $this->url(array("controller" => "advertising", "action" => "index"), "admin", true); ?>"><?php echo $this->translate->_("Advertising"); ?></a> &raquo; <?php echo sprintf($this->translate->_("Select pets for the pet sponsoring customer %s"), $this->customer->getName()); ?></h1>
+<div class="rbcontent" id="search_fields">
+	<form name="search" action="<?php echo $this->url; ?>" method="get">
+	<table>
+	<col width="50%" /><col width="50%" />
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Keywords"); ?>:</label>
+					<input type="text" name="keyword" value="<?php echo $this->keyword; ?>" />
+				</div>
+			</td>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Type"); ?>:</label>
+					<select name="species">
+						<option></option>
+						<?php
+							foreach ($this->types as $value) {
+								$hover = $value['value'] == $this->species ? ' selected="selected"' : null;
+								echo "<option value='{$value['value']}' {$hover}>{$value['name']}</option>";
+							}
+						?>
+					</select>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Owner"); ?>:</label>
+					<input type="text" name="owner" value="<?php echo $this->owner; ?>" />
+				</div>
+			</td>
+			<td>
+				<div class="filter_item">
+					<label></label>
+					<input type="button" value="<?php echo $this->translate->_("Search"); ?>" data-type="submit" />
+					<input type="button" value="<?php echo $this->translate->_("Reset"); ?>" data-type="reset" />
+				</div>
+			</td>
+		</tr>
+	</table>
+	</form>
+</div>
+<?php if(count($this->pets) > 0): ?>
+	<?php echo $this->paginationControl($this->pets, 'Elastic', 'controls.phtml', array('translate' => $this->translate)); ?>
+	<div class="gallery">
+		<?php foreach($this->pets as $pet): ?>
+			<?php echo $this->partial('pet-template.phtml', array(
+	        	'translate' => $this->translate,
+	        	'pet' => $pet,
+				'selected' => $this->selected_data,
+	    		'allow' => true
+	    	)); ?>
+		<?php endforeach; ?>
+		<div class="clear"></div>
+	</div>
+	<?php echo $this->paginationControl($this->pets, 'Elastic', 'controls.phtml', array('translate' => $this->translate)); ?>
+	<form style="background: #fff;">
+		<input type="button" onclick="document.location='<?php echo $this->url(array('controller'=>'advertising', 'action'=>'list-customers', 'type' => $this->customer->getType()), 'admin', true); ?>';" class="submit" value="<?php echo $this->translate->_("Finish"); ?>" />
+		<div class="clear"></div>
+	</form>
+<?php else: ?>
+	<div class="error"><?php echo $this->translate->_("No records found."); ?></div>
+<?php endif; ?>
+<script type="text/javascript">
+	var Selection = function() {
+		var store = {
+			customer: '<?php echo $this->customer->getId(); ?>'
+
+		// select
+		}, _select = function(add, pet) {
+	    	Admin.showLoading();
+	    	Admin.ajax({
+				url: '/advertising/pets-add-remove',
+				type: 'post',
+				data: {customer: store.customer, pet: pet, add: add},
+				cache: false,
+				success: function (x) {
+					Admin.hideLoading();
+				}
+			});
+
+	    // bind events
+		}, _bind = function() {
+			// on selection
+			$('a.data-selection').click(function() {
+				var checkbox = $(this).closest("tr").find('input');
+				checkbox.prop('checked', !checkbox.prop('checked'));
+				_select(checkbox.prop('checked'), checkbox.val());
+			});
+
+			// on checkbox state change
+			$('input.data-check').change(function() {
+				_select($(this).prop('checked'), $(this).val());
+			});
+
+		// construct
+		}, __construct = function() {
+			_bind();
+		};
+
+		// public, yay
+		return {
+			init: __construct
+		};
+	}();
+
+	READY(function() {
+		Admin.loadJs('filters/base.js');
+		Filters.load('/advertising/customer-pets/id/<?php echo $this->customer->getId(); ?>');
+		Selection.init();
+	});
+</script>

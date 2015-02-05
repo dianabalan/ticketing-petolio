@@ -1,0 +1,65 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<div>
+			<div class="left"><img src="/images/new/large/product.png" alt="<?php echo $this->title; ?>" /></div>
+			<ul class="title-menu">
+				<li><h3><?php echo $this->title; ?></h3></li>
+				<li><a href="<?php echo $this->url(array('controller'=>'marketplace', 'action'=>'index'), 'default', true); ?>">
+					<?php echo $this->translate->_("Services"); ?></a></li>
+				<li><a href="<?php echo $this->url(array('controller'=>'adoption', 'action'=>'index'), 'default', true); ?>">
+					<?php echo $this->translate->_("Adoptions"); ?></a></li>
+				<li>
+					<?php
+						echo $this->partial("products/search.phtml", array(
+							"request" => $this->request,
+							"translate" => $this->translate,
+							"country_list" => $this->country_list,
+							"action" => $this->url(array('controller'=>'products'), 'default', true)."/index"
+						));
+					?>
+				</li>
+			</ul>
+		</div>
+		<div class="clear tenpx"></div>
+		<?php if(isset($this->products) && count($this->products) > 0): ?>
+			<?php echo $this->paginationControl($this->products, 'Elastic', 'pagination-controls.phtml', array('pos' => 'top')); ?>
+			<div id="pin-container">
+				<?php
+					foreach($this->products as $product):
+					    echo $this->partial('product-template.phtml', array(
+							'countries' => $this->country_list,
+				        	'translate' => $this->translate,
+				        	'data' => $product,
+				        	'links' => array(),
+				    		'allow' => true,
+				    		'owner' => true
+			    		));
+					endforeach;
+				?>
+			</div>
+			<div class="clear"></div>
+			<?php echo $this->paginationControl($this->products, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot')); ?>
+		<?php else: ?>
+			<b class="red bigger"><?php echo $this->translate->_("No products found."); ?></b>
+		<?php endif; ?>
+	</div>
+</div>
+<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/jquery/masonry.pkgd.min.js'); ?>"></script>
+<script type="text/javascript">
+	READY(function() {
+		var $container = $('#pin-container');
+
+		// initialize
+		$container.masonry({
+			itemSelector: '.product-item',
+			gutter: 7,
+		});
+
+		// redraw the layout after all the images were loaded
+		$(window).load(function() {
+			$container.masonry();
+		});
+	});
+</script>

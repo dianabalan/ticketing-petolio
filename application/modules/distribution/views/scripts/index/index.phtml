@@ -1,0 +1,143 @@
+<div class="rightbox">
+	<h1><?php echo $this->distribution_attributes['name']->getAttributeEntity()->getValue(); ?></h1>
+	<br />
+	<?php if($this->distribution_attributes['withmainmenu']->getAttributeEntity()->getValue() == 'Yes' && isset($this->categories)): ?>
+		<table style="margin: 0px auto; width: 450px;">
+			<tr>
+				<?php $i = 0;
+					foreach($this->categories as $category): $i++;
+						if($i % 2) echo "</tr><tr>";
+						echo "<td style=\"padding: 5px;\">";
+						echo "<a href=\"".$this->url(array('controller'=>'index', 'action'=>'index', 'url'=>$this->content_distributions->getUrl(), 'species'=>$category['id']), 'distribution', true)."\" class=\"category\">";
+						echo Petolio_Service_Util::Tr($category['name']);
+						echo "</a>";
+						echo "<span class=\"count\">({$category['pet_count']})</span></td>";
+					endforeach;
+				?>
+			</tr>
+		</table>
+	<?php else: ?>
+		<?php echo $this->paginationControl($this->pets, 'Elastic', 'index/navigation-controls.phtml', array("pos" => "top")); ?>
+		<?php if($this->distribution_attributes['design']->getAttributeEntity()->getValue() == 'Grid'): ?>
+		<div class="gallery" style="margin: 0px; padding: 5px;">
+			<?php foreach($this->pets as $pet):
+				echo $this->partial('pet-pin-item.phtml', array(
+					'translate' => $this->translate,
+					'pet' => $pet
+			    ));
+			endforeach; ?>
+			
+			<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/jquery/masonry.pkgd.min.js'); ?>"></script>
+			<script type="text/javascript">
+				READY(function() {
+					var $container = $('.gallery');
+
+					// initialize
+					$container.masonry({
+						itemSelector: '.pin',
+						gutter: 7,
+					});
+
+					// redraw the layout after all the images were loaded
+					$(window).load(function() {
+						$container.masonry();
+					});
+				});
+			</script>
+			
+		</div>
+		<div class="clear"></div>
+		<?php else: ?>
+			<?php
+				$url = array('controller' => 'index', 'action' => 'index', 'url' => $this->content_distributions->getUrl());
+				if($this->species)
+					$url['species'] = $this->species;
+			?>
+			<table cellspacing="0" cellpadding="5" class="grid">
+			<col width="115" /><col width="125" /><col /><col width="200" />
+				<tr>
+					<th></th>
+					<th><a href="<?php echo $this->url(array_merge($url, array('order' => 'name', 'dir' => $this->rdir))); ?>"><?php echo $this->translate->_("Pet Info"); ?><?php if($this->order == 'name'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+					<th><a href="<?php echo $this->url(array_merge($url, array('order' => 'description', 'dir' => $this->rdir))); ?>"><?php echo $this->translate->_("Description"); ?><?php if($this->order == 'description'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+					<th><a href="<?php echo $this->url(array_merge($url, array('order' => 'address', 'dir' => $this->rdir))); ?>"><?php echo $this->translate->_("Address"); ?><?php if($this->order == 'address'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+				</tr>
+				<?php
+					$privacy_cache = array ();
+					foreach($this->pets as $pet):
+						// picture control
+						$image = "/images/small_no-pet.jpg";
+						if($pet["picture"] && strlen($pet["picture"]) > 0)
+							$image = "/images/userfiles/pets/{$pet["id"]}/gallery/small_{$pet["picture"]}";
+						?>
+							<tr>
+								<td align="right"><a href="<?php echo $this->url(array('controller'=>'index', 'action'=>'view', 'pet' => $pet["id"]), 'distribution', true); ?>"><img src="<?php echo $image; ?>" style="display: block; padding: 3px; border: 1px solid #B3B3B3; background: white;" alt="<?php echo $this->translate->_("Pet Picture"); ?>" /></a></td>
+								<td>
+									<a href="<?php echo $this->url(array('controller'=>'index', 'action'=>'view', 'pet' => $pet["id"]), 'distribution', true); ?>"><?php echo $pet["name"]; ?></a>
+									<br />
+									<?php echo $this->Tr($pet["breed"]); ?>
+									<br />
+									<?php if($pet["gender"]): ?>
+										<?php echo $this->Tr($pet["gender"]); ?>
+										<br />
+									<?php endif; ?>
+									<?php if($pet["dateofbirth"]): ?>
+										<?php echo Petolio_Service_Util::formatTime(strtotime($pet["dateofbirth"]), true); ?>
+									<?php endif; ?>
+								</td>
+								<td valign="top"><?php echo Petolio_Service_Parse::do_limit(strip_tags($pet["description"]), 220, true, true); ?></td>
+								<td valign="top"><?php
+									if(array_key_exists($pet["user_id"], $privacy_cache))
+										$user_data = $privacy_cache[$pet["user_id"]];
+									else {
+										$user_data = $this->PrivacyFilter(array(
+											"id" => $pet["user_id"],
+											"name" => $pet["user_name"],
+											"address" => $pet["user_address"],
+											"zipcode" => $pet["user_zipcode"],
+											"location" => $pet["user_location"],
+											"country_id" => $pet["user_country_id"],
+											"category_id" => $pet["user_category_id"]
+										));
+
+										$privacy_cache[$pet["user_id"]] = $user_data;
+									}
+
+									$address = '';
+									if($this->translate->getLocale() == 'en') {
+										$address .= $user_data["address"].' '.$user_data["location"].' '.$user_data["zipcode"];
+										if(strlen($user_data["address"]) > 0 || strlen($user_data["location"]) > 0)
+											if(strlen(@$this->country_list[$user_data["country_id"]]) > 0)
+												$address .= ', ';
+
+										$address .= @$this->country_list[$user_data["country_id"]];
+									} else {
+										$address .= $user_data["zipcode"].' '.$user_data["address"];
+										if(strlen($user_data["zipcode"]) > 0 || strlen($user_data["address"]) > 0)
+											if(strlen($user_data["location"]) > 0)
+												$address .= ', ';
+
+										$address .= $user_data["location"];
+										if(strlen($user_data["location"]) > 0 || strlen($user_data["zipcode"]) > 0 || strlen($user_data["address"]) > 0)
+											if(strlen(@$this->country_list[$user_data["country_id"]]) > 0)
+												$address .= ', ';
+
+										$address .= @$this->country_list[$user_data["country_id"]];
+									} $address = trim($address);
+
+									echo strlen($address) ? $address . '<br /><br />' : null;
+								?><input onclick="window.location.href='<?php echo $this->url(array('controller'=>'index', 'action'=>'view', 'pet' => $pet["id"]), 'distribution', true); ?>';" type="button" value="<?php echo $this->translate->_("Detail >"); ?>" id="submit" name="view" style="float: right;" /><div class="clear"></div>
+								</td>
+							</tr>
+				<?php endforeach; ?>
+			</table>
+		<?php endif; ?>
+		<?php echo $this->paginationControl($this->pets, 'Elastic', 'index/navigation-controls.phtml', array("pos" => "bot")); ?>
+		<?php if($this->distribution_attributes['withmainmenu']->getAttributeEntity()->getValue() == 'Yes'): ?>
+			<div class="cl tenpx"></div>
+			<div class="left"><input onclick="document.location='<?php echo $this->url(array('controller'=>'index', 'action'=>'index', 'url'=>$this->content_distributions->getUrl()), 'distribution', true); ?>';" type="button" value="<?php echo $this->translate->_("< Back to startpage"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+			<div class="clear"></div>
+		<?php endif; ?>
+		<div class="cl"></div>
+	<?php endif; ?>
+	<div class="inner-footer"><?php printf($this->translate->_("This service is provided by %s"), "<a href=\"http://www.petolio.com\" target=\"_blank\" style=\"margin: 0px; padding: 0px;\">petolio.com</a>"); ?></div>
+</div>

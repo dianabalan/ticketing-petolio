@@ -1,0 +1,630 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<?php if ($this->auth->hasIdentity()): ?>
+		<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+			<h1><?php printf($this->translate->_("My Current / Upcoming Events %s"), sprintf("(%s)", sprintf($this->translate->_("during the next %s days"), $this->events_days))); ?></h1>
+			<div class="cl"></div>
+			<div class="right">
+				<h3 style="float: left; padding: 5px 10px 0px 0px;"><?php echo $this->translate->_("Create New"); ?></h3>
+				<a href="javascript:Calendar.dayClick(null);" title="<?php echo $this->translate->_("Create new event"); ?>" style="float: left;">
+					<img style="margin: 0px 5px 0px 0px;" src="/images/new/action/calendar_add.png" alt="<?php echo $this->translate->_("Create new event"); ?>" />
+				</a>
+			</div>
+			<div class="cl tenpx"></div>
+			<div class="cl event_list" id="your_events"></div>
+			<div class="cl tenpx"></div>
+			<div class="left">
+				<input onclick="Petolio.go('<?php echo $this->url(array('more' => $this->more + 1)); ?>');" type="button" value="<?php echo $this->translate->_("Load more events >"); ?>" id="submit" name="prev" style="margin: 10px 0px 0px 0px;" />
+			</div>
+			<div class="cl"></div>
+		</div>
+	<?php endif; ?>
+	<div class="rightbox">
+		<?php if (!$this->auth->hasIdentity()): ?>
+			<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<?php endif; ?>
+		<h1><?php echo $this->title; ?></h1>
+		<br />
+		<div class="event_list" id="all_events"></div>
+		<div class="cl tenpx"></div>
+		<div class="left">
+			<input onclick="Petolio.go('<?php echo $this->url(array('more' => $this->more + 1)); ?>');" type="button" value="<?php echo $this->translate->_("Load more events >"); ?>" id="submit" name="prev" style="margin: 10px 0px 0px 0px;" />
+		</div>
+		<div class="clear tenpx"></div>
+		<div id="map_container">
+			<h2><?php echo $this->translate->_("Events Map"); ?></h2>
+			<div id="map_canvas"></div>
+		</div>
+	</div>
+</div>
+<style type="text/css">
+	div.event_list {
+		width: 100%;
+	}
+
+	div.event_list > span {
+		display: block;
+		width: 150px;
+		float: left;
+		color: #a2e0df;
+		font-size: 20px;
+		padding-top: 0px;
+	}
+
+	div.event_list > table {
+		float: right;
+		width: 650px;
+		border-collapse: collapse;
+		padding: 0px;
+	}
+
+		div.event_list > table td {
+			border: none;
+		}
+
+		div.event_list > table td.border {
+			border-bottom: 1px solid #ccc;
+			padding: 0px;
+			height: 16px;
+		}
+
+			div.event_list > table td > span {
+				padding-top: 0px;
+				display: block;
+				/* float: left; */
+				font-size: 13px;
+			}
+
+			div.event_list > table td > span.ellipsis {
+				width: 400px;
+				height: 18px;
+				font-size: 14px;
+			}
+
+				div.event_list > table td > span.ellipsis > a {
+					font-size: 14px;
+					font-weight: bold;
+				}
+
+			div.event_list > table td > span.type {
+				width: 100px;
+				font-size: 14px;
+				padding-left: 5px;
+			}
+
+			div.event_list > table td > span.date {
+				background: #d9f4bd;
+				padding: 5px;
+				color: #004C00;
+				border-radius: 5px;
+				font-size: 13px;
+				margin-right: 10px;
+			}
+
+			div.event_list > table td > span.status {
+				/* margin-top: -18px !important; */
+			}
+
+				div.event_list > table td > span.status > a {
+					font-size: 13px;
+				}
+
+			div.event_list > table td > img {
+				display: inline-block;
+				padding-top: 0px;
+			}
+
+			div.event_list > table td > a {
+				display: inline-block;
+				font-size: 13px;
+				line-height: 13px;
+			}
+
+			div.event_list > table td > .nmargin {
+				margin: 0px;
+				margin-top: 5px; /** TODO: meh, the fuck is this **/
+			}
+</style>
+<?php include_once "../application/modules/frontend/views/scripts/calendar/init.phtml"; ?>
+<script type="text/javascript">
+var EventData = <?php echo json_encode(array_merge($this->yours_json ? (array)json_decode($this->yours_json) : array(), $this->all_json ? (array)json_decode($this->all_json) : array())); ?>;
+var Event = function() {
+	store = {
+		translate: {
+			start: '<?php echo $this->translate->_('Start'); ?>',
+			deadline: '<?php echo $this->translate->_('Deadline'); ?>',
+			join: '<?php echo $this->translate->_('Join'); ?>',
+			eedit: '<?php echo $this->translate->_('Edit'); ?>',
+			ddelete: '<?php echo $this->translate->_('Delete'); ?>',
+			no_events: '<?php echo sprintf($this->translate->_('No events for the next %s days'), $this->events_days); ?>'
+		},
+
+	// the binder
+	}, bind = function() {
+		// view bind
+		$("div.event_list").delegate('a[name="event_view"]', 'click', function(e) {
+			e.preventDefault();
+			Calendar.eventClick(find($(this).attr('id')));
+		});
+
+		// join bind
+		$("div.event_list").delegate('input[name="event_join"]', 'click', function(e) {
+			e.preventDefault();
+			Petolio.go(SITE_URL + 'events/join/id/' + $(e.target).data('id'));
+		});
+
+		// edit bind
+		$("div.event_list").delegate('a[name="event_edit"]', 'click', function(e) {
+			e.preventDefault();
+			var d = find($(e.target).parent().attr('id'));
+
+			// start loading and open form
+			if(d.type == 3) Calendar.Chat.addEditWindow(d);
+			else if(d.type == 2) Calendar.addEditWindow(d, undefined, true);
+			else if(d.type == 1) Calendar.Todo.addEditWindow(d);
+			else Calendar.addEditWindow(d);
+		});
+
+		// delete bind
+		$("div.event_list").delegate('a[name="event_delete"]', 'click', function(e) {
+			e.preventDefault();
+			var d = find($(e.target).parent().attr('id'));
+
+			// show confirm
+			Petolio.showConfirm(CalendarData.translate.notice[4].replace('%s', CalendarData.types[d.type]), function() {
+				Petolio.go(SITE_URL + 'calendar/delete/id/' + d.id);
+			});
+		});
+
+	// load events
+	}, load = function() {
+		<?php if($this->yours_json): ?>yours(<?php echo $this->yours_json; ?>);<?php endif; ?>
+		<?php if($this->all_json): ?>all(<?php echo $this->all_json; ?>);<?php endif; ?>
+
+	// your events
+	}, yours = function(j) {
+		var x = $('#your_events');
+
+		$.each(group(j), function(k, v) {
+			var d = k.split('-'),
+				o = '<span>' + CalendarData.translate.monthNames[d[0]] + '</span>' +
+				'<table>';
+
+			$.each(v, function(i, j) {
+				// todo ? strike!
+				if(j.type == 1)
+					if(j.mod == 1) j.title = '<del>' + j.title + '</del>';
+
+			    o += '<tr>';
+			    o += '<td colspan="2" valign="top"><span class="ellipsis"><a href="javascript:void(0);" name="event_view" id="' + j.pid + '">' + j.title + '</a></span></td>';
+			    o += '<td valign="top"><span class="type" style="color: ' + CalendarData.colors[j.type] + ';">' + (j.type != 2 ? CalendarData.types[j.type] : (CalendarData.mods[j.mod] ? CalendarData.mods[j.mod] : CalendarData.types[j.type])) + '</span></td>';
+				o += '<td align="right" rowspan="2" style="width: 80px;"><img src="' + j.user_avatar + '" /><br/><a href="' + (SITE_URL + 'accounts/view/user/' + j.user_id) + '"><span>' + j.user_name + '</span></a></td>';
+				o += '</tr>';
+				o += '<tr>';
+				o += '<td style="width: 210px; padding-bottom: 0px;"><span class="date nmargin">' + (j.type == 1 ? store.translate.deadline : store.translate.start) + ': '+ j.formatted_start + '</span></td>';
+				o += '<td style="width: 200px; padding-bottom: 0px;"><span class="status nmargin">';
+
+				// status
+				if (j.status && j.status.length > 0)
+					o += j.status;
+
+				// admin buttons
+				if(j.owner == true) {
+					o  += '&nbsp;&nbsp;<a href="javascript:void(0);" class="icon_link edit" name="event_edit" id="' + j.pid + '"><span><?php echo $this->translate->_('Edit'); ?></span></a>&nbsp;';
+					o  += '<a href="javascript:void(0);" class="icon_link delete" name="event_delete" id="' + j.pid + '"><span><?php echo $this->translate->_('Delete'); ?></span></a>';
+				}
+
+				o += '</span></td>';
+				o += '</tr>';
+				o += '<tr><td colspan="4" class="border"></td></tr>';
+			});
+
+			o += '</table><div class="clear"></div>';
+
+			x.append(o);
+		});
+
+		// no results?
+		if(x.children().length == 0)
+			x.append('<b class="red bigger">' + store.translate.no_events + '</b>');
+
+	// all events
+	}, all = function(j) {
+		var x = $('#all_events');
+
+		$.each(group(j), function(k, v) {
+			var d = k.split('-'),
+				o = '<span>' + CalendarData.translate.monthNames[d[0]] + '</span>' +
+				'<table>';
+
+			$.each(v, function(i, j) {
+			    o += '<tr>';
+			    o += '<td colspan="2" valign="top"><span class="ellipsis"><a href="javascript:void(0);" name="event_view" id="' + j.pid + '">' + j.title + '</a></span></td>';
+			    o += '<td valign="top"><span class="type" style="color: ' + CalendarData.colors[j.type] + ';">' + (j.type != 2 ? CalendarData.types[j.type] : (CalendarData.mods[j.mod] ? CalendarData.mods[j.mod] : CalendarData.types[j.type])) + '</span></td>';
+				o += '<td align="right" rowspan="2" style="width: 80px;"><img src="' + j.user_avatar + '" /><br/><a href="' + (SITE_URL + 'accounts/view/user/' + j.user_id) + '">' + j.user_name + '</a></td>';
+				o += '</tr>';
+				o += '<tr>';
+				o += '<td style="width: 210px; padding-bottom: 0px;"><span class="date nmargin">' + store.translate.start + ': '+ j.formatted_start + '</span></td>';
+				o += '<td style="width: 200px; padding-bottom: 0px;">';
+
+				// status
+				if (j.status && j.status.length > 0)
+					o += '<span class="status nmargin">' + j.status + '</span>';
+				else
+					o += '<input type="button" class="nmargin" name="event_join" data-id="' + j.pid + '" value="' + store.translate.join + '" id="submit" />';
+
+				o += '</td>';
+				o += '</tr>';
+				o += '<tr><td colspan="4" class="border"></td></tr>';
+			});
+
+			o += '</table><div class="clear"></div>';
+
+			x.append(o);
+		});
+
+		// no results?
+		if(x.children().length == 0)
+			x.append('<b class="red bigger">' + store.translate.no_events + '</b>');
+
+	// group by date
+	}, group = function(j) {
+		var o = {};
+		$.each(j, function(k, v) {
+			var d = new Date(v.start * 1000),
+				y = d.getMonth() + '-' + d.getFullYear();
+
+			if(typeof o[y] == 'undefined')
+				o[y] = [];
+
+			o[y].push(v);
+		});
+
+		return o;
+
+	// find
+	}, find = function (id) {
+		var f = null;
+		$.each(EventData, function(s, i){
+			if(i.pid == id) {
+				f = i;
+				return false;
+			}
+		});
+
+		return f;
+
+	// the ajax in case we dont find the event in the list
+	}, ajax = function(h) {
+    	Petolio.ajax({
+			url: 'events/view',
+			type: 'post',
+			data: {id: h},
+			cache: false,
+			success: function (d) {
+				Calendar.eventClick(d.event);
+			}
+		});
+
+	// hash locator
+	}, hash = function () {
+		var h = parseInt(window.location.hash.substring(1)),
+			f = null;
+
+		if(isNaN(h))
+			return;
+
+		f = find(h);
+		if(f == null) ajax(h);
+		else return Calendar.eventClick(f);
+
+	// constructor
+	}, __construct = function() {
+		bind();
+		load();
+		hash();
+	};
+
+	// public, yay
+	return {
+		init: __construct
+	};
+}();
+
+READY(Event.init);
+</script>
+<script type="text/javascript">
+	var EventsMap = function() {
+		var coords = {lat: <?php echo $this->coords[0]; ?>, long: <?php echo $this->coords[1]; ?>},
+			map, markers, geocoder, bounds, overlay, current_zoom = -2,
+			infoWindow, cached = {}, stop_zoom = false, idle = false;
+
+		function initializeMap() {
+			var myOptions = {
+				zoom: 1, // this is very important to be 1!!! Chrome doesn't display the map correctly if you add points outsite the viewport
+				maxZoom: 15,
+				mapTypeId: google.maps.MapTypeId.ROADMAP
+			};
+
+			geocoder = new google.maps.Geocoder();
+			markers = new Array();
+			bounds = new google.maps.LatLngBounds();
+			overlay = new google.maps.OverlayView();
+			map = new google.maps.Map($('#map_canvas').get(0), myOptions);
+			infoWindow = new google.maps.InfoWindow({});
+			overlay.setMap(map);
+			overlay.draw = function() {};
+
+	    	Petolio.ajax({
+				url: 'events/getmarkets',
+				type: 'post',
+				data: <?php echo json_encode($this->request->getParams()); ?>,
+				cache: false,
+				success: function (x) {
+					if (x.count > 0) {
+						clearMarkers();
+						placeMarkers(x);
+						map.fitBounds(bounds);
+					} else {
+						$('#map_container').css('display', 'none');
+						$('#nearme_container').css('display', 'none');
+					}
+				}
+			});
+
+			google.maps.event.addListener(map, 'idle', function() {
+				idle = true;
+			});
+
+			addDragendListener();
+			addZoomListener();
+		};
+
+		function findAddressNearMe() {
+			var rad = $('#search_radius').val();
+
+			var __s = function(position) {
+				var lat = position.coords && position.coords.latitude ? position.coords.latitude : position.latitude,
+					lng = position.coords && position.coords.longitude ? position.coords.longitude : position.longitude;
+
+				cached = {latitude: lat, longitude: lng};
+				map.setCenter(new google.maps.LatLng(lat, lng));
+				map.setZoom(13);
+				findNearPoint(lng, lat, rad);
+
+				Petolio.hideLoading();
+			}, __e = function() {
+				Petolio.hideLoading();
+				Petolio.showMessage('<?php echo $this->translate->_("Could not determine your location..."); ?>');
+			}, __p = function() {
+				Petolio.showLoading('<?php echo $this->translate->_("Trying to find your location..."); ?>');
+			};
+
+			stop_zoom = true;
+			if(!$.isEmptyObject(cached))
+				return __s(cached);
+
+			__p();
+			$.ajax({
+				url : SITE_URL + "marketplace/get-user-address",
+				type : 'post',
+				cache : false,
+				success : function(data) {
+					if ( data.latitude && data.longitude && data.latitude.length > 0 && data.longitude.length > 0 ) {
+						cached = {latitude: data.latitude, longitude: data.longitude};
+						map.setCenter(new google.maps.LatLng(data.latitude, data.longitude));
+						map.setZoom(13);
+						findNearPoint(data.longitude, data.latitude, rad);
+
+						Petolio.hideLoading();
+					} else if ( data.address && data.address.length > 0 ) {
+						var input = $('#search_address');
+						input.val(data.address);
+						input.css({borderColor: '#8F8F8F'});
+
+						geocoder.geocode({'address': input.val()}, function(results, status) {
+							if(status == google.maps.GeocoderStatus.OK) {
+								var lat = results[0].geometry.location.lat();
+								var long = results[0].geometry.location.lng();
+								var point = new google.maps.LatLng(lat, long);
+
+								map.setCenter(point);
+								map.setZoom(13);
+								bounds.extend(point);
+								findNearPoint(long, lat, rad);
+							} else input.css({borderColor: 'red'});
+						});
+
+						Petolio.hideLoading();
+					} else {
+						if(navigator.geolocation) {
+							navigator.geolocation.getCurrentPosition(__s, __e, {
+								enableHighAccuracy: true,
+								maximumAge: Infinity,
+								timeout: 10000
+							});
+						}
+					}
+				}
+			});
+		};
+
+		function addZoomListener() {
+			google.maps.event.addListener(map, 'zoom_changed', function() {
+				if (map.getZoom() != current_zoom && stop_zoom == false && idle == true) {
+					idle = false;
+					current_zoom = map.getZoom();
+
+					var nw = overlay.getProjection().fromContainerPixelToLatLng(new google.maps.Point(0, 0));
+					var se = overlay.getProjection().fromContainerPixelToLatLng(new google.maps.Point($("#map_canvas").width(), $("#map_canvas").height()));
+
+					var params = {
+							longitude_from : nw.lng(),
+							latitude_from : se.lat(),
+							longitude_to : se.lng(),
+							latitude_to : nw.lat()
+						};
+
+					Petolio.ajax({
+						url: 'events/getmarkets',
+						type: 'post',
+						data: $.extend({}, params, <?php echo json_encode($this->request->getParams()); ?>),
+						cache: false,
+						success: function (x) {
+							if (x.count > 0) {
+								clearMarkers();
+								placeMarkers(x);
+							}
+						}
+					});
+				}
+			});
+		};
+
+		function addDragendListener() {
+			google.maps.event.addListener(map, 'dragend', function() {
+				if(idle == true) {
+					idle = false;
+
+					var nw = overlay.getProjection().fromContainerPixelToLatLng(new google.maps.Point(0, 0));
+					var se = overlay.getProjection().fromContainerPixelToLatLng(new google.maps.Point($("#map_canvas").width(), $("#map_canvas").height()));
+
+					var params = {
+							longitude_from : nw.lng(),
+							latitude_from : se.lat(),
+							longitude_to : se.lng(),
+							latitude_to : nw.lat()
+						};
+					
+			    	Petolio.ajax({
+						url: 'events/getmarkets',
+						type: 'post',
+						data: $.extend({}, params, <?php echo json_encode($this->request->getParams()); ?>),
+						cache: false,
+						success: function (x) {
+							if (x.count > 0) {
+								clearMarkers();
+								placeMarkers(x);
+							}
+						}
+					});
+				}
+			});
+		};
+
+		function findAddress(e) {
+			e.preventDefault();
+
+			var input = $('#search_address'),
+				rad = $('#search_radius').val();
+
+			input.css({borderColor: '#8F8F8F'});
+
+			geocoder.geocode({'address': input.val()}, function(results, status) {
+				if(status == google.maps.GeocoderStatus.OK) {
+					var lat = results[0].geometry.location.lat();
+					var long = results[0].geometry.location.lng();
+					var point = new google.maps.LatLng(lat, long);
+
+					map.setCenter(point);
+					map.setZoom(13);
+					bounds.extend(point);
+					findNearPoint(long, lat, rad);
+				} else input.css({borderColor: 'red'});
+			});
+		};
+
+		function findNearPoint(lng, lat, rad) {
+			Petolio.ajax({
+				url: 'events/getmarkets',
+				type: 'post',
+				data: {
+					longitude : lng,
+					latitude : lat,
+					radius : rad
+				},
+				cache: false,
+				success: function (x) {
+					if (x.count > 0) {
+						clearMarkers();
+						placeMarkers(x);
+						map.fitBounds(bounds);
+					}
+					stop_zoom = false;
+				}
+			});
+		};
+
+		function clearMarkers() {
+			for ( var i = 0; i < markers.length; i++) {
+				markers[i].setMap(null);
+			}
+
+			markers = new Array();
+			bounds = new google.maps.LatLngBounds();
+		};
+
+		function placeMarkers(data) {
+			jQuery.each(data.items, function(i, item) {
+				var point = new google.maps.LatLng(parseFloat(item.latitude), parseFloat(item.longitude));
+				bounds.extend(point);
+
+				var marker = new google.maps.Marker({
+					position : point,
+					map : map
+				});
+				marker.setTitle(item.name);
+
+				google.maps.event.addListener(marker, 'click', function() {
+					if (infoWindow)
+						infoWindow.close();
+
+					// Content for the infoWindow
+					var html = "<div style='height: 85px'><span style='font-size: 12px'><b>" + item.name + "</b>"
+						+ "</span><br /><span><?php echo $this->translate->_("Start"); ?>: " + item.start + "</span><br/>" 
+						+ "<a href='/accounts/view/user/" + item.userid + "'>" + item.username + "</a><hr />"
+						+ "<a id='" + item.id + "' name='event_view' href='javascript:void(0);'>" + item.view + "</a></div>";
+
+					infoWindow.setContent(html);
+					infoWindow.open(map, marker);
+				});
+
+				markers[markers.length] = marker;
+				var point = new google.maps.LatLng(parseFloat(item.latitude), parseFloat(item.longitude));
+
+				bounds.extend(point);
+			});
+		};
+
+		function __construct(s) {
+			store = s;
+
+			$('body').append('<script type="text/javascript" src="'+ window.location.protocol +'//maps.googleapis.com/maps/api/js?v=3.7&sensor=false&callback=EventsMap.go" />');
+
+			// view bind
+			$("#map_canvas").delegate('a[name="event_view"]', 'click', function(e) {
+				e.preventDefault();
+				Calendar.eventClick(find($(this).attr('id')));
+			});
+			
+		};
+
+		function fitb() {
+			map.fitBounds(bounds);
+		};
+
+		return {
+			init: __construct,
+			go: initializeMap,
+			search: findAddress,
+			nearme: findAddressNearMe,
+			placeMarkers: placeMarkers,
+			fitb: fitb
+		};
+	}();
+
+	READY(function() {
+		EventsMap.init();
+	});
+</script>

@@ -1,0 +1,82 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<!-- <div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div> -->
+		<div>
+			<div class="left"><img src="/images/new/large/galery.png" alt="<?php echo $this->title; ?>" /></div>
+			<ul class="title-menu">
+				<li><h3><?php echo $this->title; ?></h3></li>
+				<li>
+					<a href="<?php echo $this->url(array('controller'=>'galleries'), 'default', true); ?>" 
+						title="<?php echo $this->translate->_("All Galleries"); ?>">
+						<?php echo $this->translate->_("All Galleries"); ?>
+					</a>
+				</li>
+				<li>
+					<?php
+						echo $this->partial("galleries/search.phtml", array(
+							"request" => $this->request,
+							"translate" => $this->translate,
+							"yours" => $this->yours,
+							"action" => $this->url(array('controller'=>'galleries'), 'default', true)."/index"
+						));
+					?>
+				</li>
+			</ul>
+			<div class="right">
+				<a href="<?php echo $this->url(array('controller'=>'galleries', 'action'=>'add'), 'default', true); ?>" 
+					title="<?php echo $this->translate->_("Add Gallery"); ?>">
+					<img src="/images/new/action/gallery_add.png" alt="<?php echo $this->translate->_("Add Gallery"); ?>" />
+				</a>
+			</div>
+		</div>
+		<div class="clear tenpx"></div>
+		<?php if(isset($this->yours) && count($this->yours) > 0): ?>
+			<?php echo $this->paginationControl($this->yours, 'Elastic', 'galleries/your-controls.phtml', array('pos' => 'top')); ?>
+			<div id="pin-container">
+				<?php
+					foreach($this->yours as $gallery):
+						$links = array();
+						if ($this->auth->hasIdentity() && $this->auth->getIdentity()->id == $gallery["owner_id"]):
+							$links = array(array(
+								'class' => 'delete reqconf',
+								'title' => sprintf($this->translate->_("Are you sure you want to delete %s?"), $gallery['title']),
+								'url' => $this->url(array('controller'=>'galleries', 'action'=>'archive', 'gallery' => $gallery["id"]), 'default', true)
+				    		), array(
+			    				'class' => 'icn edit',
+			    				'title' => $this->translate->_('Edit')." {$gallery['title']}",
+			    				'url' => $this->url(array('controller'=>'galleries', 'action'=>'edit', 'gallery' => $gallery["id"]), 'default', true)
+							));
+						endif;
+						echo $this->partial('gallery-template.phtml', array(
+							'translate' => $this->translate,
+							'gallery' => $gallery,
+							'links' => $links
+						));
+					endforeach;
+				?>
+			</div>
+			<div class="clear"></div>
+			<?php echo $this->paginationControl($this->yours, 'Elastic', 'galleries/your-controls.phtml', array('pos' => 'bot')); ?>
+		<?php else: ?>
+			<b class="red bigger"><?php echo $this->translate->_("No galleries found."); ?></b>
+		<?php endif; ?>
+	</div>
+</div>
+<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/jquery/masonry.pkgd.min.js'); ?>"></script>
+<script type="text/javascript">
+	READY(function() {
+		var $container = $('#pin-container');
+
+		// initialize
+		$container.masonry({
+			itemSelector: '.gallery-item',
+			gutter: 7,
+		});
+
+		// redraw the layout after all the images were loaded
+		$(window).load(function() {
+			$container.masonry();
+		});
+	});
+</script>

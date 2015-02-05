@@ -1,0 +1,259 @@
+<?php
+
+// days
+$day_f = "<option value=''>".$this->translate->_('Day')."</option>";
+$day_t = "<option value=''>".$this->translate->_('Day')."</option>";
+for($day = 1; $day <= 31; $day ++) {
+	if($this->from[0] == $day) $day_f .= "<option value='{$day}' selected='selected'>{$day}</option>";
+	else $day_f .= "<option value='{$day}'>{$day}</option>";
+
+	if($this->to[0] == $day) $day_t .= "<option value='{$day}' selected='selected'>{$day}</option>";
+	else $day_t .= "<option value='{$day}'>{$day}</option>";
+}
+
+// momths
+$_months = array (
+	'1' => $this->translate->_('January'),
+	'2' => $this->translate->_('February'),
+	'3' => $this->translate->_('March'),
+	'4' => $this->translate->_('April'),
+	'5' => $this->translate->_('May'),
+	'6' => $this->translate->_('June'),
+	'7' => $this->translate->_('July'),
+	'8' => $this->translate->_('August'),
+	'9' => $this->translate->_('September'),
+	'10' => $this->translate->_('October'),
+	'11' => $this->translate->_('November'),
+	'12' => $this->translate->_('December')
+);
+$month_f = "<option value=''>".$this->translate->_('Month')."</option>";
+$month_t = "<option value=''>".$this->translate->_('Month')."</option>";
+foreach ($_months as $month => $value) {
+	if($this->from[1] == $month) $month_f .= "<option value='{$month}' selected='selected'>{$value}</option>";
+	else $month_f .= "<option value='{$month}'>{$value}</option>";
+
+	if($this->to[1] == $month) $month_t .= "<option value='{$month}' selected='selected'>{$value}</option>";
+	else $month_t .= "<option value='{$month}'>{$value}</option>";
+}
+
+// years
+$year_f = "<option value=''>".$this->translate->_('Year')."</option>";
+$year_t = "<option value=''>".$this->translate->_('Year')."</option>";
+for($year = date ( "Y" ) - 10; $year <= date ( "Y" ) + 10; $year ++) {
+	if($this->from[2] == $year) $year_f .= "<option value='{$year}' selected='selected'>{$year}</option>";
+	else $year_f .= "<option value='{$year}'>{$year}</option>";
+
+	if($this->to[2] == $year) $year_t .= "<option value='{$year}' selected='selected'>{$year}</option>";
+	else $year_t .= "<option value='{$year}'>{$year}</option>";
+}
+
+?>
+<h1><a href="<?php echo $this->url(array("controller" => "members", "action" => "list-users"), "admin", true); ?>"><?php echo $this->translate->_("Members"); ?></a> &raquo; <?php echo $this->translate->_("List Users"); ?></h1>
+<div class="rbcontent" id="search_fields">
+	<form name="search" action="<?php echo $this->url; ?>" method="get">
+	<input type="hidden" name="order" id="order" value="<?php echo $this->order; ?>" />
+	<input type="hidden" name="dir" id="dir" value="<?php echo $this->dir; ?>" />
+	<table>
+	<col width="430" />
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Name"); ?>:</label>
+					<input type="text" name="name" value="<?php echo $this->name; ?>" />
+				</div>
+			</td>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Registered from"); ?>:</label>
+					<div class="dob">
+						<select class="dobd" name="from.day">
+							<?php echo $day_f; ?>
+						</select><select class="dobm" name="from.month">
+							<?php echo $month_f; ?>
+						</select><select class="doby" name="from.year">
+							<?php echo $year_f; ?>
+						</select>
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Email"); ?>:</label>
+					<input type="text" name="email" value="<?php echo $this->email; ?>" />
+				</div>
+			</td>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Registered to"); ?>:</label>
+					<div class="dob">
+						<select class="dobd" name="to.day">
+							<?php echo $day_t; ?>
+						</select><select class="dobm" name="to.month">
+							<?php echo $month_t; ?>
+						</select><select class="doby" name="to.year">
+							<?php echo $year_t; ?>
+						</select>
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Type"); ?>:</label>
+					<select name="type">
+						<option></option>
+						<option value="1" <?php echo $this->type == '1' ? 'selected="selected"' : ''; ?>><?php echo $this->translate->_("Pet Owner"); ?></option>
+						<option value="2" <?php echo $this->type == '2' ? 'selected="selected"' : ''; ?>><?php echo $this->translate->_("Service Provider"); ?></option>
+					</select>
+				</div>
+			</td>
+			<td rowspan="4">
+				<table id="advanced">
+					<tr id="add">
+						<td>
+							<div class="filter_item" style="padding: 0px 0px 9px 0px;">
+								<label></label>
+								<a href="javascript:void(0);"><?php echo $this->translate->_("Add another filter"); ?></a>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="filter_item">
+								<label></label>
+								<input type="button" value="<?php echo $this->translate->_("Search"); ?>" data-type="submit" />
+								<input type="button" value="<?php echo $this->translate->_("Reset"); ?>" data-type="reset" />
+							</div>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Active"); ?>:</label>
+					<select name="active">
+						<option></option>
+						<option value="1" <?php echo $this->active == '1' ? 'selected="selected"' : ''; ?>><?php echo $this->translate->_("Yes"); ?></option>
+						<option value="0" <?php echo $this->active == '0' ? 'selected="selected"' : ''; ?>><?php echo $this->translate->_("No"); ?></option>
+					</select>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Match"); ?>:</label>
+					<table style="margin-top: 2px;">
+						<tr>
+							<td><input type="radio" id="all" value="" name="match" <?php echo $this->match != 'one' ? 'checked="checked"' : ''; ?> /></td>
+							<td style="padding-left: 5px;"><label for="all" class="default"><?php echo $this->translate->_("All Filters"); ?></label></td>
+							<td style="padding-left: 10px;"><input type="radio" id="one" value="one" name="match" <?php echo $this->match == 'one' ? 'checked="checked"' : ''; ?> /></td>
+							<td style="padding-left: 5px;"><label for="one" class="default"><?php echo $this->translate->_("At least one"); ?></label></td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
+	</table>
+	</form>
+</div>
+<?php if(count($this->users) > 0): ?>
+	<?php echo $this->paginationControl($this->users, 'Elastic', 'controls.phtml', array('translate' => $this->translate)); ?>
+	<table class="main">
+		<thead>
+			<tr>
+				<th class="<?php $col = "a.name"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Name"); ?></th>
+				<th class="<?php $col = "a.email"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Email"); ?></th>
+				<th class="<?php $col = "a.type"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Type"); ?></th>
+				<th class="<?php $col = "a.active"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Active"); ?></th>
+				<th class="<?php $col = "a.date_created"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Registered on"); ?></th>
+				<th width="1%"></th>
+				<th width="1%"></th>
+				<th width="1%"></th>
+				<th width="1%"></th>
+				<th width="1%"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach($this->users as $user): ?>
+				<tr>
+					<td><a href="<?php echo $this->url(array('controller'=>'members', 'action'=>'edit-user', 'id'=> $user["id"]), 'admin', true); ?>"><?php echo $user['name']; ?></a></td>
+					<td><a href="mailto:<?php echo $user['email']; ?>"><?php echo $user['email']; ?></a></td>
+					<td><?php echo $user['type'] == 1 ? $this->translate->_("Pet Owner") : $this->translate->_("Service Provider"); ?></td>
+					<td><?php echo $user['active'] == 1 ? $this->translate->_("Yes") : $this->translate->_("No"); ?></td>
+					<td><?php echo Petolio_Service_Util::formatDate($user["date_created"], null, true, true); ?></td>
+					<td nowrap="nowrap" style="text-align: center;"><?php if($user['active'] == 1): ?><a href="<?php echo $this->url(array('controller'=>'members', 'action'=>'login-user', 'credentials'=> base64_encode("{$user["email"]}:{$user['password']}")), 'admin', true); ?>"><?php echo $this->translate->_("Login") ?></a><?php else: ?><a href="<?php echo $this->url(array('controller'=>'members', 'action'=>'resend-mail', 'id'=> $user["id"]), 'admin', true); ?>"><?php echo $this->translate->_("Resend Mail") ?></a><?php endif; ?></td>
+					<td nowrap="nowrap" style="text-align: center;"><?php if($user['type'] == 1): ?><a href="<?php echo $this->url(array('controller'=>'members', 'action'=>'promote-user', 'id'=> $user["id"]), 'admin', true); ?>" class="reqconf" title="<?php echo $this->translate->_("Are you sure you want to PROMOTE this user to be a service provider?"); ?> <?php echo $this->translate->_("The process is irreversible."); ?>"><?php echo $this->translate->_("Promote") ?></a><?php endif; ?></td>
+					<td nowrap="nowrap" style="text-align: center;"><a href="<?php echo $this->url(array('controller'=>'members', 'action'=>'edit-user', 'id'=> $user["id"]), 'admin', true); ?>"><?php echo $this->translate->_("Edit") ?></a></td>
+					<td nowrap="nowrap" style="text-align: center;"><a href="<?php echo $this->url(array('controller'=>'members', 'action'=>'switch-user', 'id'=> $user["id"]), 'admin', true); ?>"><?php echo $user['active'] == 0 ? $this->translate->_("Activate") : $this->translate->_("Deactivate"); ?></a></td>
+					<td nowrap="nowrap" style="text-align: center;"><a href="<?php echo $this->url(array('controller'=>'members', 'action'=>'ban-user', 'id'=> $user["id"]), 'admin', true); ?>"  class="reqconf" title="<?php echo $user['is_banned'] == 0 ? $this->translate->_("Are you sure you want to ban this user?") : $this->translate->_("Are you sure you want to unban this user?"); ?>"><?php echo $user['is_banned'] == 0 ? $this->translate->_("Ban") : $this->translate->_("Unban"); ?></a></td>
+				</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+	<?php echo $this->paginationControl($this->users, 'Elastic', 'controls.phtml', array('translate' => $this->translate)); ?>
+	<form style="background: #fff;">
+		<input type="button" onclick="document.location='<?php echo $this->url(array('action' => 'add-user')); ?>';" class="submit" value="<?php echo $this->translate->_("Add user"); ?>" />
+		<input type="button" onclick="document.location='<?php echo $this->url(array('action' => 'export-csv')); ?>';" class="submit" value="<?php echo $this->translate->_("Export records to CVS"); ?>" />
+		<div class="clear"></div>
+	</form>
+<?php else: ?>
+	<div class="error"><?php echo $this->translate->_("No records found."); ?></div>
+	<form style="background: #fff;">
+		<input type="button" onclick="document.location='<?php echo $this->url(array('action' => 'add-user')); ?>';" class="submit" value="<?php echo $this->translate->_("Add user"); ?>" />
+		<div class="clear"></div>
+	</form>
+<?php endif; ?>
+<script type="text/javascript">
+	READY(function() {
+		Admin.loadJs('filters/base.js');
+		Filters.load('/members/list-users');
+		Filters.Advanced.init({
+			translate: {
+				label: '<?php echo $this->translate->_("Filter #"); ?>',
+				remove: '<?php echo $this->translate->_("Remove"); ?>',
+				clear: '<?php echo $this->translate->_("Clear"); ?>',
+				yes: '<?php echo $this->translate->_("Yes"); ?>',
+				no: '<?php echo $this->translate->_("No"); ?>'
+			},
+			filters: [
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("First Name"); ?>', field: 'a.first_name', type: 'str'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Last Name"); ?>', field: 'a.last_name', type: 'str'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Street"); ?>', field: 'a.street', type: 'str'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Address"); ?>', field: 'a.address', type: 'str'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Zip Code"); ?>', field: 'a.zipcode', type: 'str'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Location"); ?>', field: 'a.location', type: 'str'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Country"); ?>', field: 'a.country_id', type: 'enum', resource: 'country_list'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Cell Phone"); ?>', field: 'a.phone', type: 'str'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Private Phone"); ?>', field: 'a.private_phone', type: 'str'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Business Phone"); ?>', field: 'a.business_phone', type: 'str'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Private "); ?>', field: 'a.private_fax', type: 'str'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Business Fax"); ?>', field: 'a.business_fax', type: 'str'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Overview"); ?>', field: 'a.homepage', type: 'str'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Gender"); ?>', field: 'a.gender', type: 'enum', resource: 'gender_list'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Age"); ?>', field: 'a.date_of_birth', type: 'int'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Category"); ?>', field: 'a.category_id', type: 'enum', resource: 'user_category_list'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Avatar"); ?>', field: 'a.avatar', type: 'bool'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Admin"); ?>', field: 'a.is_admin', type: 'bool'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Editor"); ?>', field: 'a.is_editor', type: 'bool'},
+				{category: '<?php echo $this->translate->_("User Filters"); ?>', name: '<?php echo $this->translate->_("Banned"); ?>', field: 'a.is_banned', type: 'bool'},
+				{category: '<?php echo $this->translate->_("Pet Filters"); ?>', name: '<?php echo $this->translate->_("Pet Count"); ?>', field: 'join_pet_count', type: 'int'},
+				{category: '<?php echo $this->translate->_("Pet Filters"); ?>', name: '<?php echo $this->translate->_("Pet Category"); ?>', field: 'join_pet_category', type: 'enum', resource: 'pet_category_list'},
+				{category: '<?php echo $this->translate->_("Service Filters"); ?>', name: '<?php echo $this->translate->_("Service Count"); ?>', field: 'join_service_count', type: 'int'},
+				{category: '<?php echo $this->translate->_("Service Filters"); ?>', name: '<?php echo $this->translate->_("Service Category"); ?>', field: 'join_service_category', type: 'enum', resource: 'service_category_list'}
+			],
+			resources: {
+				country_list: <?php echo json_encode($this->country_list); ?>,
+				gender_list: <?php echo json_encode($this->gender_list); ?>,
+				user_category_list: <?php echo json_encode($this->user_category_list); ?>,
+				pet_category_list: <?php echo json_encode($this->pet_category_list); ?>,
+				service_category_list: <?php echo json_encode($this->service_category_list); ?>
+			}
+		});
+	});
+</script>

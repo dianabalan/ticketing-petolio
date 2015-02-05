@@ -1,0 +1,66 @@
+<?php if($this->entry['attached']['all_comments']): ?>
+	<div style="z-index: 9;">
+		<span></span>
+		<div>
+			<i></i>
+			<a href="<?php echo $this->url(array('controller'=>'dashboard', 'action'=>'view', 'id' => $this->entry['id']), 'default', true); ?>"><?php printf($this->translate->_("View all %s comments"), $this->entry['attached']['all_comments']); ?></a>
+			<div class="clear"></div>
+		</div>
+		<em></em>
+	</div>
+<?php endif; ?>
+<?php if($this->entry['attached']['pagination']): ?>
+	<div style="z-index: 9;">
+		<span></span>
+		<div>
+			<i></i>
+			<a href="javascript:void(0);" data-page="<?php echo $this->entry['attached']['pagination']['next']; ?>"><?php echo $this->translate->_("View previous comments"); ?></a>
+			<span><?php printf($this->translate->_('Showing %1$s of %2$s comments'), $this->entry['attached']['pagination']['offset'], $this->entry['attached']['pagination']['total']); ?></span>
+			<div class="clear"></div>
+		</div>
+		<em></em>
+	</div>
+<?php endif; ?>
+<?php if(count($this->entry['attached']['comments']) > 0): ?>
+	<div style="z-index: 8; overflow: hidden;">
+		<span></span>
+		<?php foreach($this->entry['attached']['comments'] as $comment): ?>
+			<?php
+				// avatar control
+				$avatar = $this->partial('avatar.phtml', array(
+					'user' => array('id' => $comment['user_id'], 'avatar' => $comment['avatar'])
+				));
+			?>
+			<div style="padding: 4px 5px 5px 5px;">
+				<table style="width: 100%; word-wrap: break-word; table-layout: fixed;">
+				<col width="57" /><col />
+					<tr>
+						<td valign="top" style="vertical-align: top;">
+							<div class="avatar">
+								<img style="display: block; margin-top: 1px; border: 1px solid white;" src="<?php echo $avatar; ?>" />
+							</div>
+						</td>
+						<td>
+							<a style="font-weight: bold;" href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $comment['user_id']), 'default', true); ?>"><?php echo $comment['name']; ?></a>
+							<span class="truncate"><?php
+								// transform any petolio url to the current domain
+								echo str_replace(array(
+									'new.petolio.local', // localhost mirror
+									'new.petolio.riffcode.ro', // test mirror
+									'petolio.com', 'petolio.de' // official mirror
+								), str_replace('www.', '', $_SERVER['HTTP_HOST']), $comment['text']);
+							?></span>
+							<div style="color: grey; padding-top: 4px;" data-id="<?php echo $comment['id']; ?>">
+								<span title="<?php echo Petolio_Service_Util::formatDate($comment["date_created"], Petolio_Service_Util::MEDIUMDATE, true, true); ?>"><?php echo Petolio_Service_Util::formatTime(strtotime($comment["date_created"])); ?></span>
+								<?php if(!is_null($this->identity) && (($this->identity->id == $comment['user_id']) || $this->identity->id == $this->entry['user_id'])) { ?>&nbsp;&bull;&nbsp;
+									<a style="color: green;" href="javascript:void(0);" name="comment_delete"><?php echo $this->translate->_("Delete"); ?></a>
+								<?php } ?>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+		<?php endforeach; ?>
+		<em></em>
+	</div>
+<?php endif; ?>

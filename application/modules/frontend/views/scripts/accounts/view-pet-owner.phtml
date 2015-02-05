@@ -1,0 +1,125 @@
+<?php include 'header.phtml'; ?>
+<style>
+<!--
+div.entries > div.entry div.entry-content-container div.data {
+	max-width: 450px;
+}
+-->
+</style>
+<div class="rightbox user-page">
+	<div class="hline">
+		<div class="user-dashboard entries">
+			<?php echo $this->partial('dashboard/feed.phtml', array(
+			        	'translate' => $this->translate,
+						'privacy' => $this->privacy,
+			        	'results' => $this->results,
+						'more' => $this->more,
+						'identity' => $this->identity,
+						'switch' => "2",
+						'hideavatar' => true,
+						'user' => $this->user->toArray()
+		    		));
+			?>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="right">
+		<?php
+			if ($this->admin) {
+				$all_pets_url = $this->url(array('controller'=>'pets', 'action'=>'mypets'), 'default', true);
+				$add_pet_url = $this->url(array('controller'=>'pets', 'action'=>'add'), 'default', true);
+			} else {
+				$all_pets_url = $this->url(array('controller'=>'pets', 'action'=>'index', 'owner' => $this->user->getName()), 'default', true);
+			}
+		?>
+		<?php if (count($this->yourPets) > 0): ?>
+		<div class="green-box">
+			<h2>&nbsp;
+				<span class="left"><?php echo $this->translate->_("Pets"); ?></span>
+				<?php if ($this->admin): ?>
+				<a href="<?php echo $add_pet_url; ?>" class="right edit"><img alt="" src="/images/new/action/pet_add.png" /></a>
+				<?php endif; ?>
+				<?php if(count($this->yourPets) > 1): ?>
+				<a href="<?php echo $all_pets_url; ?>" class="right"><?php echo $this->translate->_("see all"); ?></a>
+				<?php endif; ?>
+			</h2>
+			<div class="clear"></div>
+			<?php foreach($this->yourPets as $pet):
+				// picture control
+				$image = "/images/no-pet.jpg";
+				if ($pet["picture"] && strlen($pet["picture"]) > 0) {
+					$image = "/images/userfiles/pets/{$pet["id"]}/gallery/small_{$pet["picture"]}";
+				} ?>
+				<a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'view', 'pet' => $pet["id"]), 'default', true); ?>" 
+						class="user-pet" title="<?php echo $pet["name"]; ?>">
+					<img src="<?php echo $image; ?>" alt="<?php echo $pet["name"]; ?>" />
+					<div>
+						<span><?php echo $pet["name"]; ?></span>
+						<span><?php echo $pet["type"]; ?></span>
+						<span><?php echo $pet["breed"]; ?></span>
+					</div>
+				</a>
+			<?php endforeach; ?>
+		</div>
+		<div class="clear tenpx"></div>
+		<?php endif; ?>
+		<?php
+			if ($this->admin) {
+				$all_galleries_url = $this->url(array('controller'=>'galleries', 'action'=>'mygalleries'), 'default', true);
+				$add_gallery_url = $this->url(array('controller'=>'galleries', 'action'=>'add'), 'default', true);
+			} else {
+				$all_galleries_url = $this->url(array('controller'=>'galleries', 'action'=>'index', 'owner' => $this->user->getName()), 'default', true);
+			}
+		?>
+		<?php if (count($this->yourGalleries) > 0): ?>
+		<div class="green-box">
+			<h2>&nbsp;
+				<span class="left"><?php echo $this->translate->_("Galleries"); ?></span>
+				<?php if ($this->admin): ?>
+				<a href="<?php echo $add_gallery_url; ?>" class="right edit"><img alt="" src="/images/new/action/gallery_add.png" /></a>
+				<?php endif; ?>
+				<?php if(count($this->yourGalleries) > 1): ?>
+				<a href="<?php echo $all_galleries_url; ?>" class="right"><?php echo $this->translate->_("see all"); ?></a>
+				<?php endif; ?>
+			</h2>
+			<div class="clear"></div>
+			<?php foreach($this->yourGalleries as $gallery):
+				// picture control
+				$image = "/images/no-pet.jpg";
+				if ($gallery["picture"] && strlen($gallery["picture"]) > 0) {
+					$image = "/images/userfiles/galleries/{$gallery["id"]}/small_{$gallery["picture"]}";
+				} ?>
+				<a href="<?php echo $this->url(array('controller'=>'galleries', 'action'=>'view', 'gallery' => $gallery["id"]), 'default', true); ?>" 
+						class="user-pet" title="<?php echo $gallery["title"]; ?>">
+					<img src="<?php echo $image; ?>" alt="<?php echo $gallery["title"]; ?>" />
+					<div>
+						<span><?php echo $gallery["title"]; ?></span>
+						<span><?php printf(ngettext("%s image", "%s images", $gallery['pictures_count']), $gallery['pictures_count']); ?></span>
+					</div>
+				</a>
+			<?php endforeach; ?>
+		</div>
+		<?php endif; ?>
+	</div>
+	<div class="clear"></div>
+</div>
+<?php $imgsw_path = array(
+	'image' => "{custom}",
+	'audio' => "{custom}",
+	'video' => "http://www.youtube.com/embed/{video}"
+); include "../application/modules/frontend/views/scripts/imgsw.phtml"; ?>
+<?php $dashboard_location = "dashboard"; include "../application/modules/frontend/views/scripts/dashboard/init.phtml"; ?>
+<script type="text/javascript">
+	(function($) {
+		READY(function() {
+			$("a.user-pet").on('mouseenter', function() {
+				$(this).find("div").css("display", "none").fadeIn(1000);
+			});
+	
+			$("a.user-pet").on('mouseleave', function() {
+				$(this).find("div").css("display", "block").fadeOut(1000);
+			});
+		
+		});
+	})(jQuery);
+</script>

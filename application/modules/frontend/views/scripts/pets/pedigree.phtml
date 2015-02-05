@@ -1,0 +1,366 @@
+<?php include "menu.phtml";
+
+function check_dependency($x, $y) {
+	$dependency = array(
+		'0' => array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14),
+		'1' => array(3, 4, 7, 8, 9, 10),
+		'2' => array(5, 6, 11, 12, 13, 14),
+		'3' => array(7, 8),
+		'4' => array(9, 10),
+		'5' => array(11, 12),
+		'6' => array(13, 14),
+	);
+
+	if (intval($x) <= 6) {
+		foreach($dependency[$x] as $line)
+			if(isset($y[$line]))
+				return false;
+	}
+
+	return true;
+}
+
+$matrix = array(
+	'1' => '0', '2' => '0',
+	'3' => '1', '4' => '1',
+	'5' => '2', '6' => '2',
+	'7' => '3', '8' => '3',
+	'9' => '4', '10' => '4',
+	'11' => '5', '12' => '5',
+	'13' => '6', '14' => '6'
+);
+
+$boxes = array();
+$default_size = 175;
+for($x = 1; $x <= 14; $x++) {
+	$size = $x > 6 ? 185 : $default_size;
+
+	if($this->admin) {
+		if($x >= 1 && $x <= 2) $who = $this->levels[1];
+		else if($x >= 3 && $x <= 6) $who = $this->levels[2];
+		else if($x >= 7 && $x <= 14) $who = $this->levels[3];
+
+		$class = "active";
+		$link1 = $link2 = null;
+		$link = "rel=\"add|{$x}\"";
+		$name = " &raquo; ".$this->translate->_("Add")." {$who}";
+		if(isset($this->tree[$x])) {
+			$class = $this->tree[$x]['type'] == 0 ? 'nohand' : '';
+			$link = $this->tree[$x]['type'] == 1 ? "onclick=\"Petolio.go('{$this->url(array('controller'=>'pets', 'action'=>'view', 'pet'=>$this->tree[$x]['pet_id_linked']), 'default', true)}');\"" : '';
+			$name = $this->tree[$x]['name'];
+			$link1 = $this->tree[$x]['type'] == 0 ? "<a href='javascript:void(0);' rel='edit|{$this->tree[$x]['id']}'><img src='/images/icons/edit.png' /></a>" : null;
+			$link2 = check_dependency($x, $this->tree) ? "<a href='{$this->url(array('controller'=>'pets', 'action'=>'pedigree', 'pet'=>$this->tree[0]['id'], 'delete'=>$this->tree[$x]['id']), 'default', true)}' class='reqconf' title='".sprintf($this->translate->_("Are you sure you want to remove this %s?"), $who)."'><img src='/images/icons/delete.png' /></a>" : null;
+		}
+
+		if(!isset($this->tree[$matrix[$x]]))
+			$output = "<div style='width: {$size}px;' class='animal disabled'></div>";
+		else
+			$output = "<div style='width: {$size}px;' class='animal {$class}' "
+				. "{$link} title='{$name}'>"
+				. "{$name}<div class='links'>{$link1}{$link2}</div></div>";
+	} else {
+		$class = 'disabled';
+		$name = $link = null;
+		if(isset($this->tree[$x])) {
+			$class = $this->tree[$x]['type'] == 0 ? 'nohand' : '';
+			$link = $this->tree[$x]['type'] == 1 ? "onclick=\"Petolio.go('{$this->url(array('controller'=>'pets', 'action'=>'view', 'pet'=>$this->tree[$x]['pet_id_linked']), 'default', true)}');\"" : '';
+			$name = $this->tree[$x]['name'];
+		}
+
+		if(!isset($this->tree[$matrix[$x]]))
+			$output = "<div style='width: {$size}px;' class='animal disabled'></div>";
+		else
+			$output = "<div style='width: {$size}px;' class='animal {$class}' "
+				. "{$link}>"
+				. "{$name}</div>";
+	}
+
+	$boxes[$x] = $output;
+}
+
+$own_edit = null;
+if($this->admin)
+	$own_edit = "<div class='links'><a href='{$this->url(array('controller'=>'pets', 'action'=> 'edit', 'pet'=>$this->tree[0]['id']), 'default', true)}'><img src='/images/icons/edit.png' /></a></div>";
+
+$kids = null;
+foreach($this->kids as $kid) {
+	if($this->admin) {
+		$class = $kid['type'] == 0 ? 'nohand' : '';
+		$link = $kid['type'] == 1 ? "onclick=\"Petolio.go('{$this->url(array('controller'=>'pets', 'action'=>'view', 'pet'=>$kid['pet_id_linked']), 'default', true)}');\"" : '';
+		$name = $kid['name'];
+		$link1 = $kid['type'] == 0 ? "<a href='javascript:void(0);' rel='edit|{$kid['id']}'><img src='/images/icons/edit.png' /></a>" : null;
+		$link2 = "<a href='{$this->url(array('controller'=>'pets', 'action'=>'pedigree', 'pet'=>$this->tree[0]['id'], 'delete'=>$kid['id']), 'default', true)}' class='reqconf' title='".sprintf($this->translate->_("Are you sure you want to remove this %s?"), $this->levels[0])."'><img src='/images/icons/delete.png' /></a>";
+
+		$kids .= "<div class='animal {$class}' "
+			. "{$link} title='{$name}'>"
+			. "{$name}<div class='links'>{$link1}{$link2}</div></div>";
+	} else {
+		$class = $kid['type'] == 0 ? 'nohand' : '';
+		$link = $kid['type'] == 1 ? "onclick=\"Petolio.go('{$this->url(array('controller'=>'pets', 'action'=>'view', 'pet'=>$kid['pet_id_linked']), 'default', true)}');\"" : '';
+		$name = $kid['name'];
+
+		$kids .= "<div class='animal {$class}' "
+			. "{$link}>"
+			. "{$name}</div>";
+	}
+}
+
+?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Pet Pedigree"); ?></h1>
+		<br />
+		<div class="pedigree">
+			<div class="head"><?php echo $this->translate->_("Pet"); ?></div>
+			<div class="head">I. <?php echo $this->translate->_("Parents"); ?></div>
+			<div class="head">II. <?php echo $this->translate->_("Grandparents"); ?></div>
+			<div class="head">III. <?php echo $this->translate->_("Great-grandparents"); ?></div>
+			<div class="clear"><br /></div>
+			<div class="wrap_animal pet">
+				<div style="height: 143px;"></div>
+				<div title="<?php echo $this->tree[0]['name']; ?>" style="width: <?php echo $default_size; ?>px;" class="animal" onclick="Petolio.go('<?php echo $this->url(array('controller'=>'pets', 'action'=>'view', 'pet'=>$this->tree[0]['id']), 'default', true); ?>');"><?php echo $this->tree[0]['name']; ?><?php echo $own_edit; ?></div>
+				<?php if($kids || $this->admin): ?>
+					<div class="kid_line"></div>
+					<div class="kid_head"><?php echo $this->translate->_("Children"); ?></div>
+				<?php endif; ?>
+			</div>
+			<div class="wrap_line"><div style="height: 77px;"></div><div class="line_connect"></div><div style="height: 13px;" class="line_repeat"></div><div style="height: 64px;" class="line_repeat"></div><div class="line_center"></div><div style="height: 77px;" class="line_repeat"></div><div class="line_connect"></div><div style="height: 12px;"></div></div>
+			<div class="wrap_animal">
+				<div style="height: 65px;"></div>
+				<?php echo $boxes[1]; ?>
+				<div style="height: 130px;"></div>
+				<?php echo $boxes[2]; ?>
+			</div>
+			<div class="wrap_line"><div style="height: 38px;"></div><div class="line_connect"></div><div style="height: 13px;" class="line_repeat"></div><div style="height: 25px;" class="line_repeat"></div><div class="line_center"></div><div style="height: 38px;" class="line_repeat"></div><div class="line_connect"></div><div style="height: 12px;"></div><div style="height: 65px;"></div><div class="line_connect"></div><div style="height: 13px;" class="line_repeat"></div><div style="height: 25px;" class="line_repeat"></div><div class="line_center"></div><div style="height: 38px;" class="line_repeat"></div><div class="line_connect"></div><div style="height: 12px;"></div></div>
+			<div class="wrap_animal">
+				<div style="height: 26px;"></div>
+				<?php echo $boxes[3]; ?>
+				<div style="height: 52px;"></div>
+				<?php echo $boxes[4]; ?>
+				<div style="height: 52px;"></div>
+				<?php echo $boxes[5]; ?>
+				<div style="height: 52px;"></div>
+				<?php echo $boxes[6]; ?>
+			</div>
+			<div class="wrap_line"><div style="height: 18px;"></div><div class="line_connect"></div><div style="height: 13px;" class="line_repeat"></div><div style="height: 6px;" class="line_repeat"></div><div class="line_center"></div><div style="height: 18px;" class="line_repeat"></div><div class="line_connect"></div><div style="height: 12px;"></div><div style="height: 26px;"></div><div class="line_connect"></div><div style="height: 13px;" class="line_repeat"></div><div style="height: 6px;" class="line_repeat"></div><div class="line_center"></div><div style="height: 18px;" class="line_repeat"></div><div class="line_connect"></div><div style="height: 12px;"></div><div style="height: 26px;"></div><div class="line_connect"></div><div style="height: 13px;" class="line_repeat"></div><div style="height: 6px;" class="line_repeat"></div><div class="line_center"></div><div style="height: 18px;" class="line_repeat"></div><div class="line_connect"></div><div style="height: 12px;"></div><div style="height: 26px;"></div><div class="line_connect"></div><div style="height: 13px;" class="line_repeat"></div><div style="height: 6px;" class="line_repeat"></div><div class="line_center"></div><div style="height: 18px;" class="line_repeat"></div><div class="line_connect"></div><div style="height: 12px;"></div></div>
+			<div class="wrap_animal">
+				<div style="height: 6px;"></div>
+				<?php echo $boxes[7]; ?>
+				<div style="height: 13px;"></div>
+				<?php echo $boxes[8]; ?>
+				<div style="height: 13px;"></div>
+				<?php echo $boxes[9]; ?>
+				<div style="height: 13px;"></div>
+				<?php echo $boxes[10]; ?>
+				<div style="height: 13px;"></div>
+				<?php echo $boxes[11]; ?>
+				<div style="height: 13px;"></div>
+				<?php echo $boxes[12]; ?>
+				<div style="height: 13px;"></div>
+				<?php echo $boxes[13]; ?>
+				<div style="height: 13px;"></div>
+				<?php echo $boxes[14]; ?>
+			</div>
+			<div class="cls fivepx"></div>
+			<?php if($kids || $this->admin): ?>
+				<div class="wrap_children">
+					<?php echo $kids; ?>
+					<?php if($this->admin): ?><div title="<?php echo $this->translate->_(" &raquo; Add Child"); ?>" rel="add|0" class="animal active"><?php echo $this->translate->_(" &raquo; Add Child"); ?></div><?php endif; ?>
+					<div class="clear"></div>
+				</div>
+			<?php endif; ?>
+		</div>
+		<?php if($this->admin): ?>
+			<hr />
+			<div class="left"><input onclick="Petolio.go(window.location.href.replace('pedigree', 'videos'));" type="button" value="<?php echo $this->translate->_("< Go Back to Videos"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+			<div class="right"><input onclick="Petolio.go(window.location.href.replace('pedigree', 'finish'));" type="button" value="<?php echo $this->translate->_("Finish >"); ?>" id="submit" name="next"><div class="clear"></div></div>
+			<div class="clear"></div>
+		<?php endif; ?>
+	</div>
+</div>
+<script type="text/javascript">
+var Pedigree = function() {
+	var pet = null
+		translate = {
+			text: ['<?php echo $this->translate->_("You can link from an existing pet"); ?>', '<?php echo $this->translate->_("Select Pet"); ?>', '<?php echo $this->translate->_("OR"); ?>', '<?php echo $this->translate->_("You can just specify the name of the pet"); ?>', '<?php echo $this->translate->_("Your new connection has been saved."); ?>'],
+			edit: ['<?php echo $this->translate->_("Edit %s"); ?>', '<?php echo $this->translate->_("Rename the pet into something else"); ?>', '<?php echo $this->translate->_("%s has been successfully updated to %r."); ?>'],
+			buttons: ['<?php echo $this->translate->_("Close"); ?>']
+		},
+
+	setPet = function() {
+		var vars = document.URL.split('/');
+		$.each(vars, function(s, i) {
+			if(i == 'pet')
+				pet = vars[s + 1];
+		});
+	},
+
+	add = function(x) {
+		return $('<div id="dialog-add" title="'+ x.attr('title').substr(3, x.attr('title').length) +'" class="ui-state-highlight">'+
+				'<div style="margin: 8px 0px 2px 0px; line-height: 18px;">'+
+					translate.text[0] +'<br /><div class="fivepx"></div>'+
+					'<input type="text" title="'+ translate.text[1] +'" name="pet[]" class="chzn-select chzn-custom" multiple="multiple" style="width:265px;" id="multi_pets" />'+
+					'<div class="tenpx"></div><br /><b>'+ translate.text[2] +'</b><div class="tenpx"></div>'+
+					translate.text[3] +'<br /><div class="fivepx"></div>'+
+					'<input type="text" name="pet" class="box" style="width:261px;" />'+
+					'<br /><br /><br />'+
+				'</div>'+
+			'</div>').dialog({
+    			resizable: false,
+    			modal: true,
+    			autoOpen: false,
+    			width: 300,
+    			minHeight: 50,
+    			buttons: [{
+					text: x.attr('title').substr(3, x.attr('title').length),
+					click: function() {
+    					insert($(this), x.attr('rel'), x.attr('title').substr(7, x.attr('title').length));
+    				}
+				}, {
+					text: translate.buttons[0],
+					click: function() {
+						$(this).dialog("close");
+    				}
+				}],
+    			close: function() {
+    				$("#dialog-add").remove();
+    			}
+			});
+	},
+
+	insert = function (d, i, t) {
+		var a = $('select[name="pet[]"]'),
+			b = $('input[name="pet"]'),
+			w = b.width();
+
+		$("#multi_pets_chzn").find('ul.chzn-choices').removeAttr('style');
+		b.removeAttr('style');
+		b.css({ width: w });
+
+		if(a.val() == null && !b.val().length > 0){
+			$("#multi_pets_chzn").find('ul.chzn-choices').css({ borderColor: 'red' });
+			b.css({ borderColor: 'red' });
+			return;
+		}
+
+    	Petolio.ajax({
+			url: 'pets/pedigree/pet/'+ pet,
+			type: 'post',
+			data: {
+				act: 'insert',
+				pet: pet,
+				level: i.split('|')[1],
+				type: a.val() != null ? 1 : 0,
+				value: a.val() != null ? a.val()[0] : b.val()
+			},
+			cache: false,
+			success: function (x) {
+				Petolio.showMessage(translate.text[4].replace('%s', t), function(){
+					d.dialog("close");
+					Petolio.go(window.location.href);
+				});
+			}
+		});
+	},
+
+	edit = function (x) {
+		return $('<div id="dialog-edit" title="'+ translate.edit[0].replace('%s', x.parent().parent().attr('title')) +'" class="ui-state-highlight">'+
+				'<div style="margin: 8px 0px 2px 0px; line-height: 18px;">'+
+					translate.edit[1] +'<br /><div class="fivepx"></div>'+
+					'<input type="text" name="pet" class="box" style="width:261px;" />'+
+				'</div>'+
+			'</div>').dialog({
+    			resizable: false,
+    			modal: true,
+    			autoOpen: false,
+    			width: 300,
+    			minHeight: 50,
+    			buttons: [{
+					text: translate.edit[0].replace('%s', x.parent().parent().attr('title')),
+					click: function() {
+    					update($(this), x.attr('rel'), x.parent().parent().attr('title'));
+    				}
+				}, {
+					text: translate.buttons[0],
+					click: function() {
+						$(this).dialog("close");
+    				}
+				}],
+    			close: function() {
+    				$("#dialog-edit").remove();
+    			}
+			});
+	},
+
+	update = function (d, i, t) {
+		var b = $('input[name="pet"]'),
+			w = b.width();
+
+		b.removeAttr('style');
+		b.css({ width: w });
+
+		if(!b.val().length > 0){
+			b.css({ borderColor: 'red' });
+			return;
+		}
+
+		Petolio.ajax({
+			url: 'pets/pedigree/pet/'+ pet,
+			type: 'post',
+			data: {
+				act: 'update',
+				pet: pet,
+				id: i.split('|')[1],
+				value: b.val()
+			},
+			cache: false,
+			success: function (x) {
+				Petolio.showMessage(translate.edit[2].replace('%s', t).replace('%r', b.val()), function(){
+					d.dialog("close");
+					Petolio.go(window.location.href);
+				});
+			}
+		});
+	},
+
+	listen = function() {
+		$('[rel*="add|"]').click(function(){
+			var w = add($(this));
+
+			w.dialog('open');
+			$("#multi_pets").data('placeholder', $("#multi_pets").attr('title')).chosen({
+				translate: Petolio.translateChosen(),
+				max_choices: 1,
+				ajax: {
+	            	url: SITE_URL + "pets/pedigree/pet/"+ pet +"/find/lookup",
+					min_search: 3,
+					req_param: "name",
+					res_value: "value",
+					res_text: "text",
+					res_html: "text",
+					success_callback: function(v){
+						return v.results;
+					}
+	            }
+			});
+		});
+
+		$('[rel*="edit|"]').click(function(){
+			var w = edit($(this));
+			w.dialog('open');
+		});
+	},
+
+	__construct = function() {
+		setPet();
+		listen();
+	};
+
+	return {
+		init: __construct()
+	}
+}();
+
+READY(Pedigree.init);
+</script>

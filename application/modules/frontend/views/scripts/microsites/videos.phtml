@@ -1,0 +1,207 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Microsite Videos"); ?></h1>
+		<br />
+		<?php if(isset($this->up['errors']) && count($this->up['errors']) > 0):?>
+			<div class="c_error">
+				<?php foreach($this->up['errors'] as $error): ?>
+					<div><b><?php echo $this->translate->_("The video was not uploaded due to the following reason:"); ?></b></div>
+					<ul><li><?php echo $error; ?></li></ul>
+				<?php endforeach; ?>
+			</div>
+			<br />
+		<?php endif; ?>
+		<?php if(isset($this->up['success']) && count($this->up['success']) > 0):?>
+			<div class="c_success">
+				<ul>
+					<?php foreach($this->up['success'] as $success): ?>
+						<li><?php echo $this->translate->_("Video was successfully uploaded as "); ?> <?php echo $success; ?>.</li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+			<br />
+		<?php endif; ?>
+		<div class="left" style="width: 390px;">
+			<form id="youtube_upload" name="youtube_upload" action="<?php echo $this->form['url']; ?>" method="post" enctype="multipart/form-data">
+			<input name="token" type="hidden" value="<?php echo $this->form['token']; ?>"/>
+				<div>
+					<label class="optional" for="name1"><?php echo $this->translate->_("Video Name"); ?></label>
+					<input type="text" id="name1" name="name1">
+					<div id="name1_error" style="display: none;">
+						<div style="width: 5px;" class="red-dot">*</div><ul class="errors"><li></li></ul>
+					</div>
+					<div class="cls"></div>
+				</div>
+				<div>
+					<label class="optional" for="file"><?php echo $this->translate->_("Video File"); ?></label>
+					<input type="file" id="file" name="file">
+					<div id="file_error" style="display: none;">
+						<div style="width: 5px;" class="red-dot">*</div><ul class="errors"><li><?php echo $this->translate->_("Value is required and can't be empty"); ?></li></ul>
+					</div>
+					<div class="cls"></div>
+				</div>
+				<div>
+					<label>&nbsp;</label>
+					<input type="button" value="<?php echo $this->translate->_("Upload Video"); ?>" id="submit" name="upload" class="upload" />
+					<input type="submit" name="submit" id="submit_youtube_form" style="display: none;" />
+					<div class="cls"></div>
+				</div>
+			</form>
+		</div>
+		<div class="left" style="width: 390px;">
+			<form id="youtube_link" action="" method="post">
+				<div>
+					<label class="optional" for="name2"><?php echo $this->translate->_("Video Name"); ?></label>
+					<input type="text" id="name2" name="name2">
+					<div id="name2_error" style="display: none;">
+						<div style="width: 5px;" class="red-dot">*</div><ul class="errors"><li></li></ul>
+					</div>
+					<div class="cls"></div>
+				</div>
+				<div>
+					<label class="optional" for="file"><?php echo $this->translate->_("Youtube Link"); ?></label>
+					<input type="text" id="link" name="link">
+					<div id="link_error" style="display: none;">
+						<div style="width: 5px;" class="red-dot">*</div><ul class="errors"><li><?php echo $this->translate->_("Value is required and can't be empty"); ?></li></ul>
+					</div>
+					<div class="cls"></div>
+				</div>
+				<div>
+					<label>&nbsp;</label>
+					<input type="submit" value="<?php echo $this->translate->_("Link Video"); ?>" id="submit" name="perform">
+					<div class="cls"></div>
+				</div>
+			</form>
+		</div>
+		<div class="clear"></div>
+		<?php if(count($this->videos) > 0) :?>
+			<hr />
+			<div class="gallery">
+				<?php foreach($this->videos as $video): ?>
+					<?php
+						// get loaded entity and url
+						$entity = $video->getMapper();
+						$url = "http://www.youtube.com/watch?v=" . pathinfo($video->getFile(), PATHINFO_FILENAME);
+
+						// get video duration and thumbnail
+						$thumbnail = null;
+						$duration = '00:00';
+						if(is_object($entity)) {
+							$thumbs = $entity->getVideoThumbnails();
+							$thumbnail = $thumbs[1]['url'];
+							$duration = date("i:s", $entity->getVideoDuration());
+						}
+					?>
+					<div class="picture" rel="<?php echo $video->getId(); ?>">
+						<a href="<?php echo $url; ?>" target="_parent" style="text-decoration: none;">
+							<span class="vid" style="background: #000 url('<?php echo $thumbnail; ?>') center center no-repeat;">
+								<?php
+									if(!is_object($entity)) {
+										list($name, $text) = explode(": ", $entity);
+										if($name == 'Processing') echo "<span class='orange'><b>".$this->translate->_('Processing')."</b></span>";
+										else {
+											echo "<span class='red'><b>{$name}</b>";
+											if($text) echo "<br />{$text}";
+											echo "</span>";
+										}
+									}
+								?>
+							</span>
+						</a>
+						<span class="name ellipsis">
+							<a href="<?php echo $url; ?>" target="_parent"><?php echo pathinfo($video->getDescription(), PATHINFO_FILENAME); ?></a>
+						</span>
+						<span class="links">
+							<a href='<?php echo $this->url(array('controller'=>'microsites', 'action'=>'videos', 'remove'=>$video->getId()), 'default', true); ?>' class='icn delete reqconf' title='<?php echo $this->translate->_("Delete Video"); ?>?'>&nbsp;</a>
+						</span>
+						<?php if(is_object($entity)): ?><span class="duration"><?php echo $duration; ?></span><?php endif; ?>
+					</div>
+				<?php endforeach; ?>
+				<div class="clear"></div>
+			</div>
+			<div class="clear"></div>
+		<?php endif; ?>
+		<hr />
+		<div class="left"><input onclick="Petolio.go(window.location.href.replace('videos', 'pictures'));" type="button" value="<?php echo $this->translate->_("< Go Back to Pictures"); ?>" id="submit" name="prev" style="margin: 0px;" /><div class="clear"></div></div>
+		<div class="right"><input onclick="Petolio.go(window.location.href.replace('videos', 'index'));" type="button" value="<?php echo $this->translate->_("Save &amp; Finish >"); ?>" id="submit" name="next" /><div class="clear"></div></div>
+		<div class="clear"></div>
+	</div>
+</div>
+<script type="text/javascript">
+READY(function() {
+	$('input.upload').click(function(x) {
+		var d = $('#file').val(),
+			d2 = $('#name1').val(),
+			e = $('#file_error'),
+			e2 = $('#name1_error');
+
+		e.hide(); e2.hide();
+		x.preventDefault();
+
+		if($.trim(d2).length == 0) {
+			e2.find('ul.errors > li').html("<?php echo $this->translate->_("Value is required and can't be empty"); ?>");
+			e2.show();
+		} else if($.trim(d2).length < 3) {
+			e2.find('ul.errors > li').html("<?php echo $this->translate->_("Value is must be bigger than 3 characters"); ?>");
+			e2.show();
+		} else if($.trim(d2).length > 90) {
+			e2.find('ul.errors > li').html("<?php echo $this->translate->_("Value is must be smaller than 90 characters"); ?>");
+			e2.show();
+		} else if($.trim(d2).match(/[\\:\*\?"<>]+/)) {
+			e2.find('ul.errors > li').html("<?php echo $this->translate->_("Value is contains illegal characters"); ?>");
+			e2.show();
+		} else if($.trim(d).length == 0) {
+			e.show();
+		} else {
+			Petolio.showLoading();
+	    	Petolio.ajax({
+				url: 'microsites/youtube',
+				type: 'post',
+				data: {name: d2},
+				cache: false,
+				success: function (x) {
+					Petolio.hideLoading();
+					Petolio.showLoading('<?php echo $this->translate->_("Your video is uploading, please wait..."); ?>', [{
+		            	text: '<?php echo $this->translate->_("Abort Upload"); ?>',
+		            	click: function() {
+		            		location.reload(true);
+		    			}
+		    		}]);
+					$('#submit_youtube_form').click();
+				}
+			});
+		}
+	});
+
+	$('#youtube_link').submit(function(x) {
+		var d = $('#link').val(),
+			d2 = $('#name2').val(),
+			e = $('#link_error'),
+			e2 = $('#name2_error');
+
+		e.hide(); e2.hide();
+		if($.trim(d).length == 0 || $.trim(d2).length == 0 || $.trim(d2).length < 3 || $.trim(d2).length > 90 || $.trim(d2).match(/[\\:\*\?"<>]+/))
+			x.preventDefault();
+
+		if($.trim(d2).length == 0) {
+			e2.find('ul.errors > li').html("<?php echo $this->translate->_("Value is required and can't be empty"); ?>");
+			e2.show();
+		}
+		else if($.trim(d2).length < 3) {
+			e2.find('ul.errors > li').html("<?php echo $this->translate->_("Value is must be bigger than 3 characters"); ?>");
+			e2.show();
+		}
+		else if($.trim(d2).length > 90) {
+			e2.find('ul.errors > li').html("<?php echo $this->translate->_("Value is must be smaller than 90 characters"); ?>");
+			e2.show();
+		}
+		else if($.trim(d2).match(/[\\:\*\?"<>]+/)) {
+			e2.find('ul.errors > li').html("<?php echo $this->translate->_("Value is contains illegal characters"); ?>");
+			e2.show();
+		}
+		else if($.trim(d).length == 0) e.show();
+	});
+});
+</script>

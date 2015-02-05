@@ -1,0 +1,21 @@
+<?php if($this->pageCount > 1): ?>
+	<div class="clear <?php if($this->pos == 'bot') echo 'tenpx'; ?>"></div>
+		<?php if (isset($this->previous)): ?>
+			<a href="<?php echo $this->url(array('services-page' => $this->first)); ?>#micro-services" title="First" class="pagefirst showloading">&nbsp;</a>
+		<?php else: ?>
+			<span class="disabled pagefirstoff" title="First">&nbsp;</span>
+		<?php endif; if (isset($this->previous)): ?>
+			<a href="<?php echo $this->url(array('services-page' => $this->previous)); ?>#micro-services" title="Previous" class="pageprev showloading">&nbsp;</a>
+		<?php else: ?>
+			<span class="disabled pageprevoff" title="Previous">&nbsp;</span>
+		<?php endif; if (isset($this->next)): ?>
+			<a href="<?php echo $this->url(array('services-page' => $this->next)); ?>#micro-services" title="Next" class="pagenext showloading">&nbsp;</a>
+		<?php else: ?>
+			<span class="disabled pagenextoff" title="Next">&nbsp;</span>
+		<?php endif; if (isset($this->next)): ?>
+			<a href="<?php echo $this->url(array('services-page' => $this->last)); ?>#micro-services" title="Last" class="pagelast showloading">&nbsp;</a>
+		<?php else: ?>
+			<span class="disabled pagelastoff" title="Last">&nbsp;</span>
+		<?php endif; ?>
+	<div class="clear <?php if($this->pos == 'top') echo 'tenpx'; ?>"></div>
+<?php endif; ?>

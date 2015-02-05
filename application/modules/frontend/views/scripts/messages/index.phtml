@@ -1,0 +1,21 @@
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Overview"); ?></h1>
+		<br />
+		<div class="<?php echo $this->new > 0 ? 'c_success' : 'c_info'; ?>">
+			<ul>
+				<li><?php echo $this->new > 0 ? "<a href='{$this->url(array('controller'=>'messages', 'action'=>'inbox'), 'default', true)}'>".$this->translate->_("You have ")." {$this->new} ".$this->translate->_("new message!")."</a>" : $this->translate->_("No new messages"); ?></li>
+			</ul>
+		</div>
+		<br /><br />
+		<h3><?php echo $this->translate->_("Statistics"); ?></h3>
+		<br />
+		<table cellspacing="0" cellpadding="5" border="0" class="list">
+			<tr><th><?php echo $this->translate->_("Total received"); ?></th><td><?php echo $this->stats['inbox']; ?></td></tr>
+			<tr><th><?php echo $this->translate->_("Total sent"); ?></th><td><?php echo $this->stats['outbox']; ?></td></tr>
+			<tr><th><?php echo $this->translate->_("Total saved"); ?></th><td><?php echo $this->stats['drafts']; ?></td></tr>
+			<tr><th><?php echo $this->translate->_("Total messages"); ?></th><td><?php echo $this->stats['inbox'] + $this->stats['outbox'] + $this->stats['drafts']; ?></td></tr>
+		</table>
+	</div>
+</div>

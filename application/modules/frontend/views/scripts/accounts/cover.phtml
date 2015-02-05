@@ -1,0 +1,71 @@
+<?php include "menu.phtml"; $this->render('accounts/profile-picture.phtml'); ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Select or upload a cover picture"); ?></h1>
+		<div class="clear"><?php echo $this->translate->_("Choose one of our fabulous templates"); ?></div>
+		<div class="user-covers">
+			<?php $scover = $this->user->getCover(); ?>
+			<?php for($i = 1; $i < 10; $i++): ?>
+			<div <?php if($scover == $i): ?>class="selected"<?php endif; ?>>
+				<img alt="Cover <?php echo $i; ?>" src="/images/covers/small/0<?php echo $i; ?>.png" />
+				<a href="javascript:Cover.select(<?php echo $i; ?>)" id="<?php echo $i; ?>" class="select">
+					<span><?php echo $this->translate->_("Select"); ?></span>
+				</a>
+				<a href="javascript:Cover.open('0<?php echo $i; ?>.png')" class="magnify"><img src="/images/new/common/preview.png" /></a>
+			</div>
+			<?php endfor; ?>
+		</div>
+		<div class="clear"><?php echo $this->translate->_("Or upload your own image"); ?></div>
+		<?php echo $this->form; ?>
+	</div>
+</div>
+<script type="text/javascript">
+	var Cover = function() {
+
+		var open = function(file) {
+
+			var identity = 'dialog-picture',
+				path = '/images/covers/800px/';
+			
+	    	$('<div id="'+ identity +'" title="<?php echo $this->translate->_("View Picture"); ?>" class="ui-state-highlight">'+
+				'<div style="position: relative; margin: 8px 0px 8px 0px; width: 802px; overflow: hidden;">' +
+					'<div style="margin: 0 auto 0 auto; border: 1px solid #fff; background: #FFF;" id="main_entity">'+
+						'<img src="' + path + file + '" />'+
+					'</div>'+
+				'</div>'+
+			'</div>').dialog({
+				resizable: false,
+				modal: true,
+				autoOpen: false,
+				width: 825,
+				position: ['center', 25],
+				minHeight: 50,
+				buttons: [{
+					text: '<?php echo $this->translate->_('close'); ?>',
+					click: function() {
+						$(this).dialog("close");
+					}
+				}],
+				close: function() {
+					$("#"+ identity).remove();
+				},
+				open: function() {}
+			});
+
+			$("#"+ identity).dialog('open');
+		},
+
+		select = function(index, e) {
+			$(".user-covers > div").attr('class', '');
+			$(".user-covers > div a[id=" + index + "]").parent().attr('class', 'selected');
+			$("input[id=selected_cover]").val(index);
+		};
+		
+		// public
+		return {
+			open: open,
+			select: select
+		};
+	}();
+</script>

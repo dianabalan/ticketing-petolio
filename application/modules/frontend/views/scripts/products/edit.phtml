@@ -1,0 +1,115 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Edit Product"); ?></h1>
+		<br />
+		<?php echo $this->form; ?>
+	</div>
+</div>
+<script type="text/javascript">
+$.fn.extend({
+    getText: function() {
+        return this.contents().filter(function() { return this.nodeType == 3; }).text();
+    }
+});
+
+READY(function() {
+	var x = $("input.chzn-custom");
+
+	if(x.attr('title'))
+		x.data('placeholder', x.attr('title'));
+
+	x.chosen({
+		translate: Petolio.translateChosen(),
+		ajax: {
+			url: SITE_URL + "site/find/attribute/" + x.attr('attribute_id') + "/addall/true",
+			min_search: 2,
+			req_param: "search",
+			res_value: "value",
+			res_text: "text",
+			res_html: "text",
+			success_callback: function(v){
+				return v.results;
+			}
+		}
+	});
+
+	$("#product_species_chzn_shadow").change(function(e) {
+		var data = $("#product_species_chzn_shadow").val();
+		if(data && data.length > 0 && data.indexOf('0') > -1) {
+			$("#product_species_chzn_shadow").val(["0"]);
+			$("#product_species_chzn_shadow").trigger("liszt:updated");
+		}
+	});
+
+	x.next().css({float: 'left', marginLeft: '5px'});
+
+	// helper function
+	function number_format(number, decimals, dec_point, thousands_sep) {
+		number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
+		var n = !isFinite(+number) ? 0 : +number,
+			prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+			sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+			dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+			s = '',
+			toFixedFix = function (n, prec) {
+				var k = Math.pow(10, prec);
+				return '' + Math.round(n * k) / k;
+			};
+		// Fix for IE parseFloat(0.55).toFixed(0) = 0;
+		s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+		if (s[0].length > 3) {
+			s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+		}
+		if ((s[1] || '').length < prec) {
+			s[1] = s[1] || '';
+			s[1] += new Array(prec - s[1].length + 1).join('0');
+		}
+		return s.join(dec);
+	}
+
+	// price
+	$('input[id$="price1"], input[id$="price2"], input[id$="cost1"], input[id$="cost2"]').each(function() {
+		var self = $(this),
+			curr = ['invalid', 'euro', 'dollar'],
+			type = curr[self.attr('id').split(/ /)[0].replace(/[^\d]/g, '')],
+			first = type == 'euro' ? ',' : '.',
+    		second = type == 'euro' ? '.' : ',';
+
+		self.css({textAlign: 'right'});
+		if ( self.val().length > 0 )
+			self.val(number_format(self.val(), 2, first, second));
+	});
+
+	// switch price on submit
+	$('#submit').click(function(e) {
+		$('input[id$="price1"], input[id$="price2"], input[id$="cost1"], input[id$="cost2"]').each(function() {
+			if ( $(this).val().length > 0 ) {
+				$(this).val($(this).val().replace(',', '.'));
+			}
+		});
+	});
+
+	// legend management
+	$('label.description').each(function() {
+		var self = $(this),
+			txt = self.getText();
+
+		// not legend? skip
+		if(txt != '{{legend}}')
+			return false;
+
+		// add cluetip
+		self.html(
+			'<img rel="#help_types" src="/images/icons/question.png" class="cluetip" style="margin-top: -2px;" />'+
+			'<table class="tooltipinfo" style="display: none;" cellpadding="0" cellspacing="0" id="help_types">'+
+			'<tbody>'+
+			'<tr>'+
+				'<th valign="top"><?php echo $this->translate->_('Species'); ?></th>'+
+				'<td><?php echo $this->translate->_('All'); ?>, <?php echo implode(', ', $this->types); ?></td>'+
+			'</tr>'+
+		'</tbody></table>');
+	});
+});
+</script>

@@ -1,0 +1,26 @@
+<div class="pagination">
+	<span class="pageinfo">
+		<?php echo sprintf($this->translate->_('Showing %1$s - %2$s records from a total of %3$s'), $this->firstItemNumber, $this->lastItemNumber, $this->totalItemCount); ?>
+	</span>
+	<?php if(isset($this->next)): ?>
+		<a href="<?php echo $this->url(array('page' => $this->last)); ?>" title="Last" class="pagelast">&nbsp;</a>
+	<?php else: ?>
+		<span class="disabled pagelastoff" title="Last">&nbsp;</span>
+	<?php endif; ?>
+	<?php if(isset($this->next)): ?>
+		<a href="<?php echo $this->url(array('page' => $this->next)); ?>" title="Next" class="pagenext">&nbsp;</a>
+	<?php else: ?>
+		<span class="disabled pagenextoff" title="Next">&nbsp;</span>
+	<?php endif; ?>
+	<?php if(isset($this->previous)): ?>
+		<a href="<?php echo $this->url(array('page' => $this->previous)); ?>" title="Previous" class="pageprev">&nbsp;</a>
+	<?php else: ?>
+		<span class="disabled pageprevoff" title="Previous">&nbsp;</span>
+	<?php endif; ?>
+	<?php if(isset($this->previous)): ?>
+		<a href="<?php echo $this->url(array('page' => $this->first)); ?>" title="First" class="pagefirst">&nbsp;</a>
+	<?php else: ?>
+		<span class="disabled pagefirstoff" title="First">&nbsp;</span>
+	<?php endif; ?>
+	<div class="clear"></div>
+</div>

@@ -1,0 +1,107 @@
+<?php
+
+// figure out types
+function _types($s, $t, $self) {
+	if($s == 'po_services')
+		return $t == 0 ? $self->translate->_("Partnership") : $self->translate->_("Membership");
+	else
+		return '-';
+}
+
+?>
+<h1><a href="<?php echo $this->url(array("controller" => "attributes", "action" => "list-sets"), "admin", true); ?>"><?php echo $this->translate->_("Attributes"); ?></a> &raquo; <?php echo $this->translate->_("List Sets"); ?></h1>
+<div class="rbcontent" id="search_fields">
+	<form name="search" action="<?php echo $this->url; ?>" method="get">
+	<input type="hidden" name="order" id="order" value="<?php echo $this->order; ?>" />
+	<input type="hidden" name="dir" id="dir" value="<?php echo $this->dir; ?>" />
+	<table>
+	<col width="430" />
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Name"); ?>:</label>
+					<input type="text" name="name" value="<?php echo $this->name; ?>" />
+				</div>
+			</td>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Group"); ?>:</label>
+					<input type="text" name="group" value="<?php echo $this->group; ?>" />
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Scope"); ?>:</label>
+					<input type="text" name="scope" value="<?php echo $this->scope; ?>" />
+				</div>
+			</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Active"); ?>:</label>
+					<select name="active">
+						<option></option>
+						<option value="1" <?php echo $this->active == '1' ? 'selected="selected"' : ''; ?>><?php echo $this->translate->_("Yes"); ?></option>
+						<option value="0" <?php echo $this->active == '0' ? 'selected="selected"' : ''; ?>><?php echo $this->translate->_("No"); ?></option>
+					</select>
+				</div>
+			</td>
+			<td>
+				<div class="filter_item">
+					<label></label>
+					<input type="button" value="<?php echo $this->translate->_("Search"); ?>" data-type="submit" />
+					<input type="button" value="<?php echo $this->translate->_("Reset"); ?>" data-type="reset" />
+				</div>
+			</td>
+		</tr>
+	</table>
+	</form>
+</div>
+<?php if(count($this->sets) > 0): ?>
+	<?php echo $this->paginationControl($this->sets, 'Elastic', 'controls.phtml', array('translate' => $this->translate)); ?>
+	<table class="main">
+		<thead>
+			<tr>
+				<th class="<?php $col = "a.name"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Name"); ?></th>
+				<th class="<?php $col = "a.scope"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Scope"); ?></th>
+				<th class="<?php $col = "a.active"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Active"); ?></th>
+				<th class="<?php $col = "a.group_name"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Group Name"); ?></th>
+				<th class="<?php $col = "a.type"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Type"); ?></th>
+				<th class="<?php $col = "nr"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Attributes"); ?></th>
+				<th width="1%"></th>
+				<th width="1%"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach($this->sets as $set): ?>
+				<tr>
+					<td><a href="<?php echo $this->url(array('controller'=>'attributes', 'action'=>'edit-set', 'id'=> $set["id"]), 'admin', true); ?>"><?php echo Petolio_Service_Util::title_case(Petolio_Service_Util::Tr($set['name'])); ?></a></td>
+					<td><?php echo $set['scope']; ?></td>
+					<td><?php echo $set['active'] == 1 ? $this->translate->_("Yes") : $this->translate->_("No"); ?></td>
+					<td><?php echo Petolio_Service_Util::title_case(Petolio_Service_Util::Tr($set['group_name'])); ?></td>
+					<td><?php echo _types($set['scope'], $set['type'], $this); ?></td>
+					<td><a href="<?php echo $this->url(array('controller'=>'attributes', 'action'=>'list-attributes', 'id'=> $set["id"]), 'admin', true); ?>"><?php echo $set['nr']; ?></a></td>
+					<td nowrap="nowrap" style="text-align: center;"><a href="<?php echo $this->url(array('controller'=>'attributes', 'action'=>'edit-set', 'id'=> $set["id"]), 'admin', true); ?>"><?php echo $this->translate->_("Edit") ?></a></td>
+					<td nowrap="nowrap" style="text-align: center;"><a href="<?php echo $this->url(array('controller'=>'attributes', 'action'=>'delete-set', 'id'=> $set["id"]), 'admin', true); ?>" class="reqconf" title="<?php echo $this->translate->_("Are you sure you want to delete this attribute set?"); ?>"><?php echo $this->translate->_("Delete"); ?></a></td>
+				</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+	<?php echo $this->paginationControl($this->sets, 'Elastic', 'controls.phtml', array('translate' => $this->translate)); ?>
+<?php else: ?>
+	<div class="error"><?php echo $this->translate->_("No records found."); ?></div>
+<?php endif; ?>
+<form style="background: #fff;">
+	<input type="button" onclick="document.location='<?php echo $this->url(array('action' => 'add-set')); ?>';" class="submit" value="<?php echo $this->translate->_("Add set"); ?>" />
+	<div class="clear"></div>
+</form>
+<script type="text/javascript">
+	READY(function() {
+		Admin.loadJs('filters/base.js');
+		Filters.load('/attributes/list-sets');
+	});
+</script>

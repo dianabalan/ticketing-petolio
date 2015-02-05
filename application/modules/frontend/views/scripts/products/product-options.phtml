@@ -1,0 +1,87 @@
+<?php
+
+$this->placeholder('sidebar')->captureStart();
+$product_name = Petolio_Service_Parse::do_limit(ucfirst($this->product_attr['title']->getAttributeEntity()->getValue()), 20, false, true);
+
+// owner
+if($this->auth->hasIdentity() && $this->product->getUserId() == $this->auth->getIdentity()->id) {
+	$options = array(
+		array(
+			'link' => $this->url(array('controller'=>'products', 'action'=>'view', 'product'=>$this->product->getId()), 'default', true),
+			'name' => $this->translate->_("View product"),
+			'class' => 'lm-products_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'products', 'action'=>'edit', 'product'=>$this->product->getId()), 'default', true),
+			'name' => $this->translate->_("Edit product"),
+			'class' => 'lm-products_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'products', 'action'=>'pictures', 'product'=>$this->product->getId()), 'default', true),
+			'name' => $this->translate->_("Pictures"),
+			'class' => 'lm-products_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'products', 'action'=>'links', 'product'=>$this->product->getId()), 'default', true),
+			'name' => $this->translate->_("Links"),
+			'class' => 'lm-products_sm'
+		),
+		array(
+			'link'	=> $this->url(array('controller'=>'products', 'action'=>'archive', 'product'=>$this->product->getId()), 'default', true),
+			'name'  => $this->translate->_("Archive product"),
+			'title'	=> sprintf($this->translate->_("Are you sure you want to archive %s?"), $product_name),
+			'class'	=> 'lm-products_sm reqconf',
+		),
+		array(
+			'link' => $this->url(array('controller'=>'messages', 'action'=>'inbox', 'product'=>$this->product->getId()), 'default', true),
+			'name' => $this->translate->_("Product Messages"),
+			'class' => 'lm-products_sm'
+		),
+	);
+
+// not owner
+} else {
+	$options = array(
+		array(
+			'link' => $this->url(array('controller'=>'products', 'action'=>'view', 'product'=>$this->product->getId()), 'default', true),
+			'name' => $this->translate->_("View product"),
+			'class' => 'lm-products_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'accounts', 'action'=>'view', 'user'=>$this->product->getUserId()), 'default', true),
+			'name' => $this->translate->_("View Owner's Profile"),
+			'class' => 'lm-products_sm'
+		)
+	);
+}
+
+// link mastery
+$links = null;
+foreach($options as $link) {
+	$id = $class = $rel = null;
+	$name = $link['name'];
+
+	if(isset($link['id']))
+		$id = " id='{$link['id']}'";
+
+	if(isset($link['class'])) {
+		if (isset($link['title']) && strlen($link['title']) > 0)
+			$ttl = "title='{$link['title']}'";
+		else
+			$ttl = "title='{$link['name']}'";
+
+		$class = " class='{$link['class']}' {$ttl}";
+		$name = "{$link['name']}";
+	}
+
+	if(isset($link['rel']))
+		$rel = " rel='{$link['rel']}'";
+
+	$links .= "<li><a href='{$link['link']}'{$id}{$class}{$rel}>{$name}</a></li>";
+}
+
+?>
+<h3><?php echo $this->translate->_("Options"); ?></h3>
+<ul class="leftsubmenu" data-context="true"><?php echo $links; ?></ul>
+<div class="clear">&nbsp;</div>
+<?php $this->placeholder('sidebar')->captureEnd(); ?>

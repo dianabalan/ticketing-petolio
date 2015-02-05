@@ -1,0 +1,14 @@
+<?php include "menu.phtml"; $service_name = ucfirst($this->attributes['name']->getAttributeEntity()->getValue()); ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Request Membership"); ?></h1>
+		<br />
+		<div>
+			<label for="captcha_picture"><?php echo $this->translate->_("Service")?></label>
+			<input type="text"  value="<?php echo $service_name; ?>" disabled="disabled" style="background: none; border: none; padding: 6px 0px 4px;">
+			<div class="cls"></div>
+		</div>
+		<?php echo $this->form; ?>
+	</div>
+</div>

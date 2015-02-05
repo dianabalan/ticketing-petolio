@@ -1,0 +1,167 @@
+<?php $product_name = ucfirst($this->product_attr['title']->getAttributeEntity()->getValue()); ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title><?php echo $this->translate->_('Print Product'); ?></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<style type="text/css">
+		body {
+			font-family: Verdana;
+			font-size: 11px;
+		}
+
+		.red { color: red !important; }
+		.green { color: green !important; }
+		.orange { color: orange !important; }
+		.grey { color: #999 !important; }
+
+		div.wrap {
+			width: 600px;
+			margin: 20px auto 0px auto;
+			border: 1px solid #ddd;
+			padding: 10px;
+		}
+			h1 {
+				padding: 3px;
+				margin: 0px 0px 5px 0px;
+				float: left;
+			}
+
+			h2 {
+				padding: 3px;
+				margin: 6px 0px 0px 0px;
+				float: right;
+			}
+
+			h3 {
+				padding: 3px;
+				margin: 0px 0px 0px 0px;
+				float: left;
+			}
+
+			.clear {
+				clear: both;
+				border-bottom: 1px solid #ddd;
+				margin: 0px 3px 10px 3px;
+			}
+
+			.cls {
+				clear: both;
+				border-bottom: 1px dashed #ddd;
+				margin: 0px 3px 10px 3px;
+			}
+
+			.links {
+				white-space: nowrap;
+				width: 594px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				padding: 3px;
+			}
+
+			table.list th {
+				text-align: right;
+				white-space: nowrap;
+				vertical-align: top;
+				padding: 2px 10px 2px 2px;
+				border-right: 1px solid #ddd;
+				width: 130px;
+			}
+
+			table.list td {
+				padding: 2px 2px 2px 10px;
+			}
+	</style>
+</head>
+<body onload="window.print();">
+	<div class="wrap">
+		<h1><?php echo $product_name; ?></h1>
+		<h2><?php echo Petolio_Service_Util::formatDate(time(), Petolio_Service_Util::MEDIUMDATE, true, true); ?></h2>
+		<div class="clear"></div>
+		<h3><?php echo $this->translate->_("Contact"); ?></h3>
+		<div class="cls"></div>
+		<table cellspacing="0" cellpadding="5" border="0" class="list">
+			<tr>
+				<th><?php echo $this->translate->_("Owner"); ?></th>
+				<td><a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user'=>$this->product->getUserId()), 'default', true); ?>"><?php echo $this->product->getOwner()->getName(); ?></a></td>
+			</tr>
+			<?php if($this->cell && $this->product->getOwner()->getPhone()) { ?>
+				<tr>
+					<th style="width: 80px;"><?php echo $this->translate->_("Cell Phone"); ?></th>
+					<td><?php echo $this->product->getOwner()->getPhone(); ?></td>
+				</tr>
+			<?php } if($this->address) {
+				// compile address
+				$compiled = null;
+				if($this->translate->getLocale() == 'en') {
+					$compiled .= $this->product->getOwner()->getAddress().' '.$this->product->getOwner()->getLocation().' '.$this->product->getOwner()->getZipCode();
+					if(strlen($this->product->getOwner()->getAddress()) > 0 || strlen($this->product->getOwner()->getLocation()) > 0) {
+						if(strlen(@$this->country_list[$this->product->getOwner()->getCountryId()]) > 0)
+							$compiled .= ', ';
+					}
+					$compiled .= @$this->country_list[$this->product->getOwner()->getCountryId()];
+				} else {
+					$compiled .= $this->product->getOwner()->getZipCode().' '.$this->product->getOwner()->getAddress();
+					if(strlen($this->product->getOwner()->getZipCode()) > 0 || strlen($this->product->getOwner()->getAddress()) > 0) {
+						if(strlen($this->product->getOwner()->getLocation()) > 0)
+							$compiled .= ', ';
+					}
+					$compiled .= $this->product->getOwner()->getLocation();
+					if(strlen($this->product->getOwner()->getLocation()) > 0 || strlen($this->product->getOwner()->getZipCode()) > 0 || strlen($this->product->getOwner()->getAddress()) > 0) {
+						if(strlen(@$this->country_list[$this->product->getOwner()->getCountryId()]) > 0)
+							$compiled .= ', ';
+					}
+					$compiled .= @$this->country_list[$this->product->getOwner()->getCountryId()];
+				}
+			} if(isset($compiled) && strlen(trim($compiled)) > 0) { ?>
+				<tr>
+					<th style="width: 80px;"><?php echo $this->translate->_("Address"); ?></th>
+					<td><?php echo $compiled; ?></td>
+				</tr>
+			<?php } ?>
+		</table>
+		<br />
+		<?php if(isset($this->attrs['pricing'])): ?>
+			<h3><?php echo $this->translate->_("Pricing"); ?></h3>
+			<div class="cls"></div>
+			<table cellspacing="0" cellpadding="5" border="0" class="list">
+				<?php foreach($this->attrs['pricing'] as $label => $price): ?>
+					<tr>
+			    		<th><?php echo $label; ?></th>
+			    		<td><?php echo implode(', ', $price); ?></td>
+					</tr>
+				<?php endforeach; ?>
+			</table>
+			<br />
+		<?php endif; ?>
+		<h3><?php echo $this->translate->_("Details"); ?></h3>
+		<div class="cls"></div>
+		<table cellspacing="0" cellpadding="5" border="0" class="list">
+			<?php foreach($this->attrs['details'] as $label => $value): ?>
+				<tr>
+					<th><?php echo $label; ?></th>
+					<td><?php echo $value; ?></td>
+				</tr>
+			<?php endforeach; ?>
+		</table>
+		<br />
+		<?php if($this->product->getLinks()) { ?>
+		    <h3><?php echo $this->translate->_("Links"); ?></h3>
+			<div class="cls"></div>
+		    <div class="links">
+				<?php foreach(unserialize($this->product->getLinks()) as $link) { ?>
+		    		<a target="_blank" href="<?php echo $link; ?>"><?php echo $link; ?></a><br />
+		        <?php } ?>
+		    </div>
+		    </table>
+		<?php } ?>
+		<br />
+		<?php if(isset($this->attrs['description'])) { ?>
+		    <h3><?php echo $this->translate->_("Description"); ?></h3>
+			<div class="cls"></div>
+			<?php echo reset($this->attrs['description']); ?>
+		<?php } ?>
+	</div>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<h1><a href="<?php echo $this->url(array("controller" => "news", "action" => "index"), "admin", true); ?>"><?php echo $this->translate->_("News"); ?></a> &raquo; <?php echo $this->translate->_("List News Sources"); ?></h1>
+<div class="rbcontent" id="search_fields">
+	<form name="search" action="<?php echo $this->url; ?>" method="get">
+	<input type="hidden" name="order" id="order" value="<?php echo $this->order; ?>" />
+	<input type="hidden" name="dir" id="dir" value="<?php echo $this->dir; ?>" />
+	<table>
+	<col width="430" />
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Title"); ?>:</label>
+					<input type="text" name="title" value="<?php echo $this->title; ?>" />
+				</div>
+			</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Url"); ?>:</label>
+					<input type="text" name="url" value="<?php echo $this->url; ?>" />
+				</div>
+			</td>
+			<td>
+				<div class="filter_item">
+					<label></label>
+					<input type="button" value="<?php echo $this->translate->_("Search"); ?>" data-type="submit" />
+					<input type="button" value="<?php echo $this->translate->_("Reset"); ?>" data-type="reset" />
+				</div>
+			</td>
+		</tr>
+	</table>
+	</form>
+</div>
+<?php if(count($this->news) > 0): ?>
+	<?php echo $this->paginationControl($this->news, 'Elastic', 'controls.phtml', array('translate' => $this->translate)); ?>
+	<table class="main">
+		<thead>
+			<tr>
+				<th class="<?php $col = "title"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Title"); ?></th>
+				<th class="<?php $col = "url"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Url"); ?></th>
+				<th class="<?php $col = "date_created"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Created on"); ?></th>
+				<th class="<?php $col = "date_cached"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Synced on"); ?></th>
+				<th width="1%"></th>
+				<th width="1%"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach($this->news as $new): ?>
+				<tr>
+					<td><?php echo $new['title']; ?></td>
+					<td><a href="<?php echo $new['url']; ?>" target="_blank"><?php echo $new['url']; ?></a></td>
+					<td><?php echo Petolio_Service_Util::formatDate($new["date_created"], null, true, true); ?></td>
+					<td><?php echo $new["date_cached"] == 0 ? $this->translate->_("Never Synced") : Petolio_Service_Util::formatDate($new["date_cached"], null, true, true); ?></td>
+					<td nowrap="nowrap" style="text-align: center;"><a href="<?php echo $this->url(array('controller'=>'news', 'action'=>'resync', 'id'=> $new["id"]), 'admin', true); ?>"><?php echo $this->translate->_("Resync") ?></a></td>
+					<td nowrap="nowrap" style="text-align: center;"><a href="<?php echo $this->url(array('controller'=>'news', 'action'=>'delete', 'id'=> $new["id"]), 'admin', true); ?>"><?php echo $this->translate->_("Delete") ?></a></td>
+				</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+	<?php echo $this->paginationControl($this->news, 'Elastic', 'controls.phtml', array('translate' => $this->translate)); ?>
+<?php else: ?>
+	<div class="error"><?php echo $this->translate->_("No records found."); ?></div>
+<?php endif; ?>
+<form style="background: #fff;">
+	<input type="button" onclick="document.location='<?php echo $this->url(array('action' => 'add')); ?>';" class="submit" value="<?php echo $this->translate->_("Add Source"); ?>" />
+	<div class="clear"></div>
+</form>
+<script type="text/javascript">
+	READY(function() {
+		Admin.loadJs('filters/base.js');
+		Filters.load('/news/index');
+	});
+</script>

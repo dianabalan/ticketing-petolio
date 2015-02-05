@@ -1,0 +1,94 @@
+<div class="up leftbox mypetolio">
+	<h3><?php echo $this->translate->_("Meet2Chat"); ?></h3>
+	<div style="padding: 0px 10px 10px 10px;">
+		<h3><?php echo $this->translate->_("Live"); ?></h3>
+		<div class="fivepx"></div>
+		<?php if(count($this->live) > 0): ?>
+			<div style="width: auto; margin-top: -10px;">
+				<?php foreach($this->live as $one): ?>
+					<div>
+						<div class="open_chat" id="chat_<?php echo $one['id']; ?>" style="cursor: pointer;">
+							<div style="border-radius: 5px; padding: 8px; font-size: 13px; font-weight: bold; color: #fff; text-align: center; background: #74A428;"><?php echo $one['title']; ?></div>
+							<div class="right"><div style="border-radius: 0px 0px 5px 5px; padding: 5px 8px 5px 0px; font-size: 13px; font-weight: bold; /* color: #fff; */ text-align: center; background: #fff;"><?php echo $one['formatted_start']; ?></div></div>
+							<div class="clear"></div>
+						</div>
+						<div class="right"><input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'chat', 'action' => 'view', 'id' => $one['id']), 'default', true) ?>');" type="button" value="<?php echo $this->translate->_("Enter now !"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+						<div class="clear"></div><div class="fivepx"></div><div class="fivepx"></div>
+					</div>
+				<?php endforeach; ?>
+			</div>
+			<div class="clear"></div>
+		<?php else: ?>
+			<b class="red bigger"><?php echo $this->translate->_("Right now, there are no live chats."); ?></b>
+		<?php endif; ?>
+	</div>
+	<div style="background: #74a428; height: 5px;"></div>
+	<br />
+	<div>
+		<h3><?php echo $this->translate->_("Future Chats"); ?></h3>
+		<div style="padding: 0px 10px 10px 10px;">
+			<div class="fivepx"></div>
+			<?php if(count($this->future) > 0): ?>
+				<?php foreach($this->future as $one): ?>
+					<div class="open_chat" id="chat_<?php echo $one['id']; ?>" style="cursor: pointer;">
+						<div style="border-radius: 5px; padding: 8px; font-size: 13px; font-weight: bold; color: #fff; text-align: center; background: #74A428;"><?php echo $one['title']; ?></div>
+						<div class="right"><div style="border-radius: 0px 0px 5px 5px; padding: 5px 8px 5px 0px; font-size: 13px; font-weight: bold; text-align: center; background: #fff;"><?php echo $one['formatted_start']; ?></div></div>
+						<div class="clear"></div>
+					</div>
+					<div class="tenpx"></div>
+				<?php endforeach; ?>
+				<?php if($this->future_count > 2): ?>
+					<div class="right"><input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'events'), 'default', true) ?>');" type="button" value="<?php echo $this->translate->_("Show More"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+					<div class="clear"></div>
+				<?php endif; ?>
+			<?php else: ?>
+				<b class="red bigger" style="padding: 0px 10px 10px 10px;"><?php echo $this->translate->_("No future chats found."); ?></b>
+			<?php endif; ?>
+		</div>
+	</div>
+	<div class="clear"></div>
+</div>
+<?php include_once "../application/modules/frontend/views/scripts/calendar/init.phtml"; ?>
+<script type="text/javascript">
+	var ChatData = <?php echo json_encode(array_merge($this->live, ($this->future ? $this->future : array()))); ?>;
+	var Chat = function() {
+		function find(id) {
+			var f = null;
+			$.each(ChatData, function(s, i){
+				if(i.pid == id) {
+					f = i;
+					return false;
+				}
+			});
+
+			return f;
+		};
+
+		function randomXToY(minVal, maxVal, floatVal) {
+			var randVal = minVal + (Math.random() * (maxVal - minVal));
+			return typeof floatVal == 'undefined' ? Math.round(randVal) : randVal.toFixed(floatVal);
+		};
+
+		function glow(e) {
+			$(e).fadeOut(randomXToY(800, 1200), function() {
+				$(e).fadeIn(randomXToY(500, 1000), function() {
+					glow(e);
+				});
+			});
+		};
+
+		function listen() {
+			$('div.open_chat').click(function(e) {
+				e.preventDefault();
+				console.log(find($(this).attr('id').substr(5)));
+				Calendar.eventClick(find($(this).attr('id').substr(5)));
+	    	});
+		};
+
+		return {
+			listen: listen
+		};
+	}();
+
+	READY(Chat.listen);
+</script>

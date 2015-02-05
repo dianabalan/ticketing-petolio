@@ -1,0 +1,144 @@
+<?php include "menu.phtml"; $pet_name = ucfirst($this->pet_attr['name']->getAttributeEntity()->getValue()); ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in">
+			<a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a>
+			<?php if($this->admin): ?><a href="<?php echo $this->url(array('controller'=>'diary', 'action'=>'add-subentries', 'id' => $this->diary_record->getId()), 'default', true); ?>" class="icon_link appointment" title="<?php echo $this->translate->_('New'); ?>"><span><?php echo $this->translate->_('New'); ?></span></a><?php endif; ?>
+			<a href="<?php echo $this->url(array('controller'=>'diary', 'action'=>'export', 'id' => $this->diary_record->getId()), 'default', true); ?>" class="icon_link pdf" title="<?php echo $this->translate->_('Export'); ?>"><span><?php echo $this->translate->_('Export'); ?></span></a>
+			<?php if($this->admin): ?><a href="<?php echo $this->url(array('controller'=>'diary', 'action'=>'send', 'id' => $this->diary_record->getId()), 'default', true); ?>" class="icon_link send" title="<?php echo $this->translate->_('Send'); ?>"><span><?php echo $this->translate->_('Send'); ?></span></a><?php endif; ?>
+		</div></div>
+		<img src="/images/notes/diary.png" style="float: left;" />
+		<h3 style="float: left; padding-left: 5px;"><?php echo $this->translate->_('Diary Record'); ?></h3>
+		<div class="clear"></div>
+		<br />
+		<table cellspacing="0" cellpadding="5" border="0" class="list">
+			<tr>
+				<th colspan="2"><h3><?php echo $this->diary_record->getTitle(); ?></h3></th>
+			</tr>
+			<tr>
+				<th><?php echo $this->translate->_('Pet name:')?></th>
+				<td><a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'view', 'pet' => $this->diary_record->getPetId()), 'default', true); ?>"><?php echo $pet_name; ?></a></td>
+			</tr>
+			<tr>
+				<th><?php echo $this->translate->_('Written by:')?></th>
+				<td><a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $this->owner->getId()), 'default', true); ?>"><?php echo $this->owner->getName(); ?></a></td>
+			</tr>
+			<tr>
+				<th><?php echo $this->translate->_('Description:')?></th>
+				<td style="line-height: 18px;"><?php echo html_entity_decode($this->diary_record->getDescription()); ?></td>
+			</tr>
+			<?php if($this->admin): ?>
+				<tr><td colspan="2">
+					<div class="left">
+						<input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'diary', 'action'=>'edit', 'id'=>$this->diary_record->getId()), 'default', true); ?>');" type="button" value="<?php echo $this->translate->_("Edit Record >"); ?>" id="submit" name="edit" style="margin: 0px 5px 0px 0px;" />
+						<input href="<?php echo $this->url(array('controller'=>'diary', 'action'=>'delete', 'id'=>$this->diary_record->getId()), 'default', true); ?>" type="button" value="<?php echo $this->translate->_("Delete Record"); ?>" id="submit" name="delete" style="margin: 0px;" class="reqconf" title="<?php echo $this->translate->_("Delete Record?"); ?>" />
+						<div class="clear"></div>
+					</div>
+				</td></tr>
+			<?php endif; ?>
+			<tr><td style="padding: 0px; height: 5px; background: #66a652;" colspan="4"></td></tr>
+		</table>
+		<?php if(isset($this->subentries) && count($this->subentries) > 0): ?>
+			<br /><br />
+			<h1><?php echo $this->translate->_('Diary Record Subentries'); ?></h1>
+			<br />
+			<table cellspacing="0" cellpadding="5" border="0" class="list" style="width: 665px; float: right;">
+			<?php foreach($this->subentries as $subentry):
+				// default picture
+				$picture = "/images/no-pet.jpg";
+				$found = false;
+
+				// picture control
+				if(isset($this->pictures[$subentry->getId()]) && count($this->pictures[$subentry->getId()]) > 0) {
+					$found = true;
+
+					// get first picture
+					$first = reset($this->pictures[$subentry->getId()]);
+					$picture = "/images/userfiles/pets/{$this->pet->getId()}/diary records/{$this->diary_record->getTitle()}/{$subentry->getDate()}/thumb_{$first->getFile()}";
+				} ?>
+				<tr>
+					<th colspan="2">
+						<h3 style="position: relative; overflow: visible;">
+							<img src="<?php echo $picture; ?>" style="position: absolute; top: -6px; left: -140px; background: #fff; border: 1px solid #a2a2a2; padding: 1px; border-radius: 4px; <?php echo $found ? '' : 'width: 120px; height: 80px;'; ?>" />
+							<?php echo Petolio_Service_Util::formatDate($subentry->getDate(), Petolio_Service_Util::MEDIUMDATE, false); ?>
+						</h3>
+					</th>
+				</tr>
+				<tr>
+					<th><?php echo $this->translate->_('Description:')?></th>
+					<td style="line-height: 18px;"><?php echo html_entity_decode($subentry->getDescription()); ?></td>
+				</tr>
+				<?php if(isset($this->pictures[$subentry->getId()]) && count($this->pictures[$subentry->getId()]) > 0): ?>
+					<tr>
+						<th><?php echo $this->translate->_('Pictures:')?></th>
+						<td>
+						    <div class="pictures" style="width: 550px; margin-right: -7px;">
+								<?php foreach($this->pictures[$subentry->getId()] as $pic): ?>
+									<div class="pic">
+										<span class="img" rel="<?php echo $pic->getId(); ?>" style="background: #000 url('/images/userfiles/pets/<?php echo $this->pet->getId(); ?>/diary records/<?php echo $this->diary_record->getTitle(); ?>/<?php echo $subentry->getDate(); ?>/small_<?php echo $pic->getFile(); ?>') center center no-repeat;"></span>
+									</div>
+								<?php endforeach; ?>
+								<div class="clear"></div>
+							</div>
+						    <div class="clear"></div>
+						</td>
+					</tr>
+				<?php endif; ?>
+				<?php if(isset($this->videos[$subentry->getId()]) && count($this->videos[$subentry->getId()]) > 0): ?>
+					<tr>
+						<th><?php echo $this->translate->_('Videos:')?></th>
+						<td>
+						    <div class="pictures" style="width: 550px; margin-right: -7px;">
+								<?php foreach($this->videos[$subentry->getId()] as $video): ?>
+									<?php
+										// get video entity
+										$entity = $video->getMapper();
+
+										// get video thumbnail
+										$thumbs = $entity->getVideoThumbnails();
+										$thumbnail = $thumbs[1]['url'];
+
+										// get video duration
+										$duration = date("i:s", $entity->getVideoDuration());
+									?>
+									<div class="pic">
+										<span class="vid" rel="<?php echo $video->getId(); ?>" style="background: #000 url('<?php echo $thumbnail; ?>') center center no-repeat;"></span>
+										<span class="duration"><?php echo $duration; ?></span>
+									</div>
+								<?php endforeach; ?>
+								<div class="clear"></div>
+							</div>
+							<div class="clear"></div>
+						</td>
+					</tr>
+				<?php endif; ?>
+				<?php if($subentry->getOwnerId() == $this->auth->getIdentity()->id): ?>
+					<tr><td colspan="4">
+						<div class="left">
+							<input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'diary', 'action'=>'edit-subentry', 'id'=>$subentry->getId()), 'default', true); ?>');" type="button" value="<?php echo $this->translate->_("Edit Subentry >"); ?>" id="submit" name="edit" style="margin: 0px 5px 0px 0px;" />
+							<input href="<?php echo $this->url(array('controller'=>'diary', 'action'=>'delete-subentry', 'id'=>$subentry->getId()), 'default', true); ?>" type="button" value="<?php echo $this->translate->_("Delete Subentry"); ?>" id="submit" name="delete" style="margin: 0px;" class="reqconf" title="<?php echo $this->translate->_("Delete Subentry?"); ?>" />
+							<div class="clear"></div>
+						</div>
+					</td></tr>
+				<?php endif; ?>
+				<tr><td style="padding: 0px; height: 5px; background: #66a652;" colspan="4"></td></tr>
+			<?php endforeach; ?>
+			</table>
+			<div class="clear"></div>
+		<?php endif; ?>
+	</div>
+	<div class="rightbox" style="padding: 0px; border: 0px;">
+		<?php if(isset($_SERVER['HTTP_REFERER']) && (strpos($_SERVER['HTTP_REFERER'], 'diary/index') !== false || strpos($_SERVER['HTTP_REFERER'], 'site/view-notes') !== false  || strpos($_SERVER['HTTP_REFERER'], 'site/view-all-notes') !== false)): ?>
+			<div class="left"><input onclick="Petolio.go('<?php echo $_SERVER['HTTP_REFERER']; ?>');" type="button" value="<?php echo $this->translate->_("< Back to List"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+		<?php else: ?>
+			<div class="left"><input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'diary', 'action'=>'index', 'pet'=>$this->pet->getId()), 'default', true) ?>');" type="button" value="<?php echo $this->translate->_("< Back to List"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+		<?php endif; ?>
+		<div class="left"><input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'diary', 'action'=>'add-subentries', 'id' => $this->diary_record->getId()), 'default', true); ?>');" type="button" value="<?php echo $this->translate->_("Create new Subentry"); ?>" id="submit" name="prev" style="margin: 0px 0px 0px 5px;"><div class="clear"></div></div>
+		<div class="clear"></div>
+	</div>
+</div>
+<?php $imgsw_path = array(
+	'image' => "/images/userfiles/pets/{$this->pet->getId()}/diary records/{$this->diary_record->getTitle()}/{parent}/{image}",
+	'audio' => "/images/userfiles/pets/{$this->pet->getId()}/audios/{audio}",
+	'video' => "http://www.youtube.com/embed/{video}"
+); include "../application/modules/frontend/views/scripts/imgsw.phtml"; ?>

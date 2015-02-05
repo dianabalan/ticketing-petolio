@@ -1,0 +1,27 @@
+<?php if($this->entry['attached']['self'] || $this->entry['attached']['all_ratings'] > 0): ?>
+	<div style="z-index: 10;">
+		<span></span>
+		<div>
+			<i></i>
+			<?php 
+				if ( $this->entry['attached']['self'] != false && intval($this->entry['attached']['all_ratings']) ) {
+					$pattern = $this->translate->ngettext('You and %1$s %2$s like this.', 'You and %1$s %2$s likes this.', intval($this->entry['attached']['all_ratings']));
+				} elseif ( $this->entry['attached']['self'] != false ) {
+					$pattern = $this->translate->_("You like this.");
+				} else {
+					$pattern = $this->translate->ngettext('%1$s %2$s like this.', '%1$s %2$s likes this.', intval($this->entry['attached']['all_ratings']));
+				}
+			
+				echo str_replace(array(
+					'%1$s %2$s',
+					'%1$s'
+				), array(
+					'<a href="javascript:void(0);" name="rating_view">%1$s ' . ($this->entry['attached']['all_ratings'] == 1 ? $this->translate->_('person') : $this->translate->_('people')) . '</a>',
+					$this->entry['attached']['all_ratings']
+				), $pattern);
+			?>
+			<div class="clear"></div>
+		</div>
+		<em></em>
+	</div>
+<?php endif; ?>

@@ -1,0 +1,18 @@
+<?php include "menu.phtml"; $this->render('accounts/profile-picture.phtml'); ?>
+<div id="right">
+
+	<?php
+		if ($this->user->getType() == 1):
+			include 'view-pet-owner.phtml';
+		else:
+			include 'view-service-provider.phtml';
+			/* include 'view-profile.phtml';
+			if($this->microsite) include 'view-microsite.phtml';
+			if($this->yourServices->getTotalItemCount() > 0) include 'view-services.phtml';
+			if($this->yourPets->getTotalItemCount() > 0) include 'view-pets.phtml';
+			if($this->auth->hasIdentity() && isset($this->your_events) && count($this->your_events) > 0) include 'view-events.phtml';
+			if($this->auth->hasIdentity()) include 'view-dashboard.phtml'; */
+		endif;
+	?>
+
+</div>

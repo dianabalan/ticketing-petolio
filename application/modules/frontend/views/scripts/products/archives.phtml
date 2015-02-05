@@ -1,0 +1,49 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->title; ?></h1>
+		<br />
+		<?php if(isset($this->products) && count($this->products) > 0): ?>
+			<?php echo $this->paginationControl($this->products, 'Elastic', 'pagination-controls.phtml', array('pos' => 'top')); ?>
+			<div id="pin-container">
+				<?php
+					foreach($this->products as $product):
+					    echo $this->partial('product-template.phtml', array(
+							'countries' => $this->country_list,
+				        	'translate' => $this->translate,
+				        	'data' => $product,
+					    	'links' => array(array(
+				    			'class' => 'restore reqconf',
+				    			'title' => sprintf($this->translate->_("Are you sure you want to restore %s?"), $product['title']),
+				    			'url' => $this->url(array('controller'=>'products', 'action'=>'restore', 'product' => $product["id"]), 'default', true)
+				    		)),
+				    		'allow' => false
+			    		));
+					endforeach;
+				?>
+			</div>
+			<div class="clear"></div>
+			<?php echo $this->paginationControl($this->products, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot')); ?>
+		<?php else: ?>
+			<b class="red bigger"><?php echo $this->translate->_("No products found."); ?></b>
+		<?php endif; ?>
+	</div>
+</div>
+<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/jquery/masonry.pkgd.min.js'); ?>"></script>
+<script type="text/javascript">
+	READY(function() {
+		var $container = $('#pin-container');
+
+		// initialize
+		$container.masonry({
+			itemSelector: '.product-item',
+			gutter: 7,
+		});
+
+		// redraw the layout after all the images were loaded
+		$(window).load(function() {
+			$container.masonry();
+		});
+	});
+</script>
