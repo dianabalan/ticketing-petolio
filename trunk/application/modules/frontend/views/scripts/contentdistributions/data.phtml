@@ -1,0 +1,132 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Select data for the content distribution"); ?></h1>
+		<?php if(isset($this->errors) && count($this->errors) > 0 ): ?>
+			<br />
+			<div class="c_error">
+				<ul>
+					<?php foreach($this->errors as $idx => $error): ?>
+						<li><?php echo $error; ?></li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+		<?php endif; ?>
+		<br />
+		<form name="data_selection" action="" method="post">
+			<input type="hidden" name="distribution" value="<?php echo $this->distribution->getId(); ?>" />
+			<?php if($this->distribution_attributes['data']->getAttributeEntity()->getValue() == 'Select categories'): ?>
+				<table style="margin: 0px auto; width: 450px;">
+					<tr>
+						<?php $i = 0; foreach($this->categories as $category):
+							$i++;
+							$checked = '';
+							if(in_array($category['id'], $this->selected_data))
+								$checked = 'checked="checked"';
+
+							if($i % 2) echo "</tr><tr>";
+							echo "<td style=\"padding: 5px;\">";
+							echo '<input type="checkbox" name="data[]" value="'.$category['id'].'" class="small-left" '.$checked.' />';
+							echo "<a href=\"{$this->url(array('controller'=>'pets', 'action'=>'mypets', 'species'=>$category['id']), 'default', true)}\" class=\"category\">{$category['name']}</a>";
+							echo "<span class=\"count\">({$category['pet_count']})</span></td>";
+						endforeach; ?>
+					</tr>
+				</table>
+				<hr />
+				<table cellpadding="0" cellspacing="0" style="width: 675px;"><tr><td align="center">
+					<input type="submit" name="submit" id="submit" value="<?php echo $this->translate->_("Submit"); ?>" style="margin: 0px auto; float: none;" />
+				</td></tr></table>
+			<?php else: ?>
+				<div id="pin-container">
+					<?php foreach($this->yours as $pet):
+						echo $this->partial('pet-template.phtml', array(
+				        	'translate' => $this->translate,
+				        	'pet' => $pet,
+							'sp' => ($this->identity && $this->identity->type == 2 && $pet['user_id'] != $this->identity->id),
+				    		'allow' => true,
+				    		'selection' => true,
+				    		'selection_data' => $this->selected_data,
+				    		'links' => array(array(
+				    			'class' => 'delete reqconf',
+				    			'title' => sprintf($this->translate->_("Are you sure you want to archive %s?"), $pet['name']),
+				    			'url' => $this->url(array('controller'=>'pets', 'action'=>'archive', 'pet' => $pet["id"]), 'default', true)
+				    		), array(
+				    			'class' => 'edit',
+				    			'title' => $this->translate->_("Edit")." {$pet['name']}",
+								'url' => $this->url(array('controller'=>'pets', 'action'=>'edit', 'pet' => $pet["id"]), 'default', true)
+				    		))
+				    	));
+					endforeach; ?>
+				</div>
+				<?php echo $this->paginationControl($this->yours, 'Elastic', 'pagination-controls.phtml'); ?>
+				<div class="cl tenpx"></div>
+				<div class="left"><input onclick="document.location='<?php echo $this->url(array('controller'=>'contentdistributions', 'action'=>'index'), 'default', true); ?>';" type="button" value="<?php echo $this->translate->_("Finish"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+				<div class="clear"></div>
+			<?php endif; ?>
+		</form>
+	</div>
+</div>
+<?php include "../application/modules/frontend/views/scripts/plus.phtml"; ?>
+<script type="text/javascript">
+	var Selection = function() {
+		var store = {
+			distribution: '<?php echo $this->distribution->getId(); ?>'
+
+		// select
+		}, _select = function(add, pet) {
+	    	Petolio.showLoading();
+	    	Petolio.ajax({
+				url: 'contentdistributions/data-add-remove',
+				type: 'post',
+				data: {distribution: store.distribution, data: pet, add: add},
+				cache: false,
+				success: function (x) {
+					Petolio.hideLoading();
+				}
+			});
+
+	    // bind events
+		}, _bind = function() {
+			// on selection
+			$('a.data-selection').click(function() {
+				var checkbox = $(this).closest("tr").find('input');
+				checkbox.prop('checked', !checkbox.prop('checked'));
+				_select(checkbox.prop('checked'), checkbox.val());
+			});
+
+			// on checkbox state change
+			$('input.data-check').change(function() {
+				_select($(this).prop('checked'), $(this).val());
+			});
+
+		// construct
+		}, __construct = function() {
+			_bind();
+		};
+
+		// public, yay
+		return {
+			init: __construct
+		};
+	}();
+
+READY(Selection.init);
+</script>
+<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/jquery/masonry.pkgd.min.js'); ?>"></script>
+<script type="text/javascript">
+	READY(function() {
+		var $container = $('#pin-container');
+
+		// initialize
+		$container.masonry({
+			itemSelector: '.pet-item',
+			gutter: 7,
+		});
+
+		// redraw the layout after all the images were loaded
+		$(window).load(function() {
+			$container.masonry();
+		});
+	});
+</script>

@@ -1,0 +1,73 @@
+<?php
+	if ($this->user->getCover() && strlen($this->user->getCover()) > 1) {
+		$cover = "/images/userfiles/avatars/".$this->user->getId()."/".$this->user->getCover();
+	} elseif (strlen($this->user->getCover()) == 1) {
+		$cover = "/images/covers/800px/0".$this->user->getCover().".png";
+	} else {
+		$cover = "/images/covers/800px/0".rand(1, 9).".png";
+	}
+	
+	// links
+	if($this->admin) {
+		$mail = $this->url(array('controller'=>'messages', 'action'=>'inbox'), 'default', true);
+		$mail_title = $this->translate->_("Manage Messages");
+		$friends = $this->url(array('controller'=>'friends', 'action'=>'index'), 'default', true);
+		$friends_title = $this->translate->_("Manage Friends");
+	} else {
+		$mail = $this->url(array('controller'=>'messages', 'action'=>'send', 'id' => $this->user->getId()), 'default', true);
+		$mail_title = $this->translate->_("Send Private Message");
+		$friends = $this->url(array('controller'=>'friends', 'action'=>'invite', 'id' => $this->user->getId()), 'default', true);
+		$friends_title = $this->translate->_("Add to Friends");
+	}
+?>
+<div class="user-header" style="background-image: url('<?php echo $cover; ?>');">
+	<?php if($this->admin): ?>
+	<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'cover'), 'default', true); ?>" 
+			title="<?php echo $this->translate->_('Upload cover image'); ?>" class="upload-cover">
+		<img alt="<?php echo $this->translate->_('Upload cover image'); ?>" src="/images/new/common/upload.png" />
+	</a>
+	<?php endif; ?>
+	<div class="user-avatar" style="background-image: url('<?php echo $this->partial('avatar.phtml', array('user' => $this->user, 'for' => 'profile')); ?>');">
+		<?php if($this->admin): ?>
+		<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'picture'), 'default', true); ?>" 
+				title="<?php echo $this->translate->_('Upload avatar image'); ?>" class="upload-avatar">
+			<img alt="<?php echo $this->translate->_('Upload avatar image'); ?>" src="/images/new/common/upload.png" />
+		</a>
+		<?php endif; ?>
+	</div>
+	<div class="name">
+		<h2 <?php if(strlen($this->user->getName()) > 30) echo "class='long'"; ?>>
+			<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $this->user->getId()), 'default', true); ?>" 
+					title="<?php echo $this->user->getName(); ?>">
+				<?php echo $this->user->getName(); ?>
+			</a>
+		</h2>
+		<?php if($this->admin): ?>
+		<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'edit'), 'default', true); ?>" 
+				title="<?php echo $this->translate->_('Edit Profile Info'); ?>" class="edit-link">
+			<span></span>
+		</a>
+		<?php endif; ?>
+	</div>
+	<div class="user-icons">
+		<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view-info', 'user' => $this->user->getId()), 'default', true); ?>" 
+				title="<?php echo $this->translate->_("View profile info"); ?>">
+			<img alt="<?php echo $this->translate->_("View profile info"); ?>" src="/images/new/common/info.png" />
+		</a>
+		<a href="<?php echo $mail; ?>" title="<?php echo $mail_title; ?>">
+			<img alt="<?php echo $mail_title; ?>" src="/images/new/common/mail.png" />
+		</a>
+		<a href="<?php echo $friends; ?>" title="<?php echo $friends_title; ?>">
+			<img alt="<?php echo $friends_title; ?>" src="/images/new/common/friends.png" />
+		</a>
+	</div>
+</div>
+<div class="user-header-bottom">
+	<img src="/images/new/accounts/avatar-mirror.png" class="user-avatar-mirror" />
+	<div class="address">
+		<?php $line = "<small class='empty grey'>".$this->translate->_("No information available.")."</small>"; ?>
+		<span><?php echo strcasecmp($this->data['location'], $line) != 0 ? $this->data['location'] : ""; ?></span>
+		<span><?php echo strcasecmp($this->data['country_id'], $line) != 0 ? $this->data['country_id'] : ""; ?></span>
+	</div>
+</div>
+<div class="clear"></div>

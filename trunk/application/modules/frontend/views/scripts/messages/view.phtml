@@ -1,0 +1,45 @@
+<?php
+
+// save the emails!
+$this->message['message'] = str_replace('@petolio.com', '@email.petolio', $this->message['message']);
+
+// transform any petolio url to the current domain
+$this->message['message'] = str_replace(array(
+	'new.petolio.local', // localhost mirror
+	'new.petolio.riffcode.ro', // test mirror
+	'petolio.com', 'petolio.de' // official mirror
+), str_replace('www.', '', $_SERVER['HTTP_HOST']), $this->message['message']);
+
+// restore emails!
+$this->message['message'] = str_replace('@email.petolio', '@petolio.com', $this->message['message']);
+
+// transform url
+$url = $this->product ? array('product' => $this->product->getId()) : array();
+
+?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->message['subject']; ?></h1>
+		<br />
+	    <table cellspacing="0" cellpadding="5" border="0" class="list">
+		<tr>
+			<th><?php echo $this->translate->_("From"); ?></th>
+	        <td><?php echo isset($this->message['name']) ? $this->message['name'] : $this->translate->_("System"); ?></td>
+		</tr>
+		<tr>
+	      	<th><?php echo $this->translate->_("Sent on"); ?></th>
+	        <td><?php echo Petolio_Service_Util::formatDate($this->message['date_sent'], null, true, true); ?></td>
+		</tr>
+		<tr>
+	      	<th><?php echo $this->translate->_("Message"); ?></th>
+	        <td><?php echo nl2br($this->message['message']); ?></td>
+		</tr>
+	    </table>
+	    <br />
+		<?php if($this->message['from_user_id'] != $this->me && isset($this->message['name'])): ?><div class="right"><input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'messages', 'action'=> 'reply', 'id' => $this->message['id']), 'default', true); ?>');" type="button" value="<?php echo $this->translate->_("Reply >"); ?>" id="submit" name="reply"><div class="clear"></div></div><?php endif; ?>
+		<div class="right" style="line-height: 26px; margin-right: 5px;"><a href="<?php echo $this->url(array_merge($url, array('controller'=>'messages', 'action'=>'delete', 'id' => $this->message['id'], 'to' => $this->message['from_user_id'] == $this->me ? 'outbox' : 'inbox')), 'default', true); ?>" class="icon_link delete reqconf" title="<?php echo $this->translate->_("Delete Message"); ?>?"><span><?php echo $this->translate->_("Delete Message"); ?></span></a></div>
+		<div class="left"><input onclick="Petolio.go('<?php echo $this->url(array_merge($url, array('controller'=>'messages', 'action'=> $this->message['from_user_id'] == $this->me ? 'outbox' : 'inbox')), 'default', true); ?>');" type="button" value="<?php echo $this->translate->_("< Go Back"); ?>" id="submit" name="back" style="margin: 0px;"><div class="clear"></div></div>
+		<div class="clear"></div>
+	</div>
+</div>

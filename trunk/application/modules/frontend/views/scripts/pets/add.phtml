@@ -1,0 +1,35 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Add Pet"); ?></h1>
+		<br />
+		<?php echo $this->form; ?>
+	</div>
+</div>
+<script type="text/javascript">
+READY(function() {
+	var x = $("input.chzn-custom");
+
+	if(x.attr('title'))
+		x.data('placeholder', x.attr('title'));
+
+	x.chosen({
+		translate: Petolio.translateChosen(),
+		max_choices: 1,
+		ajax: {
+        	url: SITE_URL + "site/find/attribute/" + x.attr('attribute_id'),
+			min_search: 3,
+			req_param: "search",
+			res_value: "value",
+			res_text: "text",
+			res_html: "text",
+			success_callback: function(v){
+				return v.results;
+			}
+		}
+	});
+
+	x.next().css({float: 'left', marginLeft: '5px'});
+});
+</script>

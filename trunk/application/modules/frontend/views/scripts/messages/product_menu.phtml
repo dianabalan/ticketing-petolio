@@ -1,0 +1,54 @@
+<?php
+
+//$this->placeholder('sidebar')->append(
+echo "<h1>".$this->translate->_("Search Product Messages")."</h1>
+			<form id='product_messages_search_form'>
+				<input type='hidden' name='product' value='{$this->product->getId()}' />
+				<table width='100%' cellspacing='3' cellpadding='3' border='0'>
+					<tr>
+						<td><label>".$this->translate->_("Keywords")."</label></td>
+						<td style='padding-left: 5px;'><input type='text' name='name' size='23' value='{$this->search_name}' /></td>
+					</tr>
+					<tr>
+						<td colspan='2'><input class='srcbtn' type='submit' value='".$this->translate->_("Go")."' /><input class='srcbtn' type='button' id='search_reset' value='".$this->translate->_("Reset")."' /></td>
+					</tr>
+				</table>
+			</form>";
+
+// figure out what action we're in
+$action = $this->action;
+if($action != 'inbox' && $action != 'outbox' && $action != 'draft')
+	$action = 'inbox';
+
+?>
+<script type="text/javascript">
+(function($){
+	$.fn.serializeURL = function() {
+		var url = '';
+
+		jQuery.map($(this).serializeArray(), function(n, i){
+			if(n['value'])
+				url += n['name'] + '/' + n['value'] + '/';
+		});
+
+		return url;
+	};
+})(jQuery);
+
+READY(function(){
+	$('#product_messages_search_form').submit(function(e){
+		e.preventDefault();
+		Petolio.go(SITE_URL + 'messages/<?php echo $action; ?>/' + $(this).serializeURL());
+	});
+
+	$("#search_reset").click(function(e) {
+		e.preventDefault();
+		$("#product_messages_search_form input").each(function(index) {
+			if ( $(this).attr('type') == 'text' ) {
+				$(this).attr('value', '');
+			}
+		});
+		$("#product_messages_search_form").submit();
+	});
+});
+</script>

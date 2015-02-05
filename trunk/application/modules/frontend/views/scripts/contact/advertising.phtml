@@ -1,0 +1,18 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Advertise with Petolio"); ?></h1>
+		<br />
+		<div style="width: 400px; margin: 0 auto;">
+			<div class="left"><a target="_blank" href="/images/userfiles/advertise/Flyer-20120515-adopt-001.pdf"><img src="/images/advertise/banner_1.png" /></a></div>
+			<div class="right"><a target="_blank" href="/images/userfiles/advertise/Flyer-20120515-Std-001.pdf"><img src="/images/advertise/banner_2.png" /></a></div>
+			<div class="clear"></div>
+		</div>
+		<br />
+		<div style="text-align: center;">
+			<input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'contact', 'action' => 'index'), 'default', true) ?>');" type="button" value="<?php echo $this->translate->_("Booking Enquiry"); ?>" id="submit" name="prev" style="margin: 0px; float: none;">
+		</div>
+	</div>
+	<?php include "credits.phtml"; ?>
+</div>

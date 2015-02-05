@@ -1,0 +1,56 @@
+<?php if($this->auth->hasIdentity()):
+
+if($this->auth->getIdentity()->id == $this->user->getId()) {
+	$title = $this->translate->_("Your Account Options");
+	$accounts = array(
+		array(
+			'link' => $this->url(array('controller'=>'accounts', 'action'=>'profile'), 'default', true),
+			'name' => $this->translate->_("View Profile"),
+			'class' => 'lm-user_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'accounts', 'action'=>'password'), 'default', true),
+			'name' => $this->translate->_("Change Password"),
+			'class' => 'lm-user_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'accounts', 'action'=>'edit'), 'default', true),
+			'name' => $this->translate->_("Edit Profile Info"),
+			'class' => 'lm-user_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'accounts', 'action'=>'picture'), 'default', true),
+			'name' => $this->translate->_("Edit Profile Picture"),
+			'class' => 'lm-user_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'accounts', 'action'=>'email'), 'default', true),
+			'name' => $this->translate->_("Edit Email Notifications"),
+			'class' => 'lm-user_sm'
+		)
+	);
+} else {
+	$title = $this->user->getName();
+	$accounts = array(
+		array(
+			'link' => $this->url(array('controller'=>'friends', 'action'=>'invite', 'id' => $this->user->getId()), 'default', true),
+			'name' => $this->translate->_("Add to Friends"),
+			'class' => 'lm-friends_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'messages', 'action'=>'send', 'id' => $this->user->getId()), 'default', true),
+			'name' => $this->translate->_("Send Private Message"),
+			'class' => 'lm-messages_sm'
+		)
+	);
+}
+
+$links = null;
+foreach($accounts as $link)
+	$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+
+$this->placeholder('sidebar')
+     ->append("<h3>{$title}</h3>
+     	<ul class=\"leftsubmenu\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
+
+endif;

@@ -1,0 +1,76 @@
+<?php
+
+// my petolio
+/* if($this->auth->hasIdentity())
+	$this->placeholder('sidebar')->prepend('
+		<div class="mypetolio_box">
+			<div class="popup" id="my_popup">
+				<div class="title">
+					<div class="nub"></div>
+					<div class="clear"></div>
+				</div>
+				<div id="my_entries"></div>
+			</div>
+			<a href="javascript:void(0);" id="my_action"></a>
+			<h4>'. $this->translate->_("My Petolio") .'</h4>
+			' . ($this->new_messages > 0 ? '<span id="my_counter">' . $this->new_messages . '</span>' : '' ) . '
+			<img id="my_up" src="/images/arrow_up_g.png" />
+			<img id="my_down" src="/images/arrow_down_g.png" />
+			<div class="clear"></div>
+		</div>
+		<div class="clear"></div>
+		<script type="text/javaScript" src="' . Petolio_Service_Util::autoVersion("/js/mypetolio.js") . '"></script>
+		<script type="text/javascript">
+			READY(MyPetolio.init);
+		</script>');
+ */
+// notification bar
+if($this->auth->hasIdentity())
+	$this->placeholder('sidebar')->prepend('
+		<div class="notification_box">
+			<div class="popup" id="notify_popup">
+				<div class="title">
+					<div class="nub"></div>
+					'. $this->translate->_('Activity') .'
+					<a href="javascript:void(0);" id="notify_mark">'. $this->translate->_('Mark as Read') .'</a>
+					<div class="clear"></div>
+				</div>
+				<div id="notify_entries"></div>
+				<div id="notify_loading" class="loading"><img src="/images/dashboard/loading.gif" /></div>
+				<div class="more"><a href="/site/view-notifications">'. $this->translate->_("View More") .'</a></div>
+			</div>
+			<a href="javascript:void(0);" id="notify_action"></a>
+			<h4>'. $this->translate->_("What's up on Petolio") .'</h4>
+			<span id="notify_counter">0</span>
+			<img id="notify_up" src="/images/arrow_up.png" />
+			<img id="notify_down" src="/images/arrow_down.png" />
+			<div class="clear"></div>
+		</div>
+		<div class="clear"></div>
+		<script type="text/javaScript" src="' . Petolio_Service_Util::autoVersion("/js/notifications.js") . '"></script>
+		<script type="text/javascript">
+			READY(Notifications.init);
+		</script>');
+
+// ads
+if(isset($this->ad) && $this->ad->getId())
+	if($this->auth->hasIdentity() || strcasecmp($this->request->getActionName(), 'index') != 0 || strcasecmp($this->request->getControllerName(), 'site') != 0)
+		$this->placeholder('sidebar')->prepend('
+			<h4>'. $this->translate->_("What's new on <i>petolio?</i>") .'</h4>
+			<div class="promotion_box">
+				<a href="'.$this->ad->getLink().'" title="'.$this->ad->getTitle().'" target="_blank" style="display: inline-block;">
+					<img src="/images/userfiles/banners/'.$this->ad->getFile().'" width="'.$this->ad->getWidth().'" height="'.$this->ad->getHeight().'" border="0" alt="'.$this->ad->getTitle().'" />
+				</a>
+			</div>
+			<div class="clear"></div>
+			<script type="text/javascript">
+				(function($) {
+					READY(function() {
+						$(".promotion_box a").click(function() {
+					    	Petolio.ajax({
+								url: "site/banner-click", type: "post", data: {id: '.$this->ad->getId().'}, cache: false, success: function (x) {}
+							});
+						});
+					});
+				})(jQuery);
+			</script>');

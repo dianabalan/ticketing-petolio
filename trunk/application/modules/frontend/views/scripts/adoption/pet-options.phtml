@@ -1,0 +1,184 @@
+<?php
+
+$this->placeholder('sidebar')->captureStart();
+$pet_name = Petolio_Service_Parse::do_limit(ucfirst($this->pet_attr['name']->getAttributeEntity()->getValue()), 20, false, true);
+
+if($this->auth->hasIdentity() && $this->pet->getUserId() == $this->auth->getIdentity()->id) {
+	$options = array(
+		array(
+			'link' => $this->url(array('controller'=>'adoption', 'action'=>'view', 'pet'=>$this->pet->getId()), 'default', true),
+			'name' => $this->translate->_("View") . ' ' . $pet_name,
+			'class' => 'lm-pets_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'pets', 'action'=>'edit', 'pet'=>$this->pet->getId()), 'default', true),
+			'name' => $this->translate->_("Edit Details"),
+			'class' => 'lm-pets_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'pets', 'action'=>'pictures', 'pet'=>$this->pet->getId()), 'default', true),
+			'name' => $this->translate->_("Pictures"),
+			'class' => 'lm-pets_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'pets', 'action'=>'audios', 'pet'=>$this->pet->getId()), 'default', true),
+			'name' => $this->translate->_("Audios"),
+			'class' => 'lm-pets_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'pets', 'action'=>'videos', 'pet'=>$this->pet->getId()), 'default', true),
+			'name' => $this->translate->_("Videos"),
+			'class' => 'lm-pets_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'pets', 'action'=>'pedigree', 'pet'=>$this->pet->getId()), 'default', true),
+			'name' => $this->translate->_("Pedigree"),
+			'class' => 'lm-pets_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'pets', 'action'=>'files', 'pet'=>$this->pet->getId()), 'default', true),
+			'name' => $this->translate->_("Files"),
+			'class' => 'lm-pets_sm'
+		),
+		array(
+			'link'	=> $this->url(array('controller'=>'pets', 'action'=>'archive', 'pet'=>$this->pet->getId()), 'default', true),
+			'name'  => sprintf($this->translate->_("Archive %s"), $pet_name),
+			'title'	=> sprintf($this->translate->_("Are you sure you want to archive %s?"), $pet_name),
+			'class'	=> 'lm-pets_sm reqconf',
+		),
+		array(
+			'link' => $this->url(array('controller'=>'diary', 'action'=>'index', 'pet'=>$this->pet->getId()), 'default', true),
+			'name' => $this->translate->_("Pet Diary"),
+			'class' => 'lm-pets_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'medical', 'action'=>'index', 'pet'=>$this->pet->getId()), 'default', true),
+			'name' => $this->translate->_("Medical Records"),
+			'class' => 'lm-pets_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'shot', 'action'=>'index', 'pet'=>$this->pet->getId()), 'default', true),
+			'name' => $this->translate->_("Shot Records"),
+			'class' => 'lm-pets_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'pets', 'action'=>'emergency', 'pet'=>$this->pet->getId()), 'default', true),
+			'name' => $this->translate->_("Emergency Contacts"),
+			'class' => 'lm-pets_sm'
+		),
+	);
+
+	if ($this->pet->getToAdopt() == 0) {
+		$options[] = array(
+			'link'	=> $this->url(array('controller'=>'pets', 'action'=>'adopt', 'pet'=>$this->pet->getId()), 'default', true),
+			'name'	=> $this->translate->_("Put pet up for adoption"),
+			'class' => 'lm-pets_sm reqconf'
+		);
+	} else {
+		$options[] = array(
+			'link' => $this->url(array('controller'=>'adoption', 'action'=>'interests', 'pet'=>$this->pet->getId()), 'default', true),
+			'name' => $this->translate->_("Adoption interests"),
+			'class' => 'lm-pets_sm');
+	}
+
+} else {
+	if($this->auth->hasIdentity()) {
+		$options = array(
+			array(
+				'link' => $this->url(array('controller'=>'pets', 'action'=>'view', 'pet'=>$this->pet->getId()), 'default', true),
+				'name' => $this->translate->_("View") . ' ' . $pet_name,
+				'class' => 'lm-pets_sm'
+			),
+			array(
+				'link' => $this->url(array('controller'=>'accounts', 'action'=>'view', 'user'=>$this->pet->getUserId()), 'default', true),
+				'name' => $this->translate->_("View Owner's Profile"),
+				'class' => 'lm-pets_sm'
+			),
+			array(
+				'link' => $this->url(array('controller'=>'pets', 'action'=>'pedigree', 'pet'=>$this->pet->getId()), 'default', true),
+				'name' => $this->translate->_("Pedigree"),
+				'class' => 'lm-pets_sm'
+			),
+			array(
+				'link' => $this->url(array('controller'=>'pets', 'action'=>'files', 'pet'=>$this->pet->getId()), 'default', true),
+				'name' => $this->translate->_("Files"),
+				'class' => 'lm-pets_sm'
+			),
+			array(
+				'link' => $this->url(array('controller'=>'diary', 'action'=>'index', 'pet'=>$this->pet->getId()), 'default', true),
+				'name' => $this->translate->_("Pet Diary"),
+				'class' => 'lm-pets_sm'
+			),
+			array(
+				'link' => $this->url(array('controller'=>'medical', 'action'=>'index', 'pet'=>$this->pet->getId()), 'default', true),
+				'name' => $this->translate->_("Medical Records"),
+				'class' => 'lm-pets_sm'
+			),
+			array(
+				'link' => $this->url(array('controller'=>'shot', 'action'=>'index', 'pet'=>$this->pet->getId()), 'default', true),
+				'name' => $this->translate->_("Shot Records"),
+				'class' => 'lm-pets_sm'
+			)
+		);
+	} else {
+		$options = array(
+			array(
+				'link' => $this->url(array('controller'=>'adoption', 'action'=>'view', 'pet'=>$this->pet->getId()), 'default', true),
+				'name' => $this->translate->_("View") . ' ' . $pet_name,
+				'class' => 'lm-pets_sm'
+			),
+			array(
+				'link' => $this->url(array('controller'=>'accounts', 'action'=>'view', 'user'=>$this->pet->getUserId()), 'default', true),
+				'name' => $this->translate->_("View Owner's Profile"),
+				'class' => 'lm-pets_sm'
+			)
+		);
+	}
+}
+
+$links = null;
+foreach($options as $link) {
+	$id = $class = $rel = null;
+	$name = $link['name'];
+
+	if(isset($link['id']))
+		$id = " id='{$link['id']}'";
+
+	if(isset($link['class'])) {
+		if (isset($link['title']) && strlen($link['title']) > 0)
+			$ttl = "title='{$link['title']}'";
+		else
+			$ttl = "title='{$link['name']}'";
+
+		$class = " class='{$link['class']}' {$ttl}";
+		$name = "{$link['name']}";
+	}
+
+	if(isset($link['rel']))
+		$rel = " rel='{$link['rel']}'";
+
+	$links .= "<li><a href='{$link['link']}'{$id}{$class}{$rel}>{$name}</a></li>";
+}
+
+?>
+<h3><?php echo $this->translate->_("Options"); ?></h3>
+<ul class="leftsubmenu" data-context="true"><?php echo $links; ?></ul>
+<div class="clear">&nbsp;</div>
+<?php
+
+$this->placeholder('sidebar')->captureEnd();
+$this->placeholder('sidebar')->captureStart();
+
+$url = urlencode($this->url(array('controller'=>'pets', 'action'=>'view-mobile', 'pet'=>$this->pet->getId()), 'default', true));
+
+?>
+<h3><?php echo $this->translate->_("QR Code"); ?></h3>
+<div style="border: 1px solid #ccc; position: relative;">
+	<img style="display: block;" src="https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=<?php echo $url; ?>&choe=UTF-8" alt="<?php echo $this->translate->_("QR Code"); ?>" />
+	<ul class="leftsubmenu" style="position:absolute; width: 200px; top:50%; right: 10px; height:60px; margin-top:-30px;">
+		<li style="width: 100%;"><a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'download-qr', 'pet'=>$this->pet->getId()), 'default', true); ?>" class="lm-pets_sm" title="<?php echo $this->translate->_("Download QR Code"); ?>"><?php echo $this->translate->_("Download QR Code"); ?></a></li>
+		<li style="width: 100%;"><a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'print-qr', 'pet'=>$this->pet->getId()), 'default', true); ?>" class="lm-pets_sm" title="<?php echo $this->translate->_("Print QR Code"); ?>"><?php echo $this->translate->_("Print QR Code"); ?></a></li>
+	</ul>
+</div>
+<div class="clear">&nbsp;</div>
+<?php $this->placeholder('sidebar')->captureEnd(); ?>

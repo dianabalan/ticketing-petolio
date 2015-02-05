@@ -1,0 +1,72 @@
+<style type="text/css">
+	div.microsite_2column {
+		width: 800px;
+	}
+		div.microsite_2column > img {
+			display: block;
+		}
+	
+		div.microsite_2column > ul.menu {
+			margin: 10px 0px;
+			padding: 0px;
+			display: block;
+			width: 303px;
+			border: 1px solid #A2A2A2;
+			border-left: none;
+			height: 30px;
+		}
+	
+		div.microsite_2column > ul.menu > li {
+			float: left;
+			display: block;
+			width: 100px;
+			height: 30px;
+			text-align: center;
+			border-left: 1px solid #A2A2A2;
+			background: #EEEEEE;
+			line-height: 30px;
+			font-weight: bold;
+		}
+	
+		div.microsite_2column > ul.menu > li.clear {
+			display: none;
+		}
+		
+		div.microsite_2column > div.column {
+			font-size: 12px;
+			float: left;
+			width: 390px;
+			line-height: 18px;
+		}
+	
+		div.microsite_2column > div.last {
+			margin-left: 20px;
+		}
+	
+		div.microsite_2column > div.column > img {
+			display: inline;
+			float: left;
+			margin: 3px 10px 3px 0px;
+		}
+</style>
+<div class="microsite_2column">
+	<img src="/images/userfiles/attributes/{attr:2column_logo}" />
+	<ul class="menu">
+		<li>{menu:1}</li>
+		<li>{menu:2}</li>
+		<li>{menu:3}</li>
+		<li class="clear"></li>
+	</ul>
+	{body}
+		<div class="column">
+			<img src="/images/userfiles/attributes/{attr:2column_pic1}" />
+			{attr:2column_col1}
+		</div>
+		<div class="column last">
+			<img src="/images/userfiles/attributes/{attr:2column_pic2}" />
+			{attr:2column_col2}
+		</div>
+		<div class="clear"></div>
+		{admin}
+	{/body}
+</div>

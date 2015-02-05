@@ -1,0 +1,44 @@
+<table cellspacing="0" cellpadding="5" class="grid">
+<col width="50" /><col /><col width="120" /><col width="200" /><col width="170" />
+	<tr>
+		<th></th>
+		<th><a href="<?php echo $this->url(array('order' => 'name', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Name"); ?><?php if($this->order == 'name'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+		<th><a href="<?php echo $this->url(array('order' => 'account', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Account Type"); ?><?php if($this->order == 'account'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+		<th><a href="<?php echo $this->url(array('order' => 'gender', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Gender / Service Category"); ?><?php if($this->order == 'gender'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+		<th><a href="<?php echo $this->url(array('order' => 'address', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Address"); ?><?php if($this->order == 'address'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+	</tr>
+	<?php
+		foreach($this->paginator as $idx => $user):
+			// avatar control
+			$avatar = $this->partial('avatar.phtml', array(
+				'user' => $user
+			)); ?>
+				<tr>
+					<td align="right"><a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $user["id"]), 'default', true); ?>"><img src="<?php echo $avatar; ?>" style="display: block; padding: 3px; border: 1px solid #B3B3B3; background: white;" alt="<?php echo $this->translate->_("Profile Picture"); ?>" /></a></td>
+					<td><a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $user["id"]), 'default', true); ?>"><?php echo $user["name"]; ?></a></td>
+					<td>
+						<?php if(isset($user['micro'])): ?>
+							<a href="javascript:void(0);" class="microsite" rel="<?php echo $user['micro']; ?>"><?php echo $this->translate->_($userTypes[$user["type"]]); ?></a>
+						<?php else: ?>
+							<?php echo $this->translate->_($userTypes[$user["type"]]); ?>
+						<?php endif; ?>
+					</td>
+					<td><div><?php echo $user["type"] == 1 ? $user["gender"] : $user["category_id"]; ?></div></td>
+					<td>
+						<div>
+							<?php if ( $this->translate->getLocale() == 'en' ): ?>
+								<span><?php echo $user["address"]; ?> </span>
+								<span><?php echo $user["location"]; ?> </span>
+								<span><?php echo $user["zipcode"]; ?> </span>
+								<span><?php echo $user["country_id"]; ?></span>
+							<?php else: ?>
+								<span><?php echo $user["zipcode"]; ?> </span>
+								<span><?php echo $user["address"]; ?> </span>
+								<span><?php echo $user["location"]; ?> </span>
+								<span><?php echo $user["country_id"]; ?></span>
+							<?php endif; ?>
+						</div>
+					</td>
+				</tr>
+	<?php endforeach; ?>
+</table>

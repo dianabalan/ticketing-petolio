@@ -1,0 +1,25 @@
+<?php if(count($this->listing) > 0): ?>
+    <div class="pictures">
+		<?php foreach($this->listing as $idx => $pic): ?>
+			<div class="pic">
+				<span class="img" rel="<?php echo $idx; ?>" style="background: #000 url('/images/userfiles/microsites/<?php echo $this->microsite->getId(); ?>/small_<?php echo $pic; ?>') center center no-repeat;"></span>
+			</div>
+		<?php endforeach; ?>
+		<div class="clear"></div>
+	</div>
+<?php else: ?>
+	<b class="red bigger"><?php echo $this->translate->_("Sorry, nothing here pal :("); ?></b>
+<?php endif; ?>
+<div class="clear"></div>
+<?php if($this->admin): ?>
+	<div class="tenpx"></div>
+	<div class="buttons">
+		<a href="<?php echo $this->url(array('controller'=>'microsites', 'action'=>'pictures'), 'default', true); ?>" target="_parent" class='icon_link edit'><span><?php echo $this->translate->_("Edit Pictures"); ?></span></a>
+	</div>
+	<div class="clear"></div>
+<?php endif; ?>
+<?php $imgsw_path = array(
+	'image' => "/images/userfiles/microsites/{$this->microsite->getId()}/{image}",
+	'audio' => "/images/userfiles/microsites/{$this->microsite->getId()}/{audio}",
+	'video' => "http://www.youtube.com/embed/{video}"
+); include "../application/modules/frontend/views/scripts/imgsw.phtml"; ?>

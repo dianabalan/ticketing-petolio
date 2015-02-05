@@ -1,0 +1,458 @@
+<?php
+
+// no timezone set?
+if (!isset($_COOKIE["user_timezone"]) 
+		&& strpos($_SERVER["HTTP_USER_AGENT"], "facebook") === false
+		&& strpos($_SERVER["HTTP_USER_AGENT"], "google") === false) {
+	echo '<script type="text/javascript">var COOKIE_LAW = \'' . $this->translate->_('<h1 style="color: red;">Warning!</h1><h3 style="color: brown;">Cookies are disabled in your browser.</h2>We use cookies to store important and essential information about your visit on our website. Please enable cookie support and refresh the page.') . '\';</script>';
+	echo '<script type="text/javascript" src="' . Petolio_Service_Util::autoVersion("/js/jquery/jquery-1.6.2.min.js") . '"></script>';
+	echo '<script type="text/javascript" src="' . Petolio_Service_Util::autoVersion("/js/jquery/jquery.cookie.js") . '"></script>';
+	echo '<script type="text/javascript" src="' . Petolio_Service_Util::autoVersion("/js/timezone.js") . '"></script>';
+
+	exit;
+}
+
+?>
+<?php echo $this->doctype(); ?>
+<html lang="<?php echo $this->translate->getLocale(); ?>" version="HTML+RDFa 1.1" prefix="og: http://ogp.me/ns#">
+<head>
+	<?php echo $this->headMeta(); ?>
+	<?php echo $this->headTitle(); ?>
+	<?php echo $this->headLink(); ?>
+	<?php echo $this->jQuery(); ?>
+	<!-- dynamic scripts start -->
+	<script type="text/javascript">var SITE_URL = '<?php echo PO_BASE_URL; ?>';</script>
+	<script type="text/javascript">var CHAT_SERVER = '<?php echo CHAT_SERVER; ?>';</script>
+	<script type="text/javascript">var CHAT_TRANSPORT = '<?php echo CHAT_TRANSPORT; ?>';</script>
+	<script type="text/javascript">var TINY_URL = {js: SITE_URL, css: SITE_URL + 'css/petolio.css', language: '<?php echo $this->translate->getLocale(); ?>'};</script>
+	<script type="text/javascript">var LOCALE = '<?php echo $this->translate->getLocale(); ?>';</script>
+	<!-- dynamic scripts end -->
+	<?php
+		if ($this->tinymce) {
+			$this->headScript()->appendFile(Petolio_Service_Util::autoVersion("/js/tinymce/jquery.tinymce.min.js"));
+			$this->headScript()->appendFile(Petolio_Service_Util::autoVersion("/js/tinymce/resources.tinymce.js"));
+			$this->headScript()->appendFile(Petolio_Service_Util::autoVersion("/js/tinymce/{$this->tinymce}.init.js"));
+		}
+
+		echo $this->headScript();
+		if ($this->chat)
+			echo '<script type="text/javascript">jQuery.noConflict();</script>';
+	?>
+</head>
+<body <?php if($this->getRequestParam('iframe') != null) echo 'class="no-background"'; ?>><!-- site start -->
+	<div id="fb-root"></div>
+	<script>(function(d, s, id) {
+	  var js, fjs = d.getElementsByTagName(s)[0];
+	  if (d.getElementById(id)) return;
+	  js = d.createElement(s); js.id = id;
+	  js.src = "//connect.facebook.net/<?php echo $this->translate->getLocale() == 'de' ? 'de_DE' : 'en_US'; ?>/all.js";
+	  fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));</script>
+	<script type="text/javascript">
+		var fbAppId = '<?php echo $this->fb_app_id; ?>';
+		window.fbAsyncInit = function() {
+			FB.init({appId: fbAppId, status: true, cookie: true, xfbml: true, channelUrl: '<?php echo PO_BASE_URL; ?>fbtest/channel.html'});
+		};
+	</script>
+	
+	<?php if ($this->hasIdentity): ?>
+		<div id="online">
+			<div id="bar"></div>
+			<div id="translate">
+				<?php echo json_encode(array(
+					// messages
+					'new' => $this->translate->_("New personal message!"),
+
+					// sidebar
+					'signing' => $this->translate->_('Signing in&hellip;'),
+					'stealthy' => $this->translate->_('Going invisible&hellip;'),
+					'error' => $this->translate->_('Retrying in %s&hellip;'),
+					'error_msg' => $this->translate->_('There was a problem signing you in.'),
+					'online' => $this->translate->_('Online'),
+					'offline' => $this->translate->_('Offline'),
+					'invisible' => $this->translate->_('Invisible'),
+					'profile' => $this->translate->_('Profile'),
+					'search' => $this->translate->_('Search'),
+					'no_buddies' => $this->translate->_('You have no friends :('),
+					'no_filtered' => $this->translate->_("No buddies named '%s' found."),
+
+					// history
+					'yesterday' => $this->translate->_('Yesterday'),
+					'7 days' => $this->translate->_('7 Days'),
+					'1 month' => $this->translate->_('1 Month'),
+					'3 months' => $this->translate->_('3 Months'),
+
+					// stealth
+					'go_offline' => $this->translate->_('Go Invisible'),
+					'go_online' => $this->translate->_('Go Online'),
+					'message' => $this->translate->_('Message'),
+					'appear_online' => $this->translate->_('You now appear online to %s'),
+					'appear_offline' => $this->translate->_('You now appear offline to %s'),
+					'invisible_list' => $this->translate->_('You currently appear offline to: %s'),
+					'nobody' => $this->translate->_('nobody'),
+					'ok' => $this->translate->_('OK')
+				)); ?>
+			</div>
+			<div id="dock" class="dock_open dock_hidden"></div>
+			<div id="sidebar" class="sidebar_closed">
+				<div id="sidebar_slider"><a id="open_close" href="javascript:void(0);"><img src="/images/online/slider-open.png" /></a></div>
+				<div id="sidebar_body">
+					<div id="sidebar_infos">
+						<span class="signing"><img src="/images/online/signing.gif" /><?php echo 1 == 1 ? $this->translate->_('Signing in&hellip;') : $this->translate->_('Going invisible&hellip;'); ?></span>
+						<a href="javascript:void(0);" class="sounds"><img src="/images/online/sounds-on.png" /></a>
+						<a href="javascript:void(0);" class="status"><img src="/images/online/visible-on.png" /></a>
+						<div class="clear"></div>
+					</div>
+					<div id="sidebar_context">
+						<div class="top"></div>
+						<div class="options">
+							<a href="javascript:void(0);" class="offline" id="ctx_status"><?php echo $this->translate->_('Go Invisible'); ?></a>
+							<a href="javascript:void(0);" id="ctx_list"><?php echo $this->translate->_('See Invisible List'); ?></a>
+						</div>
+					</div>
+					<div id="sidebar_overlay"></div>
+					<div id="sidebar_users">
+						<div class="inside"></div>
+					</div>
+					<div id="sidebar_search">
+						<input type="text" value="<?php echo $this->translate->_('Search'); ?>" />
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javaScript" src="<?php echo Petolio_Service_Util::autoVersion('/APE_JSF/Clients/mootools-core.js'); ?>"></script>
+		<script type="text/javaScript" src="<?php echo Petolio_Service_Util::autoVersion('/APE_JSF/Clients/MooTools.js'); ?>"></script>
+		<script type="text/javaScript" src="<?php echo Petolio_Service_Util::autoVersion('/js/chat/base.js'); ?>"></script>
+		<script type="text/javaScript" src="<?php echo Petolio_Service_Util::autoVersion('/js/chat/online.js'); ?>"></script>
+		<script type="text/javascript">
+			READY(Online.init);
+		</script>
+	<?php endif; ?>
+	<div class="header aAD">
+		<a href="<?php echo $this->url(array('controller'=>'site'), 'default', true); ?>" class="logo"><img src="/images/new/logo.png" /></a>
+		<div class="language">
+			<a href="<?php echo $this->url(array('controller'=>'site', 'action' => 'setlocale', 'locale' => 'de'), 'default', true); ?>" class="left"><img src="/images/new/de.png" /></a><a href="<?php echo $this->url(array('controller'=>'site', 'action' => 'setlocale', 'locale' => 'en'), 'default', true); ?>" class="right"><img src="/images/new/gb.png" /></a>
+		</div>
+		<br /><br />
+		<?php if($this->hasIdentity):
+			$user = new Petolio_Model_PoUsers();
+			$user->find($this->identity->id); ?>
+			<div class="profile">
+				<i><?php printf($this->translate->_("Welcome <strong>%s</strong>"), $user->getName()); ?></i>
+			</div>
+			<div class="actions">
+				<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'profile'), 'default', true); ?>"><?php echo $this->translate->_("My Profile"); ?></a>&nbsp;&nbsp;
+				<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'password'), 'default', true); ?>"><?php echo $this->translate->_("Change Password"); ?></a>&nbsp;&nbsp;
+				<a href="javascript:void(0);" onClick="Petolio.logout('<?php echo $this->logoutUrl; ?>');"><?php echo $this->translate->_("Log out"); ?></a>
+			</div>
+		<?php else: ?>
+			<?php echo $this->loginForm($this->loginForm); ?>
+			<br /><br /><br /><br /><br /><br /><br />
+			<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'forgot'), 'default', true); ?>" class="forgot"><?php echo $this->translate->_('Forgot your password?'); ?></a>
+		<?php endif; ?>
+	</div>
+	<div class="content">
+		<?php
+			// messages
+			if (isset($this->po_messages) && is_array($this->po_messages) && count($this->po_messages) > 0) {
+				echo "<div class='po_messages po_error'><div class='align aAD'><ul>";
+	  			foreach ($this->po_messages as $message)
+	  				echo "<li>{$message}</li>";
+
+				echo "</ul></div></div>";
+			}
+
+			// custom session errors
+			if(isset($_SESSION['msg_errors']))
+				foreach($_SESSION['msg_errors'] as $error)
+					$this->po_errors[] = strip_tags($error[0]) . ': ' . implode($error[1], ", ");
+
+			// errors
+			if (isset($this->po_errors) && is_array($this->po_errors) && count($this->po_errors) > 0) {
+				echo "<div class='po_messages po_error'><div class='align aAD'><ul>";
+	  			foreach ($this->po_errors as $message)
+	  				echo "<li>{$message}</li>";
+
+				echo "</ul></div></div>";
+			}
+
+			// unset this
+			if(isset($_SESSION['msg_errors']))
+				unset($_SESSION['msg_errors']);
+		?>
+		<?php if($this->hasIdentity || $this->getController() != 'site'): ?>
+			<div class="yellow" id="main_navigation">
+				<div class="align aAD">
+					<div id="crsl-nav" class="crsl-nav">
+						<a href="#" class="previous left"><img src="/images/new/large/prev.png" /></a>
+						<a href="#" class="next right"><img src="/images/new/large/next.png" /></a>
+					</div>
+					<div class="main_menu">
+						<div class="crsl-items" data-navigation="crsl-nav">
+							<div class="crsl-wrap">
+								<figure class="crsl-item"><a href="<?php echo $this->url(array('controller'=>'marketplace'), 'default', true); ?>" title="<?php echo $this->translate->_("Market Place"); ?>"><img src="/images/new/large/market_place.png" /></a></figure>
+								<figure class="crsl-item"><a href="<?php echo $this->url(array('controller'=>'adoption'), 'default', true); ?>" title="<?php echo $this->translate->_("Adopt a Pet"); ?>"><img src="/images/new/large/adoption.png" /></a></figure>
+								<figure class="crsl-item"><a href="<?php echo $this->url(array('controller'=>'galleries'), 'default', true); ?>" title="<?php echo $this->translate->_("Photo Gallery"); ?>"><img src="/images/new/large/galery.png" /></a></figure>
+								<figure class="crsl-item"><a href="<?php echo $this->url(array('controller'=>'events'), 'default', true); ?>" title="<?php echo $this->translate->_("Events"); ?>"><img src="/images/new/large/events.png" /></a></figure>
+								<figure class="crsl-item"><a href="<?php echo $this->url(array('controller'=>'pets'), 'default', true); ?>" title="<?php echo $this->translate->_("Pets"); ?>"><img src="/images/new/large/pets.png" /></a></figure>
+								<figure class="crsl-item"><a href="<?php echo $this->url(array('controller'=>'accounts'), 'default', true); ?>" title="<?php echo $this->translate->_("Members"); ?>"><img src="/images/new/large/members.png" /></a></figure>
+								<figure class="crsl-item"><a href="<?php echo $this->url(array('controller'=>'help'), 'default', true); ?>" title="<?php echo $this->translate->_("Opinion"); ?>"><img src="/images/new/large/help.png" /></a></figure>
+								<figure class="crsl-item"><a href="<?php echo $this->url(array('controller'=>'news'), 'default', true); ?>" title="<?php echo $this->translate->_("News"); ?>"><img src="/images/new/large/anywhere.png" /></a></figure>
+								<figure class="crsl-item"><a href="<?php echo $this->url(array('controller'=>'index'), 'default', true); ?>forum" title="<?php echo $this->translate->_("Forum"); ?>"><img src="/images/new/large/forum.png" /></a></figure>
+								<!-- <figure class="crsl-item"><a href="<?php echo $this->url(array('controller'=>'site', 'action'=>'view-notes'), 'default', true); ?>" title="<?php echo $this->translate->_("Notes"); ?>"><img src="/images/new/large/medical.png" /></a></figure> -->
+								<figure class="crsl-item"><a href="<?php echo $this->url(array('controller'=>'chat'), 'default', true); ?>" title="<?php echo $this->translate->_("Meet2Chat"); ?>"><img src="/images/new/large/meet2chat.png" /></a></figure>
+								<!-- 
+								<figure class="crsl-item"><a href="<?php echo $this->url(array('controller'=>'calendar'), 'default', true); ?>" title="<?php echo $this->translate->_("Calendar"); ?>"><img src="/images/new/large/calendar.png" /></a></figure>
+								<figure class="crsl-item"><a href="<?php echo $this->url(array('controller'=>'messages', 'action'=>'inbox'), 'default', true); ?>" title="<?php echo $this->translate->_("Messages"); ?>"><img src="/images/new/large/message.png" /></a></figure>
+								<figure class="crsl-item"><a href="<?php echo $this->url(array('controller'=>'friends'), 'default', true); ?>" title="<?php echo $this->translate->_("Friends"); ?>"><img src="/images/new/large/friends.png" /></a></figure>
+								-->
+							</div>
+						</div>
+					</div>
+					<div class="clear"></div>
+				</div>
+			</div>
+			
+			<script type="text/javaScript" src="<?php echo Petolio_Service_Util::autoVersion('/js/responsiveCarousel.min.js'); ?>"></script>
+			<script type="text/javascript">
+				READY(function(){
+					var main_nav = jQuery('#main_navigation');
+
+					main_nav.show();
+					jQuery('.crsl-items', main_nav).carousel({
+						visible: 10,
+						overflow: false,
+						autoRotate: false,
+						itemMinWidth: 107,
+						itemEqualHeight: true,
+						carousel: true
+					});
+				});
+			</script>
+			<div class="index align aAD">
+				<?php if($this->getController() == 'fluxbb'): ?>
+				<div class="matter right fluxbb">
+				<?php else: ?>
+				<div class="sidebar left">
+					<!-- 
+					<div class="up news">
+						<h4>What's new on <i>petolio?</i></h4>
+						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur pretium bibendum dolor vitae condimentum. Donec venenatis, lacus eget consectetur hendrerit, lorem mi tempus nibh, in lacinia odio velit ac ligula. Suspendisse id iaculis lectus.
+						<br />
+						<div class="fivepx"></div>
+						<div class="right"><a href="#" class="green"><b>Read more</b></a></div>
+						<div class="clear"></div>
+					</div>
+					 -->
+				
+					<?php if($this->hasIdentity): ?>	
+					<div class="up leftbox mypetolio">
+						<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'profile'), 'default', true); ?>" 
+								title="<?php echo $this->translate->_("My Profile"); ?>" style="width: 100%;">
+							<h3><?php echo $this->translate->_("My Petolio"); ?></h3>
+						</a>
+						<?php $max_count = 20; ?>
+						<div class="grid">
+							<a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'mypets'), 'default', true); ?>" 
+								title="<?php echo $this->translate->_("My Pets"); ?>"><img src="/images/new/small/pets.png" /></a>
+							<a href="<?php echo $this->url(array('controller'=>'messages', 'action'=>'inbox'), 'default', true); ?>" 
+								title="<?php echo $this->translate->_("Manage Messages"); ?>">
+								<?php if ( isset($this->new_messages) && intval($this->new_messages) > 0 ): ?>
+								<span><span><?php echo $this->new_messages > $max_count ? $max_count.'+' : $this->new_messages; ?></span></span>
+								<?php endif; ?>
+								<img src="/images/new/small/message.png" />
+							</a>
+							<a href="<?php echo $this->url(array('controller'=>'galleries', 'action'=>'mygalleries'), 'default', true); ?>" 
+								title="<?php echo $this->translate->_("My Galleries"); ?>"><img src="/images/new/small/galery.png" /></a>
+							<a href="<?php echo $this->url(array('controller'=>'calendar'), 'default', true); ?>" 
+								title="<?php echo $this->translate->_("Manage Calendar"); ?>">
+								<?php if ( isset($this->new_events) && intval($this->new_events) > 0 ): ?>
+								<span><span><?php echo $this->new_events > $max_count ? $max_count.'+' : $this->new_events; ?></span></span>
+								<?php endif; ?>
+								<img src="/images/new/small/calendar.png" />
+							</a>
+							<a href="<?php echo $this->url(array('controller'=>'friends'), 'default', true); ?>" 
+								title="<?php echo $this->translate->_("Manage Friends"); ?>">
+								<?php if ( isset($this->new_friend_requests) && intval($this->new_friend_requests) > 0 ): ?>
+								<span><span><?php echo $this->new_friend_requests > $max_count ? $max_count.'+' : $this->new_friend_requests; ?></span></span>
+								<?php endif; ?>
+								<img src="/images/new/small/friends.png" />
+							</a>
+							<a href="<?php echo $this->url(array('controller'=>'help', 'action'=>'myquestions'), 'default', true); ?>" 
+								title="<?php echo $this->translate->_("Opinion"); ?>">
+								<?php if ( isset($this->new_answers) && intval($this->new_answers) > 0 ): ?>
+								<span><span><?php echo $this->new_answers > $max_count ? $max_count.'+' : $this->new_answers; ?></span></span>
+								<?php endif; ?>
+								<img src="/images/new/small/help.png" />
+							</a>
+							<?php if($this->identity->type == 2): ?>
+							<a href="<?php echo $this->url(array('controller'=>'microsites'), 'default', true); ?>" 
+								title="<?php echo $this->translate->_("Microsite"); ?>"><img src="/images/new/small/microsite.png" /></a>
+							<a href="<?php echo $this->url(array('controller'=>'services'), 'default', true); ?>" 
+								title="<?php echo $this->translate->_("My Services"); ?>"><img src="/images/new/small/service.png" /></a>
+							<?php endif; ?>
+							<a href="<?php echo $this->url(array('controller'=>'products', 'action'=>'myproducts'), 'default', true); ?>" 
+								title="<?php echo $this->translate->_("My Products"); ?>"><img src="/images/new/small/product.png" /></a>
+							<a href="<?php echo $this->url(array('controller'=>'map', 'action'=>'choose'), 'default', true); ?>" 
+								title="<?php echo $this->translate->_("Map Register"); ?>"><img src="/images/new/small/map.png" /></a>
+							<a href="<?php echo $this->url(array('controller'=>'contentdistributions'), 'default', true); ?>" 
+								title="<?php echo $this->translate->_("Anywhere!"); ?>"><img src="/images/new/small/anywhere.png" /></a>
+							<a href="<?php echo $this->url(array('controller'=>'site', 'action'=>'view-notes'), 'default', true); ?>" 
+								title="<?php echo $this->translate->_("Notes"); ?>"><img src="/images/new/small/notes.png" /></a>
+							<a href="<?php echo $this->url(array('controller'=>'chat'), 'default', true); ?>" 
+								title="<?php echo $this->translate->_("Meet2Chat"); ?>">
+								<?php if ( isset($this->new_meet2chats) && intval($this->new_meet2chats) > 0 ): ?>
+								<span><span><?php echo $this->new_meet2chats > $max_count ? $max_count.'+' : $this->new_meet2chats; ?></span></span>
+								<?php endif; ?>
+								<img src="/images/new/small/meet2chat.png" />
+							</a>
+						</div>
+						<div class="clear"></div>
+					</div>
+					<?php endif; ?>
+					
+					<?php // show sidebar only if we're not in the error controller or a microsite
+					if($this->getController() != 'error' || isset($this->microsite)) {
+						// sidebar
+						if($this->placeholder('sidebar')->count() > 0)
+							echo $this->placeholder('sidebar');
+
+						// topbar is actually hidden and only opens on "My Petolio"
+						echo $this->placeholder('topbar');
+					} ?>
+					
+					<div class="clear"></div>
+				</div>
+				<div class="matter right">
+				<?php endif; ?>
+				<?php // content layout
+				  		echo $this->layout()->content;
+					?>
+				</div>
+				<div class="clear"></div>
+			</div>
+		<?php else: ?>
+			<div class="not_logged_in yellow">
+				<div class="align aAD">
+					<?php echo $this->layout()->content; ?>
+					<div class="clear"></div>
+				</div>
+			</div>
+		<?php endif; ?>
+		<div class="align aAD">
+			<div class="announce">
+				<?php $share_title = urlencode("PETOLIO - your pet's home"); ?>
+				<div class="one left"><img src="/images/new/box/new_services.png" /></div>
+
+				<div class="two left"><span>
+					<?php for($i = 0; $i < 3; $i++): if (isset($this->new_services[$i])): ?>
+						<a href="<?php echo $this->url(
+							array('controller'=>'services', 'action'=>'view', 'service' => $this->new_services[$i]['id']), 'default', true); ?>" 
+							class="servicename ellipsis"><?php echo $this->new_services[$i]['name']; ?></a><br/>
+					<?php endif; endfor; ?>
+				</span></div>
+				<div class="three left"><span>
+					<?php for($i = 3; $i < 6; $i++): if (isset($this->new_services[$i])): ?>
+						<a href="<?php echo $this->url(
+							array('controller'=>'services', 'action'=>'view', 'service' => $this->new_services[$i]['id']), 'default', true); ?>" 
+							class="servicename ellipsis"><?php echo $this->new_services[$i]['name']; ?></a><br/>
+					<?php endif; endfor; ?>
+				</span></div>
+
+				<div class="five right">
+					<a href="<?php echo $this->url(array('controller'=>'contact'), 'default', true); ?>">
+						<img src="/images/new/social/email.png" />
+					</a>
+					<a href="http://www.facebook.com/Petolio" target="_blank" title="<?php echo $this->translate->_('Petolio on Facebook'); ?>">
+						<img src="/images/new/social/face.png" />
+					</a>
+					<a href="http://twitter.com/Petolio_com" target="_blank" title="<?php echo $this->translate->_('Petolio on Twitter'); ?>">
+						<img src="/images/new/social/tweet.png" />
+					</a>
+					<a href="http://plus.google.com/103912970851803885137/posts" target="_blank" title="<?php echo $this->translate->_('Petolio on Google Plus'); ?>">
+						<img src="/images/new/social/googli.png" />
+					</a>
+				</div>
+				<div class="four right"><img src="/images/new/box/get_social.png" /></div>
+				<div class="clear"></div>
+			</div>
+		</div>
+		<div class="green"></div>
+		<div class="footer">
+			<div class="align aAD">
+				<div class="left">
+					<?php printf($this->translate->_("Copyright &copy; %s Petolio Ltd.<br />All rights reserved"), "2012 - ".date('Y')); ?><br />
+				</div>
+				<div class="right">
+					<a href="<?php echo $this->url(array('controller'=>'contact', 'action'=>'cookies'), 'default', true); ?>"><?php echo $this->translate->_("Cookie Policy"); ?></a>
+					<a href="<?php echo $this->url(array('controller'=>'contact', 'action'=>'terms'), 'default', true); ?>"><?php echo $this->translate->_("Terms and Conditions"); ?></a>
+					<a href="<?php echo $this->url(array('controller'=>'contact', 'action'=>'data'), 'default', true); ?>"><?php echo $this->translate->_("Data Protection"); ?></a>
+					<a href="<?php echo $this->url(array('controller'=>'contact', 'action'=>'faq'), 'default', true); ?>"><?php echo $this->translate->_("FAQ"); ?></a>
+					<a href="<?php echo $this->url(array('controller'=>'contact'), 'default', true); ?>"><?php echo $this->translate->_("Contact / Credits"); ?></a>
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+	</div><!-- site end -->
+	<script type='text/javascript' src="<?php echo Petolio_Service_Util::autoVersion('/js/base64.js'); ?>"></script>
+	<script type='text/javascript' src="<?php echo Petolio_Service_Util::autoVersion('/js/dateformat.js'); ?>"></script>
+	<script type='text/javascript' src="<?php echo Petolio_Service_Util::autoVersion('/js/linkify.js'); ?>"></script>
+	<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion("/js/petolio.js"); ?>"></script>
+	<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion("/js/mypetolio.js"); ?>"></script>
+	<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion("/js/jquery/jquery.autoellipsis-1.0.10.min.js"); ?>"></script>
+	<script type="text/javascript">
+		Petolio.translate({
+			identity: <?php echo $this->hasIdentity ? 'true' : 'false'; ?>,
+			dialog: [
+				'<?php echo $this->translate->_("Message"); ?>',
+				'<?php echo $this->translate->_("Confirm"); ?>',
+				'<?php echo $this->translate->_("OK"); ?>',
+				'<?php echo $this->translate->_("Cancel"); ?>',
+				'<?php echo $this->translate->_("Loading"); ?>',
+				'<?php echo $this->translate->_("Please wait while loading..."); ?>',
+				'<?php echo $this->translate->_("Server Error"); ?>',
+				'<?php echo $this->translate->_("Sorry, the request could not be completed."); ?>',
+				'<?php echo $this->translate->_("Please confirm action"); ?>'
+			],
+			chosen: {
+				select_some_options: '<?php echo $this->translate->_("Select some Options"); ?>',
+				select_an_option: '<?php echo $this->translate->_("Select an Option"); ?>',
+				maximum_choices_reached: '<?php echo $this->translate->_("Maximum number of choices (%s) reached."); ?>',
+				no_results_type: '<?php echo $this->translate->_("Start typing to search for results."); ?>',
+				no_results_min: '<?php echo $this->translate->_("Please enter at least %s characters."); ?>',
+				no_results_empty: '<?php echo $this->translate->_("No more results."); ?>',
+				no_results_match: '<?php echo $this->translate->_('No results match "%s".'); ?>'
+			}
+		});
+
+		jQuery(Petolio.init);
+		READY(ClueTip.init);
+	</script>
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+			_gaq.push(['_setAccount', 'UA-28060885-1']);
+			_gaq.push(['_setDomainName', 'petolio.com']);
+			_gaq.push(['_setAllowLinker', true]);
+			_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0];
+			s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+	<script type="text/javascript">
+		window.___gcfg = {
+			lang: '<?php echo $this->translate->getLocale(); ?>'
+		};
+
+		(function() {
+			var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+			po.src = 'https://apis.google.com/js/plusone.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+		})();
+	</script>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+</body>
+</html>

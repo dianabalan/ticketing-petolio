@@ -1,0 +1,42 @@
+<table cellspacing="0" cellpadding="5" class="grid">
+	<col /><col width="150" /><col width="100" /><col width="60" />
+	<tr>
+		<th><a href="<?php echo $this->url(array('order' => 'name', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Name"); ?><?php if($this->order == 'name'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+		<th><a href="<?php echo $this->url(array('order' => 'type', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Type"); ?><?php if($this->order == 'type'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+		<th><a href="<?php echo $this->url(array('order' => 'owner', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Owner"); ?><?php if($this->order == 'owner'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+		<th></th>
+	</tr>
+	<?php foreach($this->services as $service): ?>
+		<?php
+			// urls
+			$url = $this->url(array('controller'=>'services', 'action'=>'view', 'service' => $service["id"]), 'default', true);
+			$profile = $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $service["user_id"]), 'default', true);
+			$products = $this->url(array('controller'=>'products', 'action'=>'index', 'owner' => $service["user_name"]), 'default', true);
+			$contact = $this->url(array('controller'=>'services', 'action'=>'contact', 'service' => $service["id"]), 'default', true);
+			$services = $this->url(array('controller'=>'marketplace', 'action'=>'index', 'owner' => $service["user_name"]), 'default', true);
+		?>
+		<tr>
+			<td><a href="<?php echo $url; ?>"><?php echo $service["name"]; ?></a></td>
+			<td><?php echo $service["type"]; ?></td>
+			<td><?php echo $service["user_name"]; ?></td>
+			<td align="right" nowrap="nowrap">
+				<a href="<?php echo $profile; ?>" class="icon_link profile" 
+						title="<?php echo $this->translate->_("View Profile"); ?>">
+					<span></span>
+				</a>
+				<a href="<?php echo $products; ?>" class="icon_link product" 
+						title="<?php echo $this->translate->_("View Products"); ?>">
+					<span></span>
+				</a>
+				<a href="<?php echo $contact; ?>" class="icon_link send" 
+						title="<?php echo $this->translate->_("Contact User"); ?>">
+					<span></span>
+				</a>
+				<a href="<?php echo $services; ?>" class="icon_link service"  
+						title="<?php echo $this->translate->_("More Services"); ?>">
+					<span></span>
+				</a>
+			</td>
+		</tr>
+	<?php endforeach; ?>
+</table>

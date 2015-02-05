@@ -1,0 +1,10 @@
+<?php
+	echo $this->partial('user-template.phtml', array(
+		'translate' => $this->translate,
+		'usertypes' => $userTypes,
+		'data' => $this->paginator,
+		'identity' => $this->identity,
+		'links' => 'plus',
+		'per_row' => 2
+	));
+?>

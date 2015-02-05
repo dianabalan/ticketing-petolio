@@ -1,0 +1,62 @@
+<link href="<?php echo Petolio_Service_Util::autoVersion('/css/jquery.jplayer.css'); ?>" rel="stylesheet" type="text/css" />
+<style type="text/css">
+	html, body {
+		margin: 0px;
+		padding: 0px;
+	}
+</style>
+<div id="jquery_jplayer_1" class="jp-jplayer"></div>
+<div id="jp_container_1" class="jp-audio">
+	<div class="jp-type-single">
+		<div class="jp-gui jp-interface">
+			<ul class="jp-controls">
+				<li><a href="javascript:void(0);" class="jp-play" tabindex="1" style="display: block;" title="' translate.play '"><?php echo $this->translate->_("Play"); ?></a></li>
+				<li><a href="javascript:void(0);" class="jp-pause" tabindex="1" style="display: block;" title="' translate.pause '"><?php echo $this->translate->_("Pause"); ?></a></li>
+				<li><a href="javascript:void(0);" class="jp-stop" tabindex="1" style="display: block;" title="' translate.stop '"><?php echo $this->translate->_("Stop"); ?></a></li>
+				<li><a href="javascript:void(0);" class="jp-mute" tabindex="1" style="display: block;" title="' translate.mute '"><?php echo $this->translate->_("Mute"); ?></a></li>
+				<li><a href="javascript:void(0);" class="jp-unmute" tabindex="1" style="display: block;" title="' translate.unmute '"><?php echo $this->translate->_("Unmute"); ?></a></li>
+				<li><a href="javascript:void(0);" class="jp-volume-max" tabindex="1" style="display: block;" title="' translate.max_volume '"><?php echo $this->translate->_("Max Volume"); ?></a></li>
+			</ul>
+			<div class="jp-progress">
+				<div class="jp-seek-bar">
+					<div class="jp-play-bar"></div>
+				</div>
+			</div>
+			<div class="jp-volume-bar">
+				<div class="jp-volume-bar-value"></div>
+			</div>
+			<div class="jp-time-holder">
+				<div class="jp-current-time"></div>
+				<div class="jp-duration"></div>
+				<ul class="jp-toggles">
+					<li><a href="javascript:void(0);" class="jp-repeat" tabindex="1" style="display: block;" title="' translate.repeat '"><?php echo $this->translate->_("Repeat"); ?></a></li>
+					<li><a href="javascript:void(0);" class="jp-repeat-off" tabindex="1" style="display: block;" title="' translate.repeat_off '"><?php echo $this->translate->_("Repeat Off"); ?></a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="jp-no-solution"><?php echo $this->translate->_("To play the media you will need to either update your browser to a recent version or update your <a href=\"http://get.adobe.com/flashplayer/\" target=\"_blank\">Flash plugin</a>"); ?></div>
+	</div>
+</div>
+<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/jquery/jquery-1.6.2.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/jquery/jquery.jplayer.min.js'); ?>"></script>
+<script type="text/javascript">
+var SITE_URL = '<?php echo PO_BASE_URL; ?>';
+$(document).ready(function(){
+	var file = '<?php echo $this->file; ?>'.toLowerCase(),
+		ext = file.split('.').pop(),
+		media = {};
+
+	// set media
+	media[ext] = SITE_URL + file.substr(1);
+
+	// load jplayer
+	$("#jquery_jplayer_1").jPlayer({
+		ready: function (event) {
+			$(this).jPlayer("setMedia", media);
+		},
+		swfPath: SITE_URL + "swf",
+		supplied: ext,
+		wmode: "window"
+	});
+});
+</script>

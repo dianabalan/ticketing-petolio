@@ -1,0 +1,32 @@
+<div class="news_title">
+	<span><?php echo Petolio_Service_Util::formatDate($this->item['pubDate'], $this->date_pattern); ?></span>
+	<h3><a href="<?php echo $this->item['link']; ?>" class="ellipsis" target="_blank" news-cache-id="<?php echo $this->item['id']; ?>">
+		<?php 
+			echo trim(strip_tags(htmlspecialchars_decode($this->item['title'])));
+		?></a></h3>
+</div>
+<div class="news_content">
+	<p><?php echo nl2br(trim(strip_tags(str_replace('&nbsp;', '', html_entity_decode($this->item['description']))))); ?></p>
+	<span>
+		<?php
+			$info = null;
+
+			if($this->item['author'])
+				$info .= $this->translate->_("By") . " {$this->item['author']}";
+
+			if($this->item['category'])
+			 	$info .= (is_null($info) ? ucfirst($this->translate->_("in")) : " &nbsp;&bull;&nbsp; " . $this->translate->_("in")) . " {$this->item['category']}";
+
+			// time
+			$info .= (is_null($info) ? "" : " &nbsp;&bull;&nbsp; ");
+			$info .= sprintf($this->translate->_("Updated %s"), 
+						Petolio_Service_Util::formatTime($this->sources[$this->item['news_id']]['date_cached']));
+			
+			// source
+			$info .= ' &nbsp;&bull;&nbsp; <a href="'.$this->item['link'].'" target="_blank">'.$this->translate->_("Source").': '.
+						$this->sources[$this->item['news_id']]['title'].'</a>';
+			
+			echo $info;
+		?>
+	</span>
+</div>

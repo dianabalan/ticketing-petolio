@@ -1,0 +1,28 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Cookie Policy"); ?></h1>
+		<?php if(strcasecmp($this->translate->getLocale(), 'en') == 0) include "cookies-en.phtml"; ?>
+		<?php if(strcasecmp($this->translate->getLocale(), 'de') == 0) include "cookies-de.phtml"; ?>
+	</div>
+</div>
+<script type="text/javascript">
+var FAQ = function() {
+	var __construct = function() {
+		var a = $('.faq').find('div > h3');
+
+		a.click(function() {
+			var b = $(this).parent().find('div');
+			b.animate({ opacity: 'toggle', height: 'toggle', paddingBottom: 'toggle' }, "slow");
+		});
+	};
+
+	// public
+	return {
+		init: __construct
+	}
+}();
+
+READY(FAQ.init);
+</script>

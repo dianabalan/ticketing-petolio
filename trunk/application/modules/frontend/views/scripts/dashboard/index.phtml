@@ -1,0 +1,33 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down dash"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("My Entries"); ?></h1>
+		<br />
+		<div class="disabler"></div>
+		<div class="post_entry">
+			<?php echo $this->partial('dashboard/post.phtml', array(
+	        	'translate' => $this->translate
+    		)); ?>
+		</div>
+		<div class="new_entries">
+			<?php echo $this->partial('dashboard/new.phtml'); ?>
+		</div>
+		<div class="entries">
+			<?php echo $this->partial('dashboard/feed.phtml', array(
+	        	'translate' => $this->translate,
+				'privacy' => $this->privacy,
+	        	'results' => $this->results,
+				'more' => $this->more,
+				'identity' => $this->identity,
+				'switch' => "0"
+    		)); ?>
+		</div>
+	</div>
+</div>
+<?php $imgsw_path = array(
+	'image' => "{custom}",
+	'audio' => "{custom}",
+	'video' => "http://www.youtube.com/embed/{video}"
+); include "../application/modules/frontend/views/scripts/imgsw.phtml"; ?>
+<?php $dashboard_location = "dashboard"; include "init.phtml"; ?>

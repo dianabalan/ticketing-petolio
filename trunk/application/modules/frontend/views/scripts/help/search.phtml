@@ -1,0 +1,103 @@
+<?php 
+	$keyword = $this->request->getParam('keyword');
+	$owner = $this->request->getParam('owner');
+	$fromdate = base64_decode($this->request->getParam('fromdate'));
+	$todate = base64_decode($this->request->getParam('todate'));
+	$species = $this->request->getParam('species');
+	$status = $this->request->getParam('status');
+	$answered = $this->request->getParam('answered');
+	$targeted = $this->request->getParam('targeted');
+
+	// filter by question type
+	$types = null;
+	foreach ($this->types as $id => $name) {
+		$hover = $id == $species ? ' selected="selected"' : null;
+		$types .= "<option value='{$id}'{$hover}>{$name}</option>";
+	}
+
+	// filter by status
+	$stats = null;
+	foreach ($this->status as $id => $name) {
+		$hover = $id == $status ? ' selected="selected"' : null;
+		$stats .= "<option value='{$id}'{$hover}>{$name}</option>";
+	}
+?>
+<div class="search-box">
+	<form id="front_search_form" action="<?php echo $this->action; ?>">
+		<input type="text" name="keyword" 
+			value="<?php echo isset($keyword) ? $keyword : $this->translate->_('Search...'); ?>" 
+			label="<?php echo $this->translate->_('Search...'); ?>" />
+		<input type="submit" class="search_submit" value="" />
+		<div class="clear"></div>
+	</form>
+</div>
+<div class="search-more">
+	<a href="javascript:void(0);" class="rreset"><?php echo $this->translate->_("Reset"); ?></a>
+	<a href="javascript:void(0);" hide="<?php echo $this->translate->_("Close search options"); ?>" 
+		show="<?php echo $this->translate->_("More search options"); ?>" class="mmore">
+		<?php echo $this->translate->_("More search options"); ?></a>
+	<div class="advanced-search">
+		<div class="nub"></div>
+		<form id="advanced_search_form" action="<?php echo $this->action; ?>">
+			<table width="100%" cellspacing="5" cellpadding="5" border="0">
+				<tr>
+					<td><label><?php echo $this->translate->_("Keywords"); ?></label></td>
+					<td style="padding-left: 5px;"><input type="text" name="keyword" value="<?php echo $keyword; ?>" /></td>
+				</tr>
+				<?php if(is_null($this->mine)): ?>
+				<tr>
+					<td><label><?php echo $this->translate->_("Created by"); ?></label></td>
+					<td style='padding-left: 5px;'><input type='text' name='owner' value='<?php echo $owner; ?>' /></td>
+				</tr>
+				<?php endif; ?>
+				<tr>
+					<td><label><?php echo $this->translate->_("Date from"); ?></label></td>
+					<td style='padding-left: 5px;'><input type='text' name='fromdate' value='<?php echo $fromdate; ?>' /></td>
+				</tr>
+				<tr>
+					<td><label><?php echo $this->translate->_("Date to"); ?></label></td>
+					<td style='padding-left: 5px;'><input type='text' name='todate' value='<?php echo $todate; ?>' /></td>
+				</tr>
+				<tr>
+					<td><label><?php echo $this->translate->_("Type"); ?></label></td>
+					<td style='padding-left: 5px;'><select name='species'><option value=''><?php echo $this->translate->_("Select Species"); ?></option><?php echo $types; ?></select></td>
+				</tr>
+				<tr>
+					<td><label><?php echo $this->translate->_("Status"); ?></label></td>
+					<td style='padding-left: 5px;'><select name='status'><?php echo $stats; ?></select></td>
+				</tr>
+				<?php 
+				if(is_null($this->mine) && $this->auth->hasIdentity()):
+					$ans = $answered == 'on' ? " checked='checked'" : '';
+					$tar = $targeted == 'on' ? " checked='checked'" : '';
+				?>
+				<tr>
+					<td style='padding-left: 13px;' colspan='2'>
+						<input style="width: 15px; margin: 10px 5px 0px 100px" id='ans' type='checkbox' class='check' name='answered' <?php echo $ans; ?>/>
+						<label for='ans' class='check' style="width: auto;"><?php echo $this->translate->_("Questions that I have answered"); ?></label>
+					</td>
+				</tr>
+				<tr>
+					<td style='padding-left: 13px;' colspan='2'>
+						<input style="width: 15px; margin: 10px 5px 0px 100px" id='tar' type='checkbox' class='check' name='targeted' <?php echo $tar; ?>/>
+						<label for='tar' class='check' style="width: auto;"><?php echo $this->translate->_("Questions targeted for me"); ?></label>
+					</td>
+				</tr>
+				<?php endif; ?>
+				<tr>
+					<td colspan="2">
+						<input class="submit" style="float: right;" type="button" id="search_reset" value="<?php echo $this->translate->_("Reset"); ?>" />
+						<input class="submit" style="float: right;" type="submit" value="<?php echo $this->translate->_("Go"); ?>" />
+					</td>
+				</tr>
+			</table>
+		</form>
+		<script type="text/javascript" src="/js/search.js"></script>
+	</div>
+</div>
+<script type="text/javascript">
+	READY(function(){
+		$('input[name="fromdate"]').datepicker();
+		$('input[name="todate"]').datepicker();
+	});
+</script>

@@ -1,0 +1,132 @@
+<?php if($this->auth->hasIdentity()):
+
+if($this->microsite) {
+	if($this->admin) {
+		$title = $this->translate->_("Microsite Options");
+		$accounts = array(
+			array(
+				'link' => $this->url(array('controller'=>'microsites', 'action'=>'index'), 'default', true),
+				'name' => $this->translate->_("Overview"),
+				'class' => 'lm-microsite_sm'
+			),
+			array(
+				'link' => $this->url(array('controller'=>'microsites', 'action'=>'edit'), 'default', true),
+				'name' => $this->translate->_("Edit Microsite"),
+				'class' => 'lm-microsite_sm'
+			),
+			array(
+				'link' => $this->url(array('controller'=>'microsites', 'action'=>'pictures'), 'default', true),
+				'name' => $this->translate->_("Pictures"),
+				'class' => 'lm-microsite_sm'
+			),
+			array(
+				'link' => $this->url(array('controller'=>'microsites', 'action'=>'videos'), 'default', true),
+				'name' => $this->translate->_("Videos"),
+				'class' => 'lm-microsite_sm'
+			)
+		);
+
+		if($this->microsite->getActive() == 1) {
+			$accounts[] = array(
+				'link' => $this->url(array('controller'=>'microsites', 'action'=>'deactivate'), 'default', true),
+				'name' => $this->translate->_("Deactivate Microsite"),
+				'class' => 'lm-microsite_sm reqconf'
+			);
+		} else {
+			$accounts[] = array(
+				'link' => $this->url(array('controller'=>'microsites', 'action'=>'activate'), 'default', true),
+				'name' => $this->translate->_("Activate Microsite"),
+				'class' => 'lm-microsite_sm reqconf'
+			);
+		}
+	} else {
+		$title = $this->user->getName();
+		$accounts = array(
+			array(
+				'link' => $this->url(array('controller'=>'friends', 'action'=>'invite', 'id' => $this->user->getId()), 'default', true),
+				'name' => $this->translate->_("Add to Friends"),
+				'class' => 'lm-friends_sm'
+			),
+			array(
+				'link' => $this->url(array('controller'=>'messages', 'action'=>'send', 'id' => $this->user->getId()), 'default', true),
+				'name' => $this->translate->_("Send Private Message"),
+				'class' => 'lm-messages_sm'
+			)
+		);
+	}
+} else {
+	$title = $this->translate->_("Microsite Options");
+	$accounts = array(
+		array(
+			'link' => $this->url(array('controller'=>'microsites', 'action'=>'add'), 'default', true),
+			'name' => $this->translate->_("Create Microsite"),
+			'class' => 'lm-microsite_sm'
+		)
+	);
+}
+
+$links = null;
+foreach($accounts as $link) {
+	$ttl = preg_match("/reqconf/i", $link['class']) ? "title='{$link['name']}?'" : "title='{$link['name']}'";
+	$links .= "<li><a href='{$link['link']}' class='{$link['class']}' {$ttl}><span>{$link['name']}</span></a></li>";
+}
+
+$this->placeholder('sidebar')
+	->append("<h3>{$title}</h3>
+		<ul class=\"leftsubmenu\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
+endif;
+
+$this->placeholder('sidebar')
+	 ->append("<h3>".$this->translate->_("Search Pets")."</h3>
+			<form id='pets_search_form'>
+				<table width='100%' cellspacing='3' cellpadding='3' border='0'>
+					<tr>
+						<td><label>".$this->translate->_("Keywords")."</label></td>
+						<td style='padding-left: 5px;'><input type='text' name='keyword' size='23' value='{$this->search_name}' /></td>
+					</tr>
+					<tr>
+						<td colspan='2'><input class='srcbtn' type='submit' value='".$this->translate->_("Go")."' /></td>
+					</tr>
+				</table>
+			</form>");
+
+$this->placeholder('sidebar')
+	 ->append("<h3>".$this->translate->_("Search Services")."</h3>
+			<form id='services_search_form'>
+				<table width='100%' cellspacing='3' cellpadding='3' border='0'>
+					<tr>
+						<td><label>".$this->translate->_("Keywords")."</label></td>
+						<td style='padding-left: 5px;'><input type='text' name='keyword' size='23' value='{$this->search_name}' /></td>
+					</tr>
+					<tr>
+						<td colspan='2'><input class='srcbtn' type='submit' value='".$this->translate->_("Go")."' /></td>
+					</tr>
+				</table>
+			</form>");
+?>
+<script type="text/javascript">
+(function($){
+	$.fn.serializeURL = function() {
+		var url = '';
+
+		jQuery.map($(this).serializeArray(), function(n, i){
+			if(n['value'])
+				url += n['name'] + '/' + n['value'] + '/';
+		});
+
+		return url;
+	};
+})(jQuery);
+
+READY(function(){
+	$('#pets_search_form').submit(function(e){
+		e.preventDefault();
+		Petolio.go(SITE_URL + 'pets/index/' + $(this).serializeURL());
+	});
+
+	$('#services_search_form').submit(function(e){
+		e.preventDefault();
+		Petolio.go(SITE_URL + 'marketplace/index/' + $(this).serializeURL());
+	});
+});
+</script>

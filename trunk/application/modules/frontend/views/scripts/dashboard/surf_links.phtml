@@ -1,0 +1,28 @@
+<div class="left">
+	<span title="<?php echo Petolio_Service_Util::formatDate($this->entry['date_created'], Petolio_Service_Util::MEDIUMDATE, true, true); ?>"><?php echo Petolio_Service_Util::formatTime(strtotime($this->entry['date_created'])); ?></span>
+	<?php if (!is_null($this->identity) && $this->activity == false): ?>
+		&nbsp;&bull;&nbsp;
+		<?php if($this->entry['attached']['self']): ?>
+			<a href="javascript:void(0);" name="rating_remove" data-id="<?php echo $this->entry['attached']['self']; ?>"><?php echo $this->translate->_('Unlike'); ?></a>
+		<?php else: ?>
+			<a href="javascript:void(0);" name="rating_add"><?php echo $this->translate->_('Like'); ?></a>
+		<?php endif; ?>
+		&nbsp;&bull;&nbsp;
+		<a href="javascript:void(0);" name="comment_add"><?php echo $this->translate->_('Comment'); ?></a>
+		<?php if(is_null($this->entry['identity'])): ?>
+			&nbsp;&bull;&nbsp;
+			<a href="javascript:void(0);" name="entry_share"><?php echo $this->translate->_('Share'); ?></a>
+		<?php endif; ?>
+		&nbsp;&bull;&nbsp;
+		<?php if($this->entry['attached']['subscription']): ?>
+			<a href="javascript:void(0);" name="subscription_remove" data-id="<?php echo $this->entry['attached']['subscription']; ?>"><?php echo $this->translate->_('Unsubscribe'); ?></a>
+		<?php else: ?>
+			<a href="javascript:void(0);" name="subscription_add"><?php echo $this->translate->_('Subscribe'); ?></a>
+		<?php endif; ?>
+	<?php endif; ?>
+	&nbsp;&bull;&nbsp;
+</div>
+<div class="left">
+	<div class="privacy <?php echo $this->privacy[$this->entry['attached']['privacy']]; ?>"></div>
+</div>
+<div class="clear"></div>

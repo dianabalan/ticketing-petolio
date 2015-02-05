@@ -1,0 +1,26 @@
+<div class="rating_translate" style="display: none;"><?php echo json_encode(array(
+	'view_ratings' => $this->translate->_("View Likes"),
+	'slf_ratings_1' => $this->translate->_("You like this."),
+	'non_ratings_1' => $this->translate->ngettext('%1$s %2$s like this.', '%1$s %2$s likes this.', 1),
+	'all_ratings_1' => $this->translate->ngettext('You and %1$s %2$s like this.', 'You and %1$s %2$s likes this.', 1),
+	'slf_ratings_2' => $this->translate->_("You like this."),
+	'non_ratings_2' => $this->translate->ngettext('%1$s %2$s like this.', '%1$s %2$s likes this.', 2),
+	'all_ratings_2' => $this->translate->ngettext('You and %1$s %2$s like this.', 'You and %1$s %2$s likes this.', 2),
+	'person' => $this->translate->_('person'),
+	'people' => $this->translate->_('people'),
+	'close' => $this->translate->_("Close")
+)); ?>
+</div>
+<?php if ($this->hasIdentity): ?>
+	<?php if($this->plugin->self): ?>
+		<a href="javascript:void(0);" class="rating_remove" style="padding: 2px 5px; border: 1px solid #ccc; background: white;" rel="<?php echo $this->plugin->self->getId(); ?>"><?php echo $this->translate->_("Unlike"); ?></a>
+	<?php else: ?>
+		<a href="javascript:void(0);" class="rating_add" style="padding: 2px 5px; border: 1px solid #ccc; background: white;"><?php echo $this->translate->_("Like"); ?></a>
+	<?php endif; ?>
+	&nbsp;&bull;&nbsp;
+<?php endif; ?>
+<strong>
+	<?php if($this->plugin->data > 0): ?><a href="javascript:void(0);" class="rating_view"><?php endif; ?>
+	<?php $this->plugin->data == 1 ? printf($this->translate->_("%s Like"), $this->plugin->data) : printf($this->translate->_("%s Likes"), $this->plugin->data); ?>
+	<?php if($this->plugin->data > 0): ?></a><?php endif; ?>
+</strong>

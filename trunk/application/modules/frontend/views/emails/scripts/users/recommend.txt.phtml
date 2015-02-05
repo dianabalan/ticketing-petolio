@@ -1,0 +1,8 @@
+<?php echo $this->translate->_("Dear Sir or Madam"); ?>
+
+<?php printf($this->translate->_("A friend of yours, %s has recommended the following %s on Petolio.com:"), $this->who, $this->what); ?>
+<a href="<?php echo $this->eventLink; ?>"><?php echo $this->eventLink; ?></a>
+
+
+--
+<?php echo $this->translate->_("Petolio team"); ?>

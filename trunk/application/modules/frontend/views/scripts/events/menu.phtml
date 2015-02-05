@@ -1,0 +1,101 @@
+<?php
+
+$accounts = array();
+$accounts[] = array(
+	'link' => $this->url(array('controller'=>'events', 'action'=>'index'), 'default', true),
+	'name' => $this->translate->_("Overview"),
+	'class' => 'lm-calendar_sm'
+);
+
+$accounts[] = array(
+	'link' => "javascript:Calendar.Todo.addEditWindow({}, null);",
+	'name' => $this->translate->_("Add To-Do"),
+	'class' => 'lm-calendar_sm'
+);
+
+$accounts[] = array(
+	'link' => "javascript:Calendar.addEditWindow({}, null);",
+	'name' => $this->translate->_("Add Appointment"),
+	'class' => 'lm-calendar_sm'
+);
+
+$accounts[] = array(
+	'link' => "javascript:Calendar.Chat.addEditWindow({}, null);",
+	'name' => $this->translate->_("Add Chat Channel"),
+	'class' => 'lm-calendar_sm'
+);
+
+$accounts[] = array(
+	'link' => "javascript:Calendar.addEditWindow({}, null, true);",
+	'name' => $this->translate->_("Add Event with Attendees"),
+	'class' => 'lm-calendar_sm'
+);
+
+$links = null;
+foreach($accounts as $link) {
+	if ( isset($link['class']) && strlen($link['class']) > 0 ) {
+		$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+	} else {
+		$links .= "<li><a href='{$link['link']}'>{$link['name']}</a></li>";
+	}
+}
+
+$this->placeholder('sidebar')
+     ->append("<h3>".$this->translate->_("Events")."</h3>
+     	<ul class=\"leftsubmenu fullwidth\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
+
+// figure out radius
+$radius = null;
+foreach (range(10, 50, 10) as $range)
+	$radius .= "<option value='{$range}'>{$range} km</option>";
+
+$this->placeholder('sidebar')
+	 ->append("<h3>".$this->translate->_("Search Events")."</h3>
+	 		<ul class='leftsubmenu' id='nearme_container' style='border-bottom: 1px dashed #ccc; padding-bottom: 5px; margin-bottom: 10px;'><li style='width: 100%;'><a href='javascript:void(0);' id='nearme' class='lm-calendar_sm'><span>".$this->translate->_("Show events near me")."</span></a></li><div class='clear'></div></ul>
+	 		<input type='hidden' value='10' name='search_radius' id='search_radius' />
+	 		<input type='hidden' value='' name='search_address' id='search_address' />
+	 		<form id='events_search_form'>
+				<table width='100%' cellspacing='3' cellpadding='3' border='0'>
+					<tr>
+						<td><label>".$this->translate->_("Keywords")."</label></td>
+						<td style='padding-left: 5px;'><input type='text' name='name' size='23' value='{$this->search_name}' /></td>
+					</tr>
+					<tr>
+						<td colspan='2'><input class='srcbtn' type='submit' value='".$this->translate->_("Go")."' /><input class='srcbtn' type='button' id='search_reset' value='".$this->translate->_("Reset")."' /></td>
+					</tr>
+				</table>
+			</form>");
+?>
+<script type="text/javascript">
+(function($){
+	$.fn.serializeURL = function() {
+		var url = '';
+
+		jQuery.map($(this).serializeArray(), function(n, i){
+			if(n['value'])
+				url += n['name'] + '/' + n['value'] + '/';
+		});
+
+		return url;
+	};
+})(jQuery);
+
+READY(function(){
+	$('#events_search_form').submit(function(e){
+		e.preventDefault();
+		Petolio.go(SITE_URL + 'events/index/' + $(this).serializeURL());
+	});
+
+	$("#search_reset").click(function(e) {
+		e.preventDefault();
+		$("#events_search_form input").each(function(index) {
+			if ( $(this).attr('type') == 'text' ) {
+				$(this).attr('value', '');
+			}
+		});
+		$("#events_search_form").submit();
+	});
+
+	$('#nearme').click(EventsMap.nearme);
+});
+</script>

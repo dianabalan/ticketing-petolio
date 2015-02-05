@@ -1,0 +1,68 @@
+<?php echo $this->doctype(); ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<?php echo $this->headMeta(); ?>
+	<?php echo $this->headTitle(); ?>
+	<?php echo $this->headLink(); ?>
+	<?php echo $this->jQuery(); ?>
+	<script type="text/javascript">var SITE_URL = '<?php echo PO_BASE_URL; ?>admin';</script>
+	<script type="text/javascript">var TINY_URL = {js: '<?php echo PO_BASE_URL; ?>', css: '<?php echo PO_BASE_URL; ?>adm/css/admin.css'};</script>
+	<script type="text/javascript">var LOCALE = '<?php echo $this->translate->getLocale(); ?>';</script>
+	<?php
+		if($this->tinymce) {
+			$this->headScript()->appendFile(Petolio_Service_Util::autoVersion("/js/tinymce/jquery.tinymce.min.js"));
+			$this->headScript()->appendFile(Petolio_Service_Util::autoVersion("/js/tinymce/resources.tinymce.js"));
+			$this->headScript()->appendFile(Petolio_Service_Util::autoVersion("/js/tinymce/{$this->tinymce}.init.js"));
+		}
+
+		echo $this->headScript();
+	?>
+</head>
+<body class="main" style="display: none;">
+	<?php
+		// main menu, available only if the user is logged in
+		echo '<div class="main-menu">';
+		echo '<span class="title"><a href="'. PO_BASE_URL . 'admin' .'">' . $this->translate->_("Petolio Administration") . '</a></span>';
+		echo '<span class="goto">[<a href="'. PO_BASE_URL . 'editor' .'">' . $this->translate->_("Petolio Editing") . '</a>]</span>';
+		echo '<div class="clear"></div>';
+		echo "<div class='menu'><div class='disable'></div>{$this->menu}</div>";
+		echo '</div>';
+
+		// messages
+		if(isset($this->po_messages) && is_array($this->po_messages) && count($this->po_messages) > 0) {
+			echo '<div class="message"><ul>';
+			foreach ($this->po_messages as $message)
+				echo '<li>'.$message.'</li>'; // this is already translated
+			echo '</ul></div>';
+		}
+
+		// content or login form
+		echo '<div class="main-container">';
+		if($this->auth->hasIdentity() && $this->auth->getIdentity()->is_admin == 1):
+	  		echo $this->layout()->content;
+		else:
+			echo $this->loginForm($this->loginForm);
+		endif;
+		echo '</div>';
+	?>
+	<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion("/adm/js/admin.js"); ?>"></script>
+	<script type="text/javascript">
+		Admin.translate({
+			dialog: [
+				'<?php echo $this->translate->_("Message"); ?>',
+				'<?php echo $this->translate->_("Confirm"); ?>',
+				'<?php echo $this->translate->_("OK"); ?>',
+				'<?php echo $this->translate->_("Cancel"); ?>',
+				'<?php echo $this->translate->_("Loading"); ?>',
+				'<?php echo $this->translate->_("Please wait while loading..."); ?>',
+				'<?php echo $this->translate->_("Server Error"); ?>',
+				'<?php echo $this->translate->_("Sorry, the request could not be completed."); ?>',
+				'<?php echo $this->translate->_("Please confirm action"); ?>'
+			]
+		});
+
+		$(Admin.init);
+		READY(Admin.unveil);
+	</script>
+</body>
+</html>

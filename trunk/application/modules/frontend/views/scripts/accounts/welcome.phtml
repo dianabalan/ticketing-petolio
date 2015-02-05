@@ -1,0 +1,37 @@
+<?php
+	$create_url = $this->url(array('controller'=>'accounts', 'action'=>'edit'), 'default', true);
+?>
+<div id="right">
+	<div class="rightbox">
+		<div>
+			<div class="left">
+				<a href="<?php echo $create_url; ?>" title="<?php echo $this->translate->_("Create your page"); ?>">
+					<img src="/images/new/large/create.png" alt="<?php echo $this->translate->_("Welcome to Petolio"); ?>" />
+				</a>
+			</div>
+			<ul class="title-menu">
+				<li><h3><?php echo $this->translate->_("Welcome to Petolio"); ?></h3></li>
+				<li><?php 
+					printf($this->translate->_("Start your journey by creating your %s or check out the following example pages."), 
+							"<a href='{$create_url}'><b>".$this->translate->_('page')."</b></a>"); 
+				?></li>
+			</ul>
+			<div class="clear"></div>
+		</div>
+		<?php if(isset($this->example_files)): ?>
+		<div class="clear images example-images">
+			<?php foreach ($this->example_files as $example): ?>
+			<img class="img" alt="<?php echo $this->translate->_("Service provider page example"); ?>" 
+				src="/images/userfiles/examples/<?php echo $example->getFile(); ?>" rel="<?php echo $example->getId(); ?>" />
+			<?php endforeach; ?>
+		</div>
+		<?php endif; ?>
+		<div class="clear tenpx"></div>
+		<a href="<?php echo $create_url; ?>" class="submit" /><?php echo $this->translate->_('create page'); ?></a>
+	</div>
+</div>
+<?php $imgsw_path = array(
+	'image' => "/images/userfiles/examples/{image}",
+	'audio' => "/images/userfiles/examples/{audio}",
+	'video' => "http://www.youtube.com/embed/{video}"
+); include "../application/modules/frontend/views/scripts/imgsw.phtml"; ?>

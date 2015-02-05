@@ -1,0 +1,9 @@
+<a href="javascript:void(0);" class="icon_link the_down openopt"><span><?php echo $this->translate->_("Small Talk Options"); ?></span></a>
+<ul id="optcont">
+	<dfn></dfn>
+	<li data-id="0"><a href="<?php echo $this->url(array('controller'=>'dashboard', 'action'=>'index'), 'default', true); ?>"><?php echo $this->translate->_("Show My Entries"); ?></a></li>
+	<li data-id="1"><a href="<?php echo $this->url(array('controller'=>'dashboard', 'action'=>'news'), 'default', true); ?>"><?php echo $this->translate->_("Show Friends Entries"); ?></a></li>
+	<li data-id="2"><a href="<?php echo $this->url(array('controller'=>'dashboard', 'action'=>'all'), 'default', true); ?>"><?php echo $this->translate->_("Show All Entries"); ?></a></li>
+	<li class="sep"></li>
+	<li><a href="javascript:void(0);" data-for="notification"></a></li>
+</ul>

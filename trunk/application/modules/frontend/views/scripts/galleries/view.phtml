@@ -1,0 +1,106 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1>
+		<?php 
+			echo $this->gallery->getTitle();
+			$this->headTitle($this->gallery->getTitle());
+			$this->headMeta()->appendProperty('og:title', $this->gallery->getTitle());
+			$this->headMeta()->appendProperty('og:description', Petolio_Service_Util::shortenText($this->gallery->getDescription(), 200, true));
+		?>
+		</h1>
+		<br />
+		<?php if(count($this->files) > 0): ?>
+		    <div class="pictures">
+				<?php
+				$first = true;
+				foreach($this->files as $idx => $pic):
+					if($first) {
+						$image = PO_BASE_URL."images/userfiles/galleries/{$this->gallery->getId()}/{$pic}";
+						$this->headMeta()->appendProperty('og:image', $image);
+						$first = false;
+					}
+				?>
+					<div class="pic">
+						<span class="img" rel="<?php echo $idx; ?>" style="background: #000 url('/images/userfiles/galleries/<?php echo $this->gallery->getId(); ?>/small_<?php echo $pic; ?>') center center no-repeat;"></span>
+					</div>
+				<?php endforeach; ?>
+				<div class="clear"></div>
+			    <?php if($this->picture_paginator->count() > 1): ?>
+			    	<?php echo $this->paginationControl($this->picture_paginator, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot')); ?>
+			    	<div class="clear"></div>
+			    <?php endif; ?>
+			</div>
+			<?php if($this->admin): ?>
+				<a href="<?php echo $this->url(array('controller'=>'galleries', 'action'=>'pictures', 'gallery'=>$this->gallery->getId()), 'default', true); ?>" class='icon_link edit right'><span><?php echo $this->translate->_("Edit Pictures"); ?></span></a>
+				<div class="clear"></div>
+			<?php endif; ?>
+		<?php else:
+			$image = PO_BASE_URL."images/new/logo.png";
+			$this->headMeta()->appendProperty('og:image', $image);
+		endif; if(count($this->videos) > 0): ?>
+			<hr />
+		    <div class="pictures">
+				<?php foreach($this->videos as $video): ?>
+					<?php
+						// get video entity
+						$entity = $video->getMapper();
+
+						// get video thumbnail
+						$thumbs = $entity->getVideoThumbnails();
+						$thumbnail = $thumbs[1]['url'];
+
+						// get video duration
+						$duration = date("i:s", $entity->getVideoDuration());
+					?>
+					<div class="pic">
+						<span class="vid" rel="<?php echo $video->getId(); ?>" style="background: #000 url('<?php echo $thumbnail; ?>') center center no-repeat;"></span>
+						<span class="duration"><?php echo $duration; ?></span>
+					</div>
+				<?php endforeach; ?>
+				<div class="clear"></div>
+			</div>
+			<?php if($this->admin): ?>
+				<a href="<?php echo $this->url(array('controller'=>'galleries', 'action'=>'videos', 'gallery'=>$this->gallery->getId()), 'default', true); ?>" class='icon_link edit right'><span><?php echo $this->translate->_("Edit Videos"); ?></span></a>
+			<?php endif; ?>
+		<?php endif; ?>
+		<div class="clear"><br /></div>
+		<table cellspacing="0" cellpadding="5" class="list">
+			<tr>
+				<th><?php echo $this->translate->_('Author'); ?></th>
+				<td>
+					<a href='<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $this->gallery->getOwnerId()), 'default', true); ?>' title='<?php echo $this->translate->_("View owner's profile"); ?>'>
+						<?php echo $this->gallery->getOwner()->getName(); ?>
+					</a>
+				</td>
+			</tr>
+			<tr>
+				<th><?php echo $this->translate->_('Created on'); ?></th>
+				<td><?php echo Petolio_Service_Util::formatDate($this->gallery->getDateCreated(), null, true, true); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo $this->translate->_('Description'); ?></th>
+				<td><?php echo nl2br($this->gallery->getDescription()); ?></td>
+			</tr>
+		</table>
+	    <div class="clear"></div>
+		<?php if($this->admin): ?>
+			<div class="tenpx"></div>
+			<a href="<?php echo $this->url(array('controller'=>'galleries', 'action'=>'edit', 'gallery'=>$this->gallery->getId()), 'default', true); ?>" class='icon_link edit right'>
+				<span><?php echo $this->translate->_("Edit Gallery"); ?></span>
+			</a>
+		<?php endif; ?>
+		<div class="clear tenpx"></div>
+		
+		<div class="right">
+			<?php echo $this->partial('addthis.phtml', array('title' => $this->gallery->getTitle(), 'translate' => $this->translate)); ?>
+		</div>
+		
+	</div>
+</div>
+<?php $imgsw_path = array(
+	'image' => "/images/userfiles/galleries/{$this->gallery->getId()}/{image}",
+	'audio' => "/images/userfiles/galleries/{$this->gallery->getId()}/{audio}",
+	'video' => "http://www.youtube.com/embed/{video}"
+); include "../application/modules/frontend/views/scripts/imgsw.phtml"; ?>

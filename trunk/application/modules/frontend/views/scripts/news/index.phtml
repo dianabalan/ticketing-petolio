@@ -1,0 +1,131 @@
+<div id="right">
+	<div class="rightbox" id="news-page">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->title; ?></h1>
+		
+		<?php if(isset($this->new_entries) && count($this->new_entries) > 0): ?>
+		<div id="news-carousel">
+			<div id="news-crsl-nav" class="crsl-nav">
+				<a href="#" class="previous left">&laquo;</a>
+				<a href="#" class="next right">&raquo;</a>
+			</div>
+			<div class="crsl-container">
+				<div class="news-crsl-items" data-navigation="news-crsl-nav">
+					<div class="crsl-wrap">
+						<?php foreach ($this->new_entries as $item): ?>
+						<figure class="crsl-item">
+							<a href="<?php echo $item['link']; ?>" class="ellipsis" target="_blank" news-cache-id="<?php echo $item['id']; ?>">
+								<span><?php echo Petolio_Service_Util::formatDate($item['pubDate'], Petolio_Service_Util::JUSTTIME); ?>&nbsp;</span>
+								<?php echo trim(strip_tags(htmlspecialchars_decode($item['title']))); ?>
+							</a>
+						</figure>
+						<?php endforeach; ?>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="new-entries">
+			<span><?php echo count($this->new_entries); ?></span>
+			<?php echo $this->translate->_('New entries'); ?>
+		</div>
+		<div class="cls"></div>
+		<script type="text/javaScript" src="<?php echo Petolio_Service_Util::autoVersion('/js/responsiveCarousel.min.js'); ?>"></script>
+		<script type="text/javascript">
+			READY(function(){
+				var news_carousel = jQuery('#news-carousel');
+
+				news_carousel.show();
+				jQuery('.news-crsl-items', news_carousel).carousel({
+					visible: 10,
+					overflow: false,
+					autoRotate: 4000,
+					itemMinWidth: 600,
+					itemEqualHeight: true,
+					carousel: true
+				});
+			});
+		</script>
+		<?php endif; ?>
+		
+		<?php if(isset($this->latest_news) && count($this->latest_news) > 0): ?>
+		<div class="cover_news">
+			<?php
+			echo $this->partial('news/news-item.phtml', array(
+					"item" => $this->latest_news[0],
+					"sources" => $this->sources,
+					"translate" => $this->translate,
+					"date_pattern" => Petolio_Service_Util::NEWSDATE
+				));
+			?>
+		</div>
+		<div class="most_viewed">
+			<h2><?php echo $this->translate->_("Most Viewed"); ?></h2>
+			<?php foreach ($this->most_viewed as $item): ?>
+				<h3>
+					<a href="<?php echo $item['link']; ?>" class="ellipsis" target="_blank" news-cache-id="<?php echo $item['id']; ?>">
+						<span><?php echo Petolio_Service_Util::formatDate($item['pubDate'], Petolio_Service_Util::SHORTDATE); ?>&nbsp;</span>
+						<?php echo trim(strip_tags(htmlspecialchars_decode($item['title']))); ?>
+					</a>
+				</h3>
+			<?php endforeach; ?>
+		</div>
+		<div class="cls"></div>
+		<?php if(count($this->latest_news) > 2): ?>
+		<div class="cover_news subcover">
+			<?php
+			echo $this->partial('news/news-item.phtml', array(
+					"item" => $this->latest_news[1],
+					"sources" => $this->sources,
+					"translate" => $this->translate,
+					"date_pattern" => Petolio_Service_Util::NEWSDATE
+				));
+			?>
+		</div>
+		<div class="cover_news subcover">
+			<?php
+			echo $this->partial('news/news-item.phtml', array(
+					"item" => $this->latest_news[2],
+					"sources" => $this->sources,
+					"translate" => $this->translate,
+					"date_pattern" => Petolio_Service_Util::NEWSDATE
+				));
+			?>
+		</div>
+		<?php endif; ?>
+		<?php endif; ?>
+		<div class="clear"></div>
+		<?php if(isset($this->news) && count($this->news) > 0): ?>
+			<div class="news_list">
+				<?php
+					foreach($this->news as $item):
+						echo $this->partial('news/news-item.phtml', array(
+								"item" => $item,
+								"sources" => $this->sources,
+								"translate" => $this->translate,
+								"date_pattern" => Petolio_Service_Util::SHORTDATE
+							));
+					endforeach;
+				?>
+			</div>
+			<?php echo $this->paginationControl($this->news, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot')); ?>
+		<?php else: ?>
+			<b class="red bigger"><?php echo $this->translate->_("No news found."); ?></b>
+		<?php endif; ?>
+	</div>
+</div>
+<script type="text/javascript">
+	READY(function() {
+		$('.cover_news .news_title h3 a').ellipsis();
+		$('.most_viewed h3 a').ellipsis();
+
+		$('#news-page a.ellipsis').click(function(e) {
+			Petolio.ajax({
+				url: 'news/increment-viewed',
+				type: 'post',
+				data: {'id': $(this).attr('news-cache-id')},
+				cache: false,
+				success: function (x) {}
+			});
+		});
+	});
+</script>

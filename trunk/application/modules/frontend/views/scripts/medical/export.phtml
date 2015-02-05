@@ -1,0 +1,189 @@
+<?php function formatSize($size) {
+	if($size == 0)
+		return null;
+
+	$sizes = array(" Bytes", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB");
+	return (round($size/pow(1024, ($i = floor(log($size, 1024)))), $i > 1 ? 2 : 0) . $sizes[$i]);
+} function strip_html_special($a) {
+	return strip_tags(htmlspecialchars_decode($a), '<br><br /><br/>');
+} ?>
+<?php $pet_name = ucfirst($this->pet_attr['name']->getAttributeEntity()->getValue()); ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<style type="text/css">
+		a {
+			outline: none;
+			color: #047E00;
+			text-decoration: none;
+		}
+
+		a:hover, a:active, a:focus {
+			color: #73A900;
+			text-decoration: underline;
+		}
+		table.list {
+			margin: 5px auto 0px auto;
+			border: 1px solid #eee;
+			border-bottom: none;
+		}
+			table.list th {
+				font-weight: bold;
+				vertical-align: top;
+				border-bottom: 1px solid #eee;
+				text-align: left; /* stupid IE */
+			}
+
+			table.list td {
+				vertical-align: top;
+				border-bottom: 1px solid #eee;
+			}
+			h1 {
+				margin: 2px 0px 0px 5px;
+				padding: 0;
+				font: bold 30px Arial, Helvetica, sans-serif;
+				color: #ccdbcc;
+				letter-spacing: -2px;
+				text-align: left;
+			}
+			h2 {
+				margin: 0px;
+				padding: 5px 0px 0px 10px;
+				font: bold 16px Arial, Helvetica, sans-serif;
+				color: #333;
+				background-color: #F8F8F8;
+				border: 1px solid #eee;
+			}
+			h3 {
+				margin: 2px 0px 0px 5px;
+				padding: 0;
+				font: bold 16px Arial, Helvetica, sans-serif;
+				color: #004b00;
+				letter-spacing: -1px;
+			}
+		div.afile {
+			float: left;
+			margin: 3px;
+		}
+		div.afile a {
+			display: block;
+			height: 20px;
+		}
+		div.afile a:hover {
+			text-decoration: none;
+		}
+	</style>
+</head>
+<body>
+	<h1><?php echo $this->translate->_('Medical Record'); ?></h1>
+    <h2><?php echo $this->translate->_("Pet Details"); ?></h2>
+    <br />
+    <table cellspacing="0" cellpadding="3" border="0" class="list" width="100%">
+		<?php
+			if($this->pet_attr['name']->getAttributeEntity()->getValue() && strlen($this->pet_attr['name']->getAttributeEntity()->getValue()) > 0)
+        		echo "<tr><th>".$this->translate->_('Pet name')."</th>";
+        		echo "<td><a href=\"{$this->url(array('controller'=>'pets', 'action'=>'view', 'pet' => $this->medical_record->getPetId()), 'default', true)}\">{$pet_name}</a></td></tr>";
+        	$val = "";
+        	if(is_array($this->pet_attr['breed']->getAttributeEntity())) {
+        		$src = reset($this->pet_attr['breed']->getAttributeEntity());
+        		$val = $src->getValue();
+        	}
+        	echo "<tr><th>".$this->translate->_('Breed')."</th><td>{$val}</td></tr>";
+			if($this->pet_attr['gender']->getAttributeEntity()->getValue() && strlen($this->pet_attr['gender']->getAttributeEntity()->getValue()) > 0)
+        		echo "<tr><th>".$this->translate->_('Gender')."</th><td>{$this->pet_attr['gender']->getAttributeEntity()->getValue()}</td></tr>";
+			if($this->pet_attr['dateofbirth']->getAttributeEntity()->getValue() && strlen($this->pet_attr['dateofbirth']->getAttributeEntity()->getValue()) > 0)
+        		echo "<tr><th>".$this->translate->_('Date of birth')."</th><td>{$this->pet_attr['dateofbirth']->getAttributeEntity()->getValue()}</td></tr>";
+		?>
+    </table>
+    <br />
+	<h2><?php echo $this->medical_record->getHeadline1(); ?></h2>
+	<h3><?php echo $this->medical_record->getHeadline2(); ?></h3>
+	<br />
+	<table cellspacing="0" cellpadding="3" border="0" class="list" width="100%">
+		<col width="25%"/>
+		<col width="75%"/>
+		<?php if(isset($this->service)): ?>
+			<tr>
+				<th><?php echo $this->translate->_('Service:')?></th>
+				<td><a href="<?php echo $this->url(array('controller'=>'services', 'action'=>'view', 'service' => $this->medical_record->getServiceId()), 'default', true); ?>"><?php echo ucfirst($this->service_attributes['name']->getAttributeEntity()->getValue()); ?></a></td>
+			</tr>
+		<?php endif; ?>
+		<tr>
+			<th><?php echo $this->translate->_('Written by:')?></th>
+			<td><a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $this->owner->getId()), 'default', true); ?>"><?php echo $this->owner->getName(); ?></a></td>
+		</tr>
+		<tr>
+			<th><?php echo $this->translate->_('Start date:')?></th>
+			<td><?php echo Petolio_Service_Util::formatDate($this->medical_record->getStartDate(), Petolio_Service_Util::MEDIUMDATE, false); ?></td>
+		</tr>
+		<tr>
+			<th><?php echo $this->translate->_('End date:')?></th>
+			<td><?php echo Petolio_Service_Util::formatDate($this->medical_record->getEndDate(), Petolio_Service_Util::MEDIUMDATE, false); ?></td>
+		</tr>
+		<tr>
+			<th><?php echo $this->translate->_('Description:')?></th>
+			<td><?php echo strip_html_special($this->medical_record->getDescription()); ?></td>
+		</tr>
+		<?php if(isset($this->files) && count($this->files) > 0): ?>
+			<tr><td colspan="2">
+				<?php foreach($this->files as $file): // attached files ?>
+					<div class="afile"><a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'files', 'download'=>$file->getId()), 'default', true); ?>"><span><?php echo $file->getDescription()." (".formatSize($file->getSize() * 1024).")"; ?></span></a></div>
+				<?php endforeach; ?>
+				<div class="clear"></div>
+			</td></tr>
+		<?php endif; ?>
+	</table>
+	<?php if(isset($this->subentries) && count($this->subentries) > 0): ?>
+		<?php foreach($this->subentries as $subentry): ?>
+			<br />
+			<table cellspacing="0" cellpadding="3" border="0" class="list">
+				<col width="10%"/>
+				<col width="40%"/>
+				<col width="10%"/>
+				<col width="40%"/>
+				<tr>
+					<th colspan="4">
+						<h2><?php echo $subentry->getHeadline1(); ?></h2>
+						<?php echo $subentry->getHeadline2(); ?>
+					</th>
+				</tr>
+				<tr>
+					<th><?php echo $this->translate->_('Written by:')?></th>
+					<td><a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $subentry->getOwnerId()), 'default', true); ?>"><?php echo $subentry->getOwner()->getName(); ?></a></td>
+					<?php if($subentry->getServiceId()): ?>
+						<th><?php echo $this->translate->_('Service:')?></th>
+						<td><a href="<?php echo $this->url(array('controller'=>'services', 'action'=>'view', 'service' => $subentry->getServiceId()), 'default', true); ?>"><?php echo ucfirst($subentry->getServiceName()); ?></a></td>
+					<?php else: ?>
+						<td></td>
+						<td></td>
+					<?php endif; ?>
+				</tr>
+				<tr>
+					<th><?php echo $this->translate->_('Visit date:')?></th>
+					<td colspan="3"><?php echo Petolio_Service_Util::formatDate($subentry->getVisitDate(), Petolio_Service_Util::MEDIUMDATE, false); ?></td>
+				</tr>
+				<tr>
+					<th><?php echo $this->translate->_('Description:')?></th>
+					<td colspan="3"><?php echo strip_html_special($subentry->getDescription()); ?></td>
+				</tr>
+				<tr>
+					<th colspan="2"><?php echo $this->translate->_('Recommendation:')?></th>
+					<th colspan="2"><?php echo $this->translate->_('Drugs:')?></th>
+				</tr>
+				<tr>
+					<td colspan="2"><?php echo strip_html_special($subentry->getRecommendation()); ?></td>
+					<td colspan="2"><?php echo strip_html_special($subentry->getDrugs()); ?></td>
+				</tr>
+				<?php if(isset($this->subentries_files[$subentry->getId()]) && count($this->subentries_files[$subentry->getId()]) > 0): ?>
+					<tr><td colspan="4">
+						<?php foreach($this->subentries_files[$subentry->getId()] as $file): // attached files ?>
+							<div class="afile"><a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'files', 'download'=>$file->getId()), 'default', true); ?>"><span><?php echo $file->getDescription()." (".formatSize($file->getSize() * 1024).")"; ?></span></a></div>
+						<?php endforeach; ?>
+						<div class="clear"></div>
+					</td></tr>
+				<?php endif; ?>
+			</table>
+		<?php endforeach; ?>
+	<?php endif; ?>
+</body>
+</html>

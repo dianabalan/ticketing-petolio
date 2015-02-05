@@ -1,0 +1,24 @@
+<?php 
+
+$tips = array(
+	array(
+		'link' => '#',
+		'name' => $this->translate->_("Helpful Tips")
+	),
+	array(
+		'link' => '#',
+		'name' => $this->translate->_("Tutorial Videos")
+	),
+	array(
+		'link' => '#',
+		'name' => $this->translate->_("Contact Us")
+	)
+);
+
+$links = null;
+foreach($tips as $link)
+	$links .= "<li><a href='{$link['link']}'>{$link['name']}</a></li>";
+
+$this->placeholder('sidebar')
+     ->prepend("<h1>".$this->translate->_("Tips")."</h1>
+     	<ul>{$links}</ul>");

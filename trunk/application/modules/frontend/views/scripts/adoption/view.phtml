@@ -1,0 +1,236 @@
+<?php include "menu.phtml"; $pet_name = ucfirst($this->attributes['name']->getAttributeEntity()->getValue()); ?>
+<div id="right">
+	<div class="rightbox">
+		<?php if($this->flagged): ?>
+			<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+			<h1><?php echo $this->translate->_("Pet:"); ?> <?php echo $pet_name; ?></h1>
+			<br />
+			<div class="c_error">
+				<div><b><?php echo $this->translate->_("Cannot display this pet because it was flagged by the community."); ?></b></div>
+				<ul>
+					<?php foreach(array_unique($this->flagged) as $item): ?>
+						<li><?php echo $item; ?></li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+		<?php else: ?>
+			<div class="context"><div class="in">
+				<a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a>
+				<?php if ($this->hasIdentity && !$this->admin): ?>
+					<a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'favorite', 'pet' => $this->pet->getId()), 'default', true); ?>" class="icon_link favorite reqconf" title="<?php echo $this->translate->_('Add to Favorite').'?'; ?>"><span><?php echo $this->translate->_('Add to Favorite'); ?></span></a>
+					<?php if($this->pet->getToAdopt() == 1): ?><a href="<?php echo $this->url(array('controller'=>'adoption', 'action'=>'interest', 'pet' => $this->pet->getId()), 'default', true); ?>" class="icon_link adoptpet reqconf" title="<?php echo $this->translate->_('Show interest for').' '.$pet_name.'?'; ?>"><span><?php echo $this->translate->_('Show interest?'); ?></span></a>
+					<?php endif; ?><a href="javascript:void(0);" class="icon_link caution openflag"><span><?php echo $this->translate->_("Flag as inappropriate"); ?></span></a>
+					<div class="dialog-flag" title="<?php echo $this->translate->_("Flag as inappropriate"); ?>">
+						<div id="in-flag" style="margin: 8px 0px 2px 0px; line-height: 18px;" rel="<?php echo $this->pet->getId(); ?>_<?php echo $this->pet->getUserId(); ?>">
+							<span id="flag-text"><?php echo $this->translate->_("Please select the category that most closely reflects your concern about the content presented before you."); ?><br /><br /></span>
+							<?php echo $this->flag; ?><br />
+							<span class="grey"><small>
+								<?php echo $this->translate->_("You may only flag as inappropriate once per content."); ?><br /><br />
+								<?php echo $this->translate->_("Anything more than that would be against our Terms and Conditions and it may lead to the suspension or your account or a permanent ban."); ?><br /><br />
+								<?php echo $this->translate->_("Abusing this feature is also a violation of our Terms and Conditions, so please don't do it."); ?>
+							</small></span>
+						</div>
+					</div>
+					<?php $flag_opt = 'PoPets'; include "../application/modules/frontend/views/scripts/flag.phtml"; ?>
+				<?php endif; ?>
+			</div></div>
+			<?php
+				// picture control
+				$image = "/images/small_no-pet.jpg";
+				if (count($this->gallery) > 0)
+					$image = "/images/userfiles/pets/{$this->pet->getId()}/gallery/small_" . reset($this->gallery);
+			?>
+			<div>
+				<div class="left"><img src="<?php echo $image; ?>" style="display: block; padding: 3px; border: 1px solid #B3B3B3; background: white;" alt="<?php echo $this->translate->_("Pet Picture"); ?>" /></div>
+				<div class="left" style="padding: 20px 0px 0px 10px;"><h3><?php echo $pet_name; ?></h3></div>
+				<div class="clear"></div>
+			</div>
+			<br />
+			<table cellspacing="0" cellpadding="5" border="0" class="list">
+				<tr>
+					<th><?php echo $this->translate->_("Owner") ?>:</th>
+			 		<td><a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $this->pet->getUserId()), 'default', true); ?>"><?php echo $this->owner; ?></a></td>
+			 	</tr>
+			</table>
+			<div class="tenpx"></div>
+			<?php
+				$params = $this->urlParser($_SERVER['HTTP_REFERER']);
+			?>
+			<?php if(strcasecmp($params['action'], 'index') == 0 && strcasecmp($params['controller'], 'adoption') == 0): ?>
+				<div class="left"><input onclick="Petolio.go('<?php echo $_SERVER['HTTP_REFERER']; ?>');" type="button" value="<?php echo $this->translate->_("< Back to List"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+				<div class="clear"></div>
+			<?php else: ?>
+				<div class="left"><input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'adoption'), 'default', true) ?>');" type="button" value="<?php echo $this->translate->_("< Back to List"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+				<div class="clear"></div>
+			<?php endif; ?>
+			<br /><br />
+			<br /><br />
+			<div class="green_box">
+				<div class="title">
+					<span data-id='info' class="active"><?php echo $this->translate->_("Pet Details"); ?></span>
+					<span data-id='pictures'><?php echo $this->translate->_("Pictures"); ?></span>
+					<span data-id='videos'><?php echo $this->translate->_("Videos"); ?></span>
+				</div>
+				<div id="info">
+					<div>
+					    <table cellspacing="0" cellpadding="5" border="0" class="list">
+					    <?php echo "<tr><th>".$this->translate->_('Species')."</th><td>{$this->species[$this->pet->getAttributeSetId()]}</td>"; ?>
+					    <?php $sci = false; $tr_end = 1; $description = array();
+					    	foreach ($this->attributes as $attr) {
+					    		$src = is_array($attr->getAttributeEntity()) ? reset($attr->getAttributeEntity()) : $attr->getAttributeEntity();
+								$val = $src->getValue();
+								if(strpos($attr->getCode(), '_description') !== false) {
+									$description = array($this->Tr($attr->getLabel()), $val);
+									continue;
+								}
+
+								if (isset($val) && strlen($val) > 0) {
+									if ($tr_end == 2) {
+										echo "</tr><tr>";
+										$tr_end = 0;
+									}
+
+									$tr_end++;
+
+									echo "<th>";
+					        		echo $this->Tr($attr->getLabel());
+					        		echo "</th><td>";
+
+					        		echo $val;
+
+					        		// no description for the price fields
+					        		if ($attr->getDescription() && strlen($attr->getDescription()) > 0 && !($attr->getCurrencyId() && intval($attr->getCurrencyId()) > 0))
+					        			echo "&nbsp;".$attr->getDescription();
+
+					        		echo "</td>";
+								}
+
+					        	// show the latin name if it's any
+					        	if ($attr->getAttributeInputType()->getType() == 'select')
+					        		if ($src->getLatin() && strlen($src->getLatin()) > 0)
+										$sci = $src->getLatin();
+							}
+
+							if($sci) {
+								if ($tr_end == 1)
+									echo "<th>".$this->translate->_('Scientific name').":</th><td>{$sci}</td>";
+								else
+									echo "</tr><tr><th>".$this->translate->_('Scientific name').":</th><td>{$sci}</td><th></th><td></td></tr>";
+								echo "</tr>";
+							} else {
+								if ($tr_end == 1)
+									echo "<th></th><td></td>";
+								echo "</tr>";
+							}
+						?>
+					    </table>
+					</div>
+					<?php if(strlen($description[1]) > 0): ?>
+						<div class="tenpx"></div>
+						<div style="font-size: 12px; line-height: 18px;">
+							<h3><?php echo $description[0]; ?></h3>
+							<div class="fivepx"></div>
+							<?php echo $description[1]; ?>
+						</div>
+					<?php endif; ?>
+					<div class="clear"></div>
+				</div>
+				<div id="pictures" style="display: none;">
+					<?php if(count($this->gallery) > 0): ?>
+					    <div class="pictures">
+							<?php foreach($this->gallery as $idx => $pic): ?>
+								<div class="pic">
+									<span class="img" rel="<?php echo $idx; ?>" style="background: #000 url('/images/userfiles/pets/<?php echo $this->pet->getId(); ?>/gallery/small_<?php echo $pic; ?>') center center no-repeat;"></span>
+								</div>
+							<?php endforeach; ?>
+							<div class="clear"></div>
+						</div>
+					    <div class="clear"></div>
+					<?php else: ?>
+						<b class="red bigger"><?php echo $this->translate->_("Sorry, nothing here pal :("); ?></b>
+					<?php endif; if($this->admin): ?>
+						<div class="fivepx"></div>
+						<a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'pictures', 'pet'=>$this->pet->getId()), 'default', true); ?>" class='icon_link edit right'><span><?php echo $this->translate->_("Edit Pictures"); ?></span></a>
+						<div class="clear"></div>
+					<?php endif; ?>
+					<div class="clear"></div>
+				</div>
+				<div id="videos" style="display: none;">
+					<?php if(count($this->videos) > 0): ?>
+					    <div class="pictures">
+							<?php foreach($this->videos as $video): ?>
+								<?php
+									// get video entity
+									$entity = $video->getMapper();
+
+									// get video thumbnail
+									$thumbs = $entity->getVideoThumbnails();
+									$thumbnail = $thumbs[1]['url'];
+
+									// get video duration
+									$duration = date("i:s", $entity->getVideoDuration());
+								?>
+								<div class="pic">
+									<span class="vid" rel="<?php echo $video->getId(); ?>" style="background: #000 url('<?php echo $thumbnail; ?>') center center no-repeat;"></span>
+									<span class="duration"><?php echo $duration; ?></span>
+								</div>
+							<?php endforeach; ?>
+							<div class="clear"></div>
+						</div>
+						<div class="clear"></div>
+					<?php else: ?>
+						<b class="red bigger"><?php echo $this->translate->_("Sorry, nothing here pal :("); ?></b>
+					<?php endif; if($this->admin): ?>
+						<div class="fivepx"></div>
+						<a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'videos', 'pet'=>$this->pet->getId()), 'default', true); ?>" class='icon_link edit right'><span><?php echo $this->translate->_("Edit Videos"); ?></span></a>
+						<div class="clear"></div>
+					<?php endif; ?>
+					<div class="clear"></div>
+				</div>
+			</div>
+		<?php endif; ?>
+	</div>
+	<div class="rightbox" style="padding: 0px; border: 0px;">
+		<?php if(strcasecmp($params['action'], 'index') == 0 && strcasecmp($params['controller'], 'adoption') == 0): ?>
+			<div class="left"><input onclick="Petolio.go('<?php echo $_SERVER['HTTP_REFERER']; ?>');" type="button" value="<?php echo $this->translate->_("< Back to List"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+			<div class="clear"></div>
+		<?php else: ?>
+			<div class="left"><input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'adoption'), 'default', true) ?>');" type="button" value="<?php echo $this->translate->_("< Back to List"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+			<div class="clear"></div>
+		<?php endif; ?>
+	</div>
+</div>
+<?php $imgsw_path = array(
+	'image' => "/images/userfiles/pets/{$this->pet->getId()}/gallery/{image}",
+	'audio' => "/images/userfiles/pets/{$this->pet->getId()}/audios/{audio}",
+	'video' => "http://www.youtube.com/embed/{video}"
+); include "../application/modules/frontend/views/scripts/imgsw.phtml"; ?>
+<script type="text/javascript">
+	var GreenBox = function() {
+		var _switch = function(i, e) {
+			$('.green_box > .title > span').removeClass('active');
+			$('.green_box > #info').hide();
+			$('.green_box > #pictures').hide();
+			$('.green_box > #videos').hide();
+
+			e.addClass('active');
+			$('#' + i).show();
+		}, _bind = function() {
+			$('.green_box > .title > span').each(function(k, v) {
+				var e = $(v),
+					i = e.data('id');
+				e.click(function(f){
+					_switch(i, e);
+				});
+			});
+		}, __construct = function() {
+			_bind();
+		};
+
+		return {
+			init: __construct
+		};
+	}();
+
+	READY(GreenBox.init);
+</script>

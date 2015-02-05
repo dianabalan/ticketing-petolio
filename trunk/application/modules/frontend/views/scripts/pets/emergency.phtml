@@ -1,0 +1,184 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Emergency Contacts"); ?></h1>
+		<br />
+		<?php echo $this->form; ?>
+		<div class="clear"></div>
+		<hr />
+		<div class="tenpx"></div>
+		<label for="qr" style="width: 430px;"><?php echo $this->translate->_("Do you want to show the emergency contacts via QR Code?"); ?></label>
+		<select name="qr" id="qr" class="chzn-select">
+			<option value="0"<?php echo $this->pet->getMobileEmergency() == '0' ? " selected='selected'": ''; ?>><?php echo $this->translate->_("No"); ?></option>
+			<option value="1"<?php echo $this->pet->getMobileEmergency() == '1' ? " selected='selected'": ''; ?>><?php echo $this->translate->_("Yes"); ?></option>
+		</select>
+		<div class="clear"></div>
+		<br /><br />
+		<table cellspacing="0" cellpadding="5" class="grid" id="contacts">
+			<col width="152"><col width="152"><col width="152"><col width="152"><col width="152"><col width="40">
+			<tr>
+				<th class="no_link"><?php echo $this->translate->_("First Name"); ?></th>
+				<th class="no_link"><?php echo $this->translate->_("Last Name"); ?></th>
+				<th class="no_link"><?php echo $this->translate->_("Service Type"); ?></th>
+				<th class="no_link"><?php echo $this->translate->_("Phone"); ?></th>
+				<th class="no_link"><?php echo $this->translate->_("E-Mail"); ?></th>
+				<th class="no_link">&nbsp;</th>
+			</tr>
+		</table>
+		<div id="error" style="display: none; padding: 0px 6px;">
+			<div class="tenpx"></div>
+			<b class="bigger red"><?php echo $this->translate->_("No contacts found."); ?></b>
+		</div>
+		<br /><br />
+		<div class="left"><input onclick="Petolio.go(window.location.href.replace('emergency', 'view'));" type="button" value="<?php echo $this->translate->_("< Go Back to Pet Details"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+		<div class="right"><input onclick="Emergency.save();" type="button" value="<?php echo $this->translate->_("Save Emergency Contacts >"); ?>" id="submit" name="next"><div class="clear"></div></div>
+		<div class="clear"></div>
+	</div>
+</div>
+<script type="text/javascript">
+	var Emergency = function() {
+		var storage = {
+			contacts: {},
+			service_types: <?php echo $this->service_types; ?>,
+			contact_list: <?php echo $this->contact_list; ?>,
+			translate: {
+				req: '<?php echo $this->translate->_("is required"); ?>',
+				conf:  '<?php echo $this->translate->_("Are you sure you want to delete this contact?"); ?>'
+
+			}, fields: [
+				'first_name',
+				'last_name',
+				'category',
+				'phone',
+				'email'
+			]
+
+		// add (save contact)
+		}, add = function(a) {
+			var error = [],
+				values = [],
+				real = [];
+
+			$(storage.fields).each(function(key, value){
+				var v = $.trim($("[name='" + value + "']").val()),
+					f = $.trim($("label[for='" + value + "']").html());
+
+				values.push(v);
+
+				if(value == 'category') real.push(storage.service_types[v]);
+				else real.push(v);
+
+				if(!v.length > 0)
+					error.push(f + ' ' + storage.translate.req);
+			});
+
+			if(error.length > 0)
+				return alert(error.join('\n'))
+
+			insert(values, real);
+			$("[name='copy_from']").val(0);
+			$("[name='copy_from']").trigger("liszt:updated");
+			return update([null, null, null, null, null]);
+
+		// insert in DOM
+		}, insert = function(v, r) {
+			var t = $('table#contacts'),
+				x = 'id_' + Math.floor(Math.random() * 99999);
+
+			h = '<tr id="' + x + '">';
+			$(r).each(function(k, v) {
+				h += '<td>' + v + '</td>';
+			});
+
+			h += '<td align="right"><a href="javascript:void(0);" id="delete_contact" style="display: block; width: 18px;" class="delete">&nbsp;</a></td>' +
+			'</tr>';
+
+			t.append(h);
+			storage.contacts[x] = v;
+			error(true);
+
+		// update fields
+		}, update = function(s) {
+			$(storage.fields).each(function(key, value){
+				$("[name='" + value + "']").val(s[key]);
+				if(value == 'category')
+					$("[name='category']").trigger("liszt:updated");
+			});
+
+		// copy from partner
+		}, copy = function(a) {
+			var c = $.trim($(a).val());
+			if(!c.length > 0)
+				return update([null, null, null, null, null]);
+
+			var s = $.parseJSON(Base64.decode(c));
+			update(s);
+
+		// binder
+		}, bind = function() {
+			$("table#contacts").delegate('#delete_contact', 'click', _delete);
+
+		// save contacts
+		}, save = function() {
+			var s = {
+				contacts: storage.contacts,
+				qr: $('select#qr').val()
+			};
+
+			Petolio.go(window.location.href.replace('emergency', 'emergency/save/' + Base64.encode(JSON.stringify(s))));
+
+		// delete a contact
+		}, _delete = function() {
+			var d = $(this).closest('tr');
+
+			if(confirm(storage.translate.conf)) {
+				d.remove();
+				delete storage.contacts[d.attr('id')];
+
+				if($('table#contacts').find('tr').length < 2)
+					error(false);
+			}
+
+		// error management
+		}, error = function(z) {
+			var x = $('div#error');
+
+			if(z) x.hide();
+			else x.show();
+
+		// constructor
+		}, __construct = function() {
+			bind();
+
+			// modify form elements
+			$('form#main_form > div').css({width: 400, float: 'left'});
+			$('form#main_form > div:first').after('<div class="clear"></div><hr /><div class="tenpx"></div>');
+			$('form#main_form input[type="button"]').css({float: 'right', marginRight: 60});
+
+			// update from db
+			if(storage.contact_list.length > 0) {
+				error(true);
+				$(storage.contact_list).each(function(k, v){
+					var values = [],
+						real = [];
+
+					values.push(v[0], v[1], v[2], v[3], v[4]);
+					real.push(v[0], v[1], storage.service_types[v[2]], v[3], v[4]);
+
+					insert(values, real);
+				});
+			} else error(false);
+		};
+
+		// public, yay
+		return {
+			init: __construct,
+			copy: copy,
+			add: add,
+			save: save
+		};
+	}();
+
+	READY(Emergency.init);
+</script>

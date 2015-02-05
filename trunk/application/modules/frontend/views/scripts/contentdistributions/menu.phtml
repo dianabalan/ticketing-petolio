@@ -1,0 +1,36 @@
+<?php
+
+// links
+$accounts = array(
+	array(
+		'link' => $this->url(array('controller'=>'contentdistributions', 'action'=>'index'), 'default', true),
+		'name' => $this->translate->_("Home"),
+		'class' => 'lm-contentdistribution_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'contentdistributions', 'action'=>'add'), 'default', true),
+		'name' => $this->translate->_("Add Distribution"),
+		'class' => 'lm-contentdistribution_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'contentdistributions', 'action'=>'archives'), 'default', true),
+		'name' => $this->translate->_("Distribution Archives"),
+		'class' => 'lm-contentdistribution_sm'
+	)
+);
+
+$links = null;
+foreach($accounts as $link) {
+	if ( isset($link['class']) && strlen($link['class']) > 0 ) {
+		$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+	} else {
+		$links .= "<li><a href='{$link['link']}'>{$link['name']}</a></li>";
+	}
+}
+
+if ($this->auth->hasIdentity()) {
+	$this->placeholder('sidebar')
+	     ->append("<h3>".$this->translate->_("Content Distribution")."</h3>
+	     	<ul class=\"leftsubmenu\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
+}
+?>

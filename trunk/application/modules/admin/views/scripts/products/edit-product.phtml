@@ -1,0 +1,51 @@
+<h1><a href="<?php echo $this->url(array("controller" => "products", "action" => "list-products"), "admin", true); ?>"><?php echo $this->translate->_("Products"); ?></a> &raquo; <?php echo $this->translate->_("Edit Product"); ?></h1>
+<?php echo $this->form; ?>
+<script type="text/javascript">
+READY(function() {
+	// helper function
+	function number_format(number, decimals, dec_point, thousands_sep) {
+		number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
+		var n = !isFinite(+number) ? 0 : +number,
+			prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+			sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+			dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+			s = '',
+			toFixedFix = function (n, prec) {
+				var k = Math.pow(10, prec);
+				return '' + Math.round(n * k) / k;
+			};
+		// Fix for IE parseFloat(0.55).toFixed(0) = 0;
+		s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+		if (s[0].length > 3) {
+			s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+		}
+		if ((s[1] || '').length < prec) {
+			s[1] = s[1] || '';
+			s[1] += new Array(prec - s[1].length + 1).join('0');
+		}
+		return s.join(dec);
+	}
+
+	// price
+	$('input[id$="price1"], input[id$="price2"], input[id$="cost1"], input[id$="cost2"]').each(function() {
+		var self = $(this),
+			curr = ['invalid', 'euro', 'dollar'],
+			type = curr[self.attr('id').split(/ /)[0].replace(/[^\d]/g, '')],
+			first = type == 'euro' ? ',' : '.',
+    		second = type == 'euro' ? '.' : ',';
+
+		self.css({textAlign: 'right'});
+		if ( self.val().length > 0 )
+			self.val(number_format(self.val(), 2, first, second));
+	});
+
+	// switch price on submit
+	$('#submit').click(function(e) {
+		$('input[id$="price1"], input[id$="price2"], input[id$="cost1"], input[id$="cost2"]').each(function() {
+			if ( $(this).val().length > 0 ) {
+				$(this).val($(this).val().replace(',', '.'));
+			}
+		});
+	});
+});
+</script>

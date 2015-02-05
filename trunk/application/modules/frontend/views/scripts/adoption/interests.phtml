@@ -1,0 +1,44 @@
+<?php include "menu.phtml"; $pet_name = Petolio_Service_Parse::do_limit(ucfirst($this->attributes['name']->getAttributeEntity()->getValue()), 20, false, true); ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php printf($this->translate->_("Intrested People for %s"), $pet_name); ?></h1>
+		<br />
+		<?php if(count($this->users)) {	?>
+		    <table cellspacing="0" cellpadding="0" border="0" class="grid">
+		    	<col width="200" /><col /><col />
+		    	<tr>
+		    		<th><?php echo $this->translate->_('User'); ?></th>
+		    		<th><?php echo $this->translate->_('Status'); ?></th>
+		    		<th></th>
+		    	</tr>
+				<?php
+					foreach ($this->users as $user) { ?>
+			        	<tr>
+			        		<td nowrap="nowrap"><a href='<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user'=>$user->getId()), 'default', true) ?>'><?php echo $user->getName(); ?></a>
+			        			<?php if(!($user->getActive() == 1 && $user->getisBanned() != 1)): ?>
+			        				- <small class="red">User inactive or banned</small>
+			        			<?php endif; ?>
+			        		</td>
+							<?php if($this->user_interest_statuses[$user->getId()] == 0): ?>
+					        	<td><?php echo $this->translate->_('Interested'); ?></td>
+					        	<td align='right'>
+					        		<a href='<?php echo $this->url(array('controller' =>'adoption', 'action'=>'decline', 'pet'=>$this->pet->getId(), 'user'=>$user->getId()), 'default', true); ?>' class='reqconf' title='<?php echo $this->translate->_("Remove interest ?"); ?>'><?php echo $this->translate->_("Remove Interest"); ?></a>
+					        		<?php if($user->getActive() == 1 && $user->getisBanned() != 1): ?>
+					        			 - <a href='<?php echo $this->url(array('controller' =>'adoption', 'action'=>'transfer', 'pet'=>$this->pet->getId(), 'user'=>$user->getId()), 'default', true); ?>' class='reqconf' title='<?php printf($this->translate->_("Transfer %s to %s ?"), $pet_name, $user->getName()); ?>'><?php echo $this->translate->_("Transfer"); ?></a>
+					        		<?php endif; ?>
+					        	</td>
+							<?php endif; if($this->user_interest_statuses[$user->getId()] == 1): ?>
+					        	<td><?php echo $this->translate->_('Transfer waiting for aproval'); ?></td>
+								<td align='right'>
+									<a href='<?php echo $this->url(array('controller' =>'adoption', 'action'=>'cancel', 'pet'=>$this->pet->getId(), 'user'=>$user->getId()), 'default', true); ?>' class='reqconf' title='<?php printf($this->translate->_("Cancel transfer of %s to %s ?"), $pet_name, $user->getName()); ?>'><?php echo $this->translate->_("Cancel transfer"); ?></a>
+								</td>
+							<?php endif; ?>
+			        	</tr>
+				<?php } ?>
+	    	</table>
+	    <?php } else { ?>
+	    	<b class="red bigger"><?php printf($this->translate->_("We are sorry, but no one is interested in adopting %s at the moment."), $pet_name); ?></b>
+	    <?php } ?>
+	</div>
+</div>

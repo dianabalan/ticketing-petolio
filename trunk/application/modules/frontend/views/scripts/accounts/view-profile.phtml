@@ -1,0 +1,44 @@
+<div class="rightbox">
+	<!-- <div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+	<h1 style="margin-bottom: -14px;"><?php echo $this->data['name']; ?> <?php if($this->auth->hasIdentity()): ?><small style="color: #aac3aa; letter-spacing: 0px; font-weight: normal; font-size: 15px;">(<?php echo $this->friend_zoned ? $this->translate->_("User is on your friends list") : "<a href='{$this->url(array('controller'=>'friends', 'action'=>'invite', 'id' => $this->data['id']), 'default', true)}' class='icon_link accept' style='color: inherit; letter-spacing: inherit; font-weight: inherit; font-size: inherit;'><span>". $this->translate->_("Add to Friends"). "</span></a>"; ?>)</small><?php endif; ?></h1>
+	<br /> -->
+	<?php include "profile-info.phtml"; ?>
+</div>
+<script type="text/javascript">
+	var Privacy = function() {
+		function hideFields() {
+			$('span [class*="private"], span [class*="empty"]').each(function(s, i){
+				$(i).parent().parent().remove();
+			});
+		};
+
+		function hideGroups() {
+			$('h3[class="profile"]').each(function(s, i){
+				var j = $(i).parent().children();
+				if(j.length <= 1)
+					j.parent().remove();
+			});
+		}
+
+		function normalizeA() {
+			var a = $('.profilebox'),
+				b = $(a[0]),
+				c = $(a[1]);
+
+			if(b.height() > c.height())
+				c.css({minHeight: b.height()+1});
+		};
+
+		function __construct() {
+			hideFields();
+			hideGroups();
+			normalizeA();
+		};
+
+		return {
+			init: __construct
+		}
+	}();
+
+	READY(Privacy.init);
+</script>

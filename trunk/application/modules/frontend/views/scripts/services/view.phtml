@@ -1,0 +1,1057 @@
+<?php 
+	include "menu.phtml"; 
+	$service_name = ucfirst($this->attributes['name']->getAttributeEntity()->getValue());
+	$this->headTitle($service_name);
+	$this->headMeta()->appendProperty('og:title', $service_name);
+?>
+<div id="right">
+	<div class="rightbox">
+		<?php if($this->flagged): ?>
+			<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+			<h1><?php echo $this->translate->_("Service:"); ?> <?php echo $service_name; ?></h1>
+			<br />
+			<div class="c_error">
+				<div><b><?php echo $this->translate->_("Cannot display this service because it was flagged by the community."); ?></b></div>
+				<ul>
+					<?php foreach(array_unique($this->flagged) as $item): ?>
+						<li><?php echo $item; ?></li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+		<?php else: ?>
+			<div class="context"><div class="in">
+				<a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a>
+			</div></div>
+			
+			<div>
+				<div class="left"><img src="/images/new/large/market_place.png" alt="<?php echo $service_name; ?>" /></div>
+				<ul class="title-menu">
+					<li><h3 class="ellipsis"><?php echo $this->translate->_("Services"); ?></h3></li>
+					<li><a href="<?php echo $this->url(array('controller'=>'products', 'action'=>'index'), 'default', true); ?>">
+						<?php echo $this->translate->_("Products"); ?></a></li>
+					<li><a href="<?php echo $this->url(array('controller'=>'adoption', 'action'=>'index'), 'default', true); ?>">
+						<?php echo $this->translate->_("Adoptions"); ?></a></li>
+					<li>
+						<?php
+							echo $this->partial("marketplace/search.phtml", array(
+								"request" => $this->request,
+								"translate" => $this->translate,
+								"types" => $this->types
+							));
+						?>
+					</li>
+				</ul>
+			</div>
+			<div class="clear tenpx"></div>
+			
+			<div class="service-images">
+				<?php if ($this->admin): ?>
+				<a href="<?php echo $this->url(array('controller'=>'services', 'action'=>'pictures', 'service'=>$this->service->getId()), 'default', true); ?>" 
+						class="edit-images" title="<?php echo $this->translate->_("edit pictures here"); ?>">
+					<img alt="<?php echo $this->translate->_('Upload cover image'); ?>" src="/images/new/common/upload.png" />
+				</a>
+				<?php endif; ?>
+				<?php if(count($this->listing) > 0): ?>
+					<?php $first = true;
+					foreach($this->listing as $idx => $pic):
+						if ($first):
+							$first = false;
+							$image = PO_BASE_URL."images/userfiles/services/{$this->service->getId()}/{$pic}";
+							$this->headMeta()->appendProperty('og:image', $image);
+							?>
+							<div class="main" style="background: url('<?php echo $image; ?>') no-repeat scroll center center / 100% auto;">
+								<img alt="cover" src="<?php echo $image; ?>" style="visibility: hidden;" />
+							</div>
+							<div class="images" id="image_navigation">
+								<div id="crsl-nav-01" class="crsl-nav">
+									<a href="#" class="previous left">&lt;</a>
+									<a href="#" class="next right">&gt;</a>
+								</div>
+								<div class="crsl-items" data-navigation="crsl-nav-01">
+									<div class="crsl-wrap">
+										<figure class="crsl-item">
+											<img class="img" rel="<?php echo $idx; ?>" 
+												src="/images/userfiles/services/<?php echo $this->service->getId(); ?>/small_<?php echo $pic; ?>" />
+										</figure>
+						<?php else: ?>
+							<figure class="crsl-item">
+								<img class="img" rel="<?php echo $idx; ?>" src="/images/userfiles/services/<?php echo $this->service->getId(); ?>/small_<?php echo $pic; ?>" />
+							</figure>
+						<?php endif;
+					endforeach; ?>
+					</div><!-- crsl-wrap end -->
+					</div><!-- crsl-items end -->
+					</div><!-- image_navigation end -->
+					<script type="text/javascript">
+						READY(function(){
+							var imageNav = jQuery('#image_navigation');
+		
+							imageNav.show();
+							jQuery('.crsl-items', imageNav).carousel({
+								visible: 5,
+								overflow: false,
+								autoRotate: false,
+								itemMinWidth: 99,
+								itemEqualHeight: true,
+								carousel: true
+							});
+
+							jQuery('.crsl-nav', imageNav).find('.previous, .next').css({ opacity: 0 });
+							imageNav.hover( function(){
+								$(this).find('.previous').css({ left: 0 }).stop(true, true).animate({ left: '20px', opacity: 1 });
+								$(this).find('.next').css({ right: 0 }).stop(true, true).animate({ right: '20px', opacity: 1 });
+							}, function(){
+								$(this).find('.previous').animate({ left: 0, opacity: 0 });
+								$(this).find('.next').animate({ right: 0, opacity: 0 });
+							});
+											
+						});
+					</script>
+					
+				<?php else: ?>
+					<div class="main">
+						<?php
+							$cover = PO_BASE_URL."images/covers/0".rand(1, 8).".png";
+							$this->headMeta()->appendProperty('og:image', $cover);
+						?>
+						<img alt="cover" src="<?php echo $cover; ?>" />
+					</div>
+				<?php endif;
+				if(count($this->videos) > 0): ?>
+					<div class="images" id="video_navigation">
+						<div id="crsl-nav-02" class="crsl-nav">
+							<a href="#" class="previous left">&lt;</a>
+							<a href="#" class="next right">&gt;</a>
+						</div>
+						<div class="crsl-items" data-navigation="crsl-nav-02">
+							<div class="crsl-wrap">
+							<?php foreach($this->videos as $video):
+								// get video entity
+								$entity = $video->getMapper();
+			
+								// get video thumbnail
+								$thumbs = $entity->getVideoThumbnails();
+								$thumbnail = $thumbs[1]['url'];
+			
+								// get video duration
+								$duration = date("i:s", $entity->getVideoDuration()); ?>
+								<figure class="crsl-item">
+									<div class="pic">
+										<img class="vid" rel="<?php echo $video->getId(); ?>" src="<?php echo $thumbnail; ?>" />
+										<span class="duration"><?php echo $duration; ?></span>
+									</div>
+								</figure>
+							<?php endforeach; ?>
+							</div>
+						</div>
+					</div>
+					<script type="text/javascript">
+						READY(function(){
+							var videoNav = jQuery('#video_navigation');
+		
+							videoNav.show();
+							jQuery('.crsl-items', videoNav).carousel({
+								visible: 5,
+								overflow: false,
+								autoRotate: false,
+								itemMinWidth: 99,
+								itemEqualHeight: true,
+								carousel: true
+							});
+
+							jQuery('.crsl-nav', videoNav).find('.previous, .next').css({ opacity: 0 });
+							videoNav.hover( function(){
+								$(this).find('.previous').css({ left: 0 }).stop(true, true).animate({ left: '20px', opacity: 1 });
+								$(this).find('.next').css({ right: 0 }).stop(true, true).animate({ right: '20px', opacity: 1 });
+							}, function(){
+								$(this).find('.previous').animate({ left: 0, opacity: 0 });
+								$(this).find('.next').animate({ right: 0, opacity: 0 });
+							});
+											
+						});
+					</script>
+				<?php endif; ?>
+				
+				<?php if($this->auth->hasIdentity() && $this->show_partners_list): ?>
+					<?php $count = 0; ?>
+					<?php if ($this->service_type == 1): /* IF MEMBERS */ ?>
+						<h3 class="green" style="font-size: 16px;"><?php echo $this->translate->_("Members"); ?></h3>
+						<div class="clear partners-container pet">
+							<div class="grey-line"></div>
+							<?php //if((count($this->requested_members_users) + count($this->accepted_members_users)) > $this->member_limit): ?>
+								<a href="<?php echo $this->url(array('controller'=>'services', 'action'=>'view-links', 'service' => $this->service->getId()), 'default', true); ?>"
+									class="all-links"  
+									title="<?php echo $this->translate->_('View all service members'); ?>">
+									<span><?php echo $this->translate->_('View all members'); ?></span>
+								</a>
+							<?php //endif; ?>
+							<?php if ($this->admin): ?>
+								<a href="#" class="invite-link" id="invite_members"><?php echo $this->translate->_("Invite potential clients for this service"); ?></a>
+								<?php foreach($this->requested_members_users as $member_user): 
+									if($count < $this->member_limit):
+										$count++;
+										$avatar = $this->partial('avatar.phtml', array('user' => $member_user->getMemberUser(), 'for' => 'profile')); ?>
+										<div class="partner-item">
+											<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $member_user->getUserId()), 'default', true); ?>"
+													title="<?php echo $member_user->getMemberUser()->getName(); ?>">
+												<img alt="<?php echo $member_user->getMemberUser()->getName(); ?>" src="<?php echo $avatar; ?>" />
+											</a>
+											<div class="partner-icons" style="display: block;">
+												<a class="accept-link" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'accept-membership', 'link' => $member_user->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Accept"); ?>">
+													<img alt="<?php echo $this->translate->_("Accept"); ?>" src="/images/icons/accept.png" />
+												</a>
+												<a class="deny-link" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'decline-membership', 'link' => $member_user->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Decline"); ?>">
+													<img alt="<?php echo $this->translate->_("Decline"); ?>" src="/images/icons/deny.png" />
+												</a>
+											</div>
+										</div>
+									<?php endif; ?>
+								<?php endforeach; ?>
+							<?php endif; ?>
+							<?php foreach($this->accepted_members_users as $member_user): 
+								$the_members[] = $member_user->getUserId()."|".addcslashes($member_user->getMemberUser()->getName(), "\000\n\r\\'\"\032");
+
+								if($count < $this->member_limit):
+									$count++;
+									$avatar = $this->partial('avatar.phtml', array('user' => $member_user->getMemberUser(), 'for' => 'profile')); ?>
+									<div class="partner-item">
+										<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $member_user->getUserId()), 'default', true); ?>"
+												title="<?php echo $member_user->getMemberUser()->getName(); ?>">
+											<img alt="<?php echo $member_user->getMemberUser()->getName(); ?>" src="<?php echo $avatar; ?>" />
+										</a>
+										<?php if ($this->admin): ?>
+										<div class="partner-icons">
+											<a class="send-link" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'send-message', 'user' => $member_user->getUserId(), 'service' => $this->service->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Send message"); ?>">
+												<img alt="<?php echo $this->translate->_("Send message"); ?>" src="/images/icons/send.png" />
+											</a>
+											<a class="appointment-link" href="javascript:void(0);" rel="<?php echo "member,{$member_user->getUserId()}|{$member_user->getMemberUser()->getName()}"; ?>" id="service_link_<?php echo $member_user->getId(); ?>" title="<?php echo $this->translate->_('Ask for appointment'); ?>">
+												<img alt="<?php echo $this->translate->_("Ask for appointment"); ?>" src="/images/icons/appointment.png" />
+											</a>
+											<a class="delete-link reqconf" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'remove-membership', 'link' => $member_user->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Cancel membership"); ?>?">
+												<img alt="<?php echo $this->translate->_("Cancel membership"); ?>" src="/images/icons/delete.png" />
+											</a>
+										</div>
+										<?php elseif ($member_user->getUserId() == $this->auth->getIdentity()->id): ?>
+										<div class="partner-icons">
+											<a class="send-link" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'send-message', 'user' => $this->service->getUserId(), 'service' => $this->service->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Send message"); ?>">
+												<img alt="<?php echo $this->translate->_("Send message"); ?>" src="/images/icons/send.png" />
+											</a>
+											<a class="appointment-link" href="javascript:void(0);" rel="<?php echo "member_service,".$this->service->getOwner()->getId()."|".addcslashes($this->service->getOwner()->getName(), "\000\n\r\\'\"\032").",".$this->service->getId()."|".addcslashes($service_name, "\000\n\r\\'\"\032"); ?>" id="service_link_<?php echo $member_user->getId(); ?>" title="<?php echo $this->translate->_('Ask for appointment'); ?>">
+												<img alt="<?php echo $this->translate->_("Ask for appointment"); ?>" src="/images/icons/appointment.png" />
+											</a>
+											<a class="delete-link reqconf" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'remove-membership', 'link' => $member_user->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Cancel membership"); ?>?">
+												<img alt="<?php echo $this->translate->_("Cancel membership"); ?>" src="/images/icons/delete.png" />
+											</a>
+										</div>
+										<?php endif; ?>
+									</div>
+								<?php endif; ?>
+							<?php endforeach; ?>
+						</div>
+						<?php if($this->admin && count($this->accepted_members_users) > 0): ?>
+						<div class="clear tenpx"></div>
+						<input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'services', 'action'=>'send-message', 'user' => 'all', 'service' => $this->service->getId()), 'default', true); ?>');" type="button" value="<?php echo $this->translate->_('Send mass message'); ?>" id="submit" name="compose" style="margin: 0px 5px 0px 0px;">
+						<input rel="member,<?php echo implode(',', $the_members); ?>" name="service_app_<?php echo $this->service->getId(); ?>" type="button" value="<?php echo $this->translate->_('Create Event'); ?>" id="submit" style="margin: 0px 0px 0px 0px;">
+						<?php endif; ?>
+					<?php else: /* ELSE PARTNERS THEN */ ?>
+						<h3 class="green" style="font-size: 16px;"><?php echo $this->translate->_("Partners"); ?></h3>
+						<div class="clear partners-container pet">
+							<div class="grey-line"></div>
+							<?php //if((count($this->requested_members_pets) + count($this->accepted_members_pets)) > $this->member_limit): ?>
+								<a href="<?php echo $this->url(array('controller'=>'services', 'action'=>'view-links', 'service' => $this->service->getId()), 'default', true); ?>"
+									class="all-links"  
+									title="<?php echo $this->translate->_('View all service partners'); ?>">
+									<span><?php echo $this->translate->_('View all partners'); ?></span>
+								</a>
+							<?php //endif; ?>
+							<?php if ($this->admin): ?>
+								<a href="#" class="invite-link" id="invite_partners"><?php echo $this->translate->_("Invite potential clients for this service"); ?></a>
+								<?php foreach($this->requested_members_pets as $member_pet):
+									if($count < $this->member_limit):
+										$count++;
+										$image = "/images/no-pet.jpg";
+										if ($member_pet->getMemberPet()->getPicture() != null) {
+											$image = "/images/userfiles/pets/{$member_pet->getPetId()}/gallery/thumb_{$member_pet->getMemberPet()->getPicture()}";
+										} ?>
+										<div class="partner-item">
+											<a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'view', 'pet' => $member_pet->getPetId()), 'default', true); ?>"
+												title="<?php echo $member_pet->getMemberPet()->getName(); ?>">
+												<img alt="<?php echo $member_pet->getMemberPet()->getName(); ?>" src="<?php echo $image; ?>" />
+											</a>
+											<div class="partner-icons" style="display: block;">
+												<a class="accept-link" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'accept-partnership', 'link' => $member_pet->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Accept"); ?>">
+													<img alt="<?php echo $this->translate->_("Accept"); ?>" src="/images/icons/accept.png" />
+												</a>
+												<a class="deny-link" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'decline-partnership', 'link' => $member_pet->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Decline"); ?>">
+													<img alt="<?php echo $this->translate->_("Decline"); ?>" src="/images/icons/deny.png" />
+												</a>
+											</div>
+										</div>
+									<?php endif; ?>
+								<?php endforeach; ?>
+							<?php endif; ?>
+							<?php foreach($this->accepted_members_pets as $member_pet):
+								
+								$owner_id = $member_pet->getMemberPet()->getOwner()->getId();
+								$owner_name = addcslashes($member_pet->getMemberPet()->getOwner()->getName(), "\000\n\r\\'\"\032");
+								$pet_id = $member_pet->getPetId();
+								$pet_name = addcslashes($member_pet->getMemberPet()->getName(), "\000\n\r\\'\"\032");
+								$the_members_pets[] = $owner_id."|".$owner_name."#".$pet_id."|".$pet_name;
+								
+								if($count < $this->member_limit):
+									$count++;
+									$image = "/images/no-pet.jpg";
+									if ($member_pet->getMemberPet()->getPicture() != null) {
+										$image = "/images/userfiles/pets/{$member_pet->getPetId()}/gallery/thumb_{$member_pet->getMemberPet()->getPicture()}";
+									} ?>
+									<div class="partner-item">
+										<a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'view', 'pet' => $member_pet->getPetId()), 'default', true); ?>"
+											title="<?php echo $member_pet->getMemberPet()->getName(); ?>">
+											<img alt="<?php echo $member_pet->getMemberPet()->getName(); ?>" src="<?php echo $image; ?>" />
+										</a>
+										<?php if ($this->admin): ?>
+										<div class="partner-icons">
+											<a class="send-link" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'send-message', 'user' => $member_pet->getMemberPet()->getOwner()->getId(), 'service' => $this->service->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Send message"); ?>">
+												<img alt="<?php echo $this->translate->_("Send message"); ?>" src="/images/icons/send.png" />
+											</a>
+											<a class="appointment-link" href="javascript:void(0);" rel="<?php echo "partner,{$owner_id}|{$owner_name}#{$pet_id}|{$pet_name}"; ?>" id="service_link_<?php echo $member_pet->getId(); ?>" title="<?php echo $this->translate->_('Ask for appointment'); ?>">
+												<img alt="<?php echo $this->translate->_("Ask for appointment"); ?>" src="/images/icons/appointment.png" />
+											</a>
+											<a class="delete-link reqconf" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'remove-partnership', 'link' => $member_pet->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Cancel partnership"); ?>?">
+												<img alt="<?php echo $this->translate->_("Cancel membership"); ?>" src="/images/icons/delete.png" />
+											</a>
+										</div>
+										<?php elseif ( $member_pet->getMemberPet()->getUserId() == $this->auth->getIdentity()->id ): ?>
+										<div class="partner-icons">
+											<a class="send-link" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'send-message', 'user' => $this->service->getUserId(), 'service' => $this->service->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Send message"); ?>">
+												<img alt="<?php echo $this->translate->_("Send message"); ?>" src="/images/icons/send.png" />
+											</a>
+											<a class="appointment-link" href="javascript:void(0);" rel="<?php echo "partner_service,".$this->service->getOwner()->getId()."|".addcslashes($this->service->getOwner()->getName(), "\000\n\r\\'\"\032").",".$this->service->getId()."|".addcslashes($service_name, "\000\n\r\\'\"\032"); ?>" id="service_link_<?php echo $member_pet->getId(); ?>" title="<?php echo $this->translate->_('Ask for appointment'); ?>">
+												<img alt="<?php echo $this->translate->_("Ask for appointment"); ?>" src="/images/icons/appointment.png" />
+											</a>
+											<a class="delete-link reqconf" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'remove-partnership', 'link' => $member_pet->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Cancel partnership"); ?>?">
+												<img alt="<?php echo $this->translate->_("Cancel partnership"); ?>" src="/images/icons/delete.png" />
+											</a>
+										</div>
+										<?php endif; ?>
+									</div>
+								<?php endif; ?>
+							<?php endforeach; ?>
+						</div>
+						<?php if($this->admin && count($this->accepted_members_pets) > 0): ?>
+						<div class="clear tenpx"></div>
+						<input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'services', 'action'=>'send-message', 'user' => 'all', 'service' => $this->service->getId()), 'default', true); ?>');" type="button" value="<?php echo $this->translate->_('Send mass message'); ?>" id="submit" name="compose" style="margin: 0px 5px 0px 0px;">
+						<input rel="partner,<?php echo implode(',', $the_members_pets); ?>" name="service_app_<?php echo $this->service->getId(); ?>" type="button" value="<?php echo $this->translate->_('Create Event'); ?>" id="submit" style="margin: 0px 0px 0px 0px;">
+						<?php endif; ?>
+					<?php endif; ?>
+				<?php endif; ?>
+			</div>
+			
+			<div class="service-provider">
+				<?php $avatar = $this->partial('avatar.phtml', array('user' => $this->service->getOwner(), 'for' => 'dashboard')); ?>
+				<img alt="<?php echo $this->service->getOwner()->getName(); ?>" src="<?php echo $avatar; ?>" />
+				<ul class="sp-links">
+					<?php
+					$url = $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $this->service->getUserId()), 'default', true);
+					$reviews_title = sprintf(ngettext("%s review", "%s reviews", $this->reviews_count), $this->reviews_count);
+					$profile = $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $this->service->getOwner()->getId()), 'default', true);
+					$products = $this->url(array('controller'=>'products', 'action'=>'index', 'owner' => $this->service->getOwner()->getName()), 'default', true);
+					$products_title = sprintf(ngettext("%s product", "%s products", $this->products_count), $this->products_count);
+					$contact = $this->url(array('controller'=>'services', 'action'=>'contact', 'service' => $this->service->getId()), 'default', true);
+					$services = $this->url(array('controller'=>'marketplace', 'action'=>'index', 'owner_id' => $this->service->getOwner()->getId()), 'default', true);
+					$services_title = sprintf(ngettext("%s service", "%s services", $this->services_count), $this->services_count);
+					$map_url = $this->url(array('controller'=>'marketplace', 'action'=>'map', 'service' => $this->service->getId()), 'default', true);
+					?>
+					<li><a href="<?php echo $services; ?>" title="<?php echo $services_title; ?>"><?php echo $services_title; ?></a></li>
+					<li><a href="<?php echo $url; ?>#reviews" title="<?php echo $reviews_title; ?>"><?php echo $reviews_title; ?></a></li>
+					<li><a href="<?php echo $products; ?>" title="<?php echo $products_title; ?>"><?php echo $products_title; ?></a></li>
+				</ul>
+				<div class="clear fivepx"></div>
+				<a class="sp-name" href="<?php echo $url; ?>" title="<?php echo $this->service->getOwner()->getName(); ?>"><h5 class="green"><?php echo $this->service->getOwner()->getName(); ?></h5></a>
+				<p class="sp-desc ellipsis"><?php echo Petolio_Service_Util::shortenText($this->service->getOwner()->getAboutUs(), 500); ?></p>
+				<div class="clear tenpx"></div>
+
+				<h5><?php echo $this->translate->_("Recommend"); ?></h5>
+				<div style="padding: 3px;"><?php echo $this->translate->_("Recommend this service to your friends! All you have to do is to write their emails in the box below:"); ?></div>
+				<div id="recommend-social">
+					<div class="social">
+						<div class="recommend">
+							<div style="text-align: center; padding: 2px 5px; border: 1px solid #A5CC7D; background: #CEECB0;">
+								<?php echo $this->translate->_("Loading Social Plugins..."); ?>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="clear"></div>
+				<table>
+					<tr>
+						<td><a style="float: left;" href="<?php echo $url; ?>" title="<?php echo $this->service->getOwner()->getName(); ?>"><?php echo $this->translate->_("view page"); ?></a></td>
+						<?php if( $this->service->getGpsLatitude() && $this->service->getGpsLongitude()): ?>
+						<td><a style="float: left; margin-left: 10px;" href="<?php echo $map_url; ?>" title="<?php echo $this->translate->_("see on map"); ?>"><?php echo $this->translate->_("see on map"); ?></a></td>
+						<?php endif; ?>
+						<td><a style="float: right;" href="<?php echo $contact; ?>" title="<?php echo $this->service->getOwner()->getName(); ?>"><?php echo $this->translate->_("contact owner"); ?></a></td>
+					</tr>
+				</table>
+			</div>
+			
+			<div class="clear tenpx"></div>
+			<div>
+				<h3 class="green left"><?php echo $service_name; ?></h3>
+				<?php if ($this->admin): ?>
+				<a href="<?php echo $this->url(array('controller'=>'services', 'action'=>'edit', 'service'=>$this->service->getId()), 'default', true); ?>" 
+						class="edit-link" style="height: 35px; margin-left: 10px;">
+					<span></span>
+				</a>
+				<?php endif; ?>
+			</div>
+			<div class="clear"></div>
+			
+			
+			<div class="service-attrs reset">
+				<?php
+				$t_content = "<tr><td class='label'>{$this->Tr("Type")}:</td><td class='icon'></td>
+							<td class='desc'>{$this->Tr($this->service->getAttributeSetName())}</td>";
+				$attr_count = 0;
+				$group_entities = array();
+				$description = ""; $street = ""; $zipcode = ""; $address = ""; $location = ""; $country = "";
+				foreach ($this->attributes as $key => $attr):
+					if ( !$attr->getGroupId() && !is_array($attr->getAttributeEntity()) ) {
+						$val = $attr->getAttributeEntity()->getValue();
+						if (isset($val) && strlen($val) > 0 && $key != 'name' && $key != 'description'
+								&& $key != 'street' && $key != 'zipcode'&& $key != 'address' 
+								&& $key != 'location' && $key != 'country' ) {
+							if($attr_count % 2 == 1) {
+								$t_content .= "<tr>";
+							}
+							$t_content .= "<td class='label'>{$this->Tr($attr->getLabel())}:</td>";
+							$t_content .= "<td class='icon'>";
+							if( strcasecmp('yesno', $attr->getAttributeInputType()->getType()) == 0 ) {
+								if( strcasecmp($val, $this->Tr("Yes")) == 0 ) {
+									$t_content .= "<img src='/images/new/common/yes.png' alt='{$val}' />";
+								} else {
+									$t_content .= "<img src='/images/new/common/no.png' alt='{$val}' />";
+								}
+							}
+							$t_content .= "</td>";
+							$t_content .= "<td class='desc'>";
+							if( strcasecmp('yesno', $attr->getAttributeInputType()->getType()) != 0 ) {
+								$t_content .= "{$val}";
+							}
+							if ( $attr->getAttributeEntity()->getDescription() && strlen($attr->getAttributeEntity()->getDescription()) > 0 ) {
+								$t_content .= " ({$attr->getAttributeEntity()->getDescription()})";
+							}
+							$t_content .= "</td>";
+							$attr_count++;
+							if($attr_count % 2 == 1) {
+								$t_content .= "</tr>";
+							}
+						} elseif ($key == 'description') {
+							$description = $attr->getAttributeEntity()->getValue();
+						} elseif ( $key == 'street' ) {
+							$street = $val;
+						} elseif ( $key == 'zipcode' ) {
+							$zipcode = $val;
+						} elseif ( $key == 'address' ) {
+							$address = $val;
+						} elseif ( $key == 'location' ) {
+							$location = $val;
+						} elseif ( $key == 'country' ) {
+							$country = $val;
+						}
+					} elseif ( is_array($attr->getAttributeEntity()) ) {
+						if ( !isset($group_entities[$attr->getGroupId()]) ) {
+							$group_entities[$attr->getGroupId()] = array();
+						}
+						foreach ($attr->getAttributeEntity() as $entity) {
+							if ( !isset($group_entities[$attr->getGroupId()][$entity->getEntityId()]) ) {
+								$group_entities[$attr->getGroupId()][$entity->getEntityId()] = array();
+							}
+							array_push($group_entities[$attr->getGroupId()][$entity->getEntityId()], array(
+								"label" => $attr->getLabel(),
+								"value" => $entity->getValue()
+							));
+						}
+					}
+				endforeach;
+				
+				if($attr_count % 2 == 0 && $attr_count > 1) {
+					$t_content .= "<td class='label'></td><td class='icon'></td><td class='desc'></td></tr>";
+				} elseif($attr_count % 2 == 0) {
+					$t_content .= "</tr>";
+				}
+				
+				$t_address = "";
+				$t_address .= strlen($street) > 0 ? (strlen($t_address) > 0 ? ", " : "") . $street : "";
+				$t_address .= strlen($address) > 0 ? (strlen($t_address) > 0 ? ", " : "") . $address : "";
+				$t_address .= strlen($location) > 0 ? (strlen($t_address) > 0 ? ", " : "") . $location : "";
+				$t_address .= strlen($zipcode) > 0 ? (strlen($t_address) > 0 ? ", " : "") . $zipcode : "";
+				$t_address .= strlen($country) > 0 ? (strlen($t_address) > 0 ? ", " : "") . $country : "";
+				echo strlen($t_address) > 0 ? "<span><b>{$this->Tr("Address")}: </b></span>
+						<span style='color: #000000;'>{$t_address}</span><div class='clear tenpx'></div>" : "";
+				?>
+				<h2><?php echo $this->translate->_("Facilities / Equipment"); ?></h2>
+				<table class="repo">
+					<tbody>
+					<?php echo $t_content; ?>
+					</tbody>
+				</table>
+				</div>
+			<?php
+				$this->headMeta()->appendProperty('og:description', Petolio_Service_Util::shortenText($description, 200, true));
+			?>
+			<?php if(strlen($description) > 0): ?>
+			<h3 class="green left"><?php echo $this->translate->_("Description"); ?></h3>
+			<div class="clear reset"><?php echo $description; ?></div>
+			<?php endif; ?>
+			<?php if ( count($group_entities) > 0 ): ?>
+				<?php foreach ($group_entities as $group_id => $entities): ?>
+				<br />
+				<table cellspacing="0" cellpadding="5" border="0" class="list">
+					<?php
+						$label_displayed = false;
+						foreach ($entities as $entity_row) {
+							if ( !$label_displayed ) {
+								echo '<tr>';
+								foreach ($entity_row as $cell) {
+									echo "<th>{$this->Tr($cell["label"])}</th>";
+								}
+								echo '</tr>';
+								$label_displayed = true;
+							}
+							echo '<tr>';
+							foreach ($entity_row as $cell) {
+								echo "<td>{$cell["value"]}</td>";
+							}
+							echo '</tr>';
+						}
+					?>
+
+				</table>
+				<?php endforeach; ?>
+			<?php endif; ?>
+		<?php endif; ?>
+	</div>
+
+	<?php if ($this->admin && isset($this->service_apps) && count($this->service_apps) > 0): ?>
+	<div class="rightbox">
+		<h3><?php echo $this->translate->_("Service upcoming appointments"); ?></h3>
+		<br />
+		<?php echo $this->paginationControl($this->service_apps, 'Elastic', 'events/your-controls.phtml', array('pos' => 'top')); ?>
+		<table cellspacing="0" cellpadding="5" class="grid">
+		<col /><col width="120" /><col width="170" /><col width="170" />
+			<tr>
+				<th><a href="<?php echo $this->url(array('order' => 'name', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Name"); ?><?php if($this->order == 'name'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+				<th><a href="<?php echo $this->url(array('order' => 'type', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Type"); ?><?php if($this->order == 'type'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+				<th><a href="<?php echo $this->url(array('order' => 'owner', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Created By"); ?><?php if($this->order == 'owner'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+				<th><a href="<?php echo $this->url(array('order' => 'date', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Date Start"); ?><?php if($this->order == 'date'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+			</tr>
+			<?php foreach($this->service_apps as $event): ?>
+				<tr>
+					<td>
+						<a href="javascript:void(0);" id="event_<?php echo $event["pid"]; ?>"><?php echo $event["title"]; ?></a>
+						<?php echo isset($event["status"]) && $event["status"] != false ? " - <small>{$event["status"]}</small>" : null; ?>
+					</td>
+					<td><span class="type"><?php echo $event["type"]; ?></span></td>
+					<td><a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $event["user_id"]), 'default', true); ?>"><?php echo $event["user_name"]; ?></a></td>
+					<td><?php echo Petolio_Service_Util::formatDate($event["start"], null, ($event['allDay'] != 1), true, true); ?></td>
+				</tr>
+			<?php endforeach; ?>
+		</table>
+		<?php echo $this->paginationControl($this->service_apps, 'Elastic', 'events/your-controls.phtml', array('pos' => 'bot')); ?>
+	</div>
+	<?php endif; // has appointments if ?>
+	
+	<div class="rightbox" id="service-stars">
+		<span class="starRatings"></span>
+	</div>
+
+	<div class="rightbox" id="service-social">
+		<div class="social" style="text-align: left; width: 100%; margin: 0 auto; position: relative;">
+			<div class="comments"><div style="height: 7px;"></div><div style="text-align: center; padding: 2px 5px; border: 1px solid #A5CC7D; background: #CEECB0;"><?php echo $this->translate->_("Loading Social Plugins..."); ?></div><div style="height: 7px;"></div></div>
+			<div style="position: absolute; top: 10px; right: 0px;">
+				<span class="subscriptions"></span>
+				<span class="ratings"></span>
+			</div>
+		</div>
+	</div>
+
+	<div class="right">
+		<?php echo $this->partial('addthis.phtml', array('title' => $service_name, 'translate' => $this->translate)); ?>
+	</div>
+	
+</div>
+<?php $imgsw_path = array(
+	'image' => "/images/userfiles/services/{$this->service->getId()}/{image}",
+	'audio' => "/images/userfiles/services/{$this->service->getId()}/{audio}",
+	'video' => "http://www.youtube.com/embed/{video}"
+); include "../application/modules/frontend/views/scripts/imgsw.phtml"; ?>
+
+<script type="text/javascript">
+	var ServiceSocial = function() {
+		var _load = function() {
+			var params = {
+				scope: 'po_services',
+				label: '{service}',
+				id: <?php echo $this->service->getId(); ?>,
+				url: '<a href="<?php echo $this->url(array('controller'=>'services', 'action'=>'view', 'service' => $this->service->getId()), 'default', true); ?>"><?php echo addcslashes($service_name, "\000\n\r\\'\"\032"); ?></a>',
+				owner: <?php echo $this->service->getUserId(); ?>
+			};
+			Social.load('comments', $("#service-social"), params);
+			Social.load('ratings', $("#service-social"), params);
+			Social.load('subscriptions', $("#service-social"), params);
+		}, _listen = function() {
+			$("body").bind("ImgSw", function(e){
+				if(e.close === true)
+					_load();
+			});
+		}, __construct = function() {
+			_load();
+			_listen();
+		};
+
+		return {
+			init: __construct
+		};
+	}();
+
+	READY(ServiceSocial.init);
+</script>
+
+<?php //if ($this->admin): ?>
+<?php include_once "../application/modules/frontend/views/scripts/calendar/init.phtml"; ?>
+<script type="text/javascript">
+	var EventData = <?php echo json_encode($this->service_apps_json ? json_decode($this->service_apps_json) : array()); ?>;
+	var Event = function() {
+		function type() {
+			$('span.type').each(function(s, i) {
+				var i = $(i);
+
+				i.css({color: Calendar.getOpt().colors[i.html()]});
+				i.html(Calendar.getOpt().types[i.html()]);
+			});
+		};
+
+		function glow() {
+			var	colors = ['#adddad', '#c6e7c6', '#d7eed7', '#e3f3e3', '#ebf7eb'],
+				now = new Date().getTime() / 1000,
+				loop = [],
+				x = 225;
+
+			for (var i = 1; i < 5; i++) {
+				x = x * 2;
+				loop.push({
+					time: x,
+					color: colors[i]
+				});
+			}
+
+			$('a[id^="event_"]').each(function(s, i) {
+				var i = $(i),
+					d = find(i.attr('id').substr(6)),
+					t = i.parent().parent();
+
+				if(d.start < now) {
+					t.css({background: colors[0]});
+				} else {
+					$.each(loop, function(s, i) {
+						if(d.start < now + i.time) {
+							t.css({background: i.color});
+							return false;
+						}
+					});
+				}
+			});
+
+			window.setTimeout(glow, 1000);
+		};
+
+		function hash() {
+			var h = parseInt(window.location.hash.substring(1));
+			if(isNaN(h))
+				return;
+
+			Calendar.eventClick(find(h));
+		};
+
+		function find(id) {
+			var f = null;
+			$.each(EventData, function(s, i){
+				if(i.pid == id) {
+					f = i;
+					return false;
+				}
+			});
+
+			return f;
+		};
+
+		function listen() {
+			type();
+			hash();
+			glow();
+
+			$('a[id^="event_"]').click(function(e) {
+				e.preventDefault();
+				Calendar.eventClick(find($(e.target).attr('id').substr(6)));
+	    	});
+
+			$('a[id^="service_link_"]').click(function(e) {
+				e.preventDefault();
+				Calendar.addEditWindow({
+					link_id: $(e.target.parentNode).attr('id').substr(13),
+					users_id: $(e.target.parentNode).attr('rel')
+				});
+	    	});
+
+			$('input[name^="service_app_"]').click(function(e) {
+				e.preventDefault();
+				Calendar.addEditWindow({
+					service_id: $(e.target).attr('name').substr(12),
+					users_id: $(e.target).attr('rel')
+				}, null, true);
+	    	});
+		};
+
+		return {
+			listen: listen
+		};
+	}();
+
+	var Service = function() {
+		var store = {};
+		var data = {};
+
+	    // main init function
+		function __construct(opt) {
+			store = opt;
+		};
+
+		function chooser() {
+			var y = $("#multi_users");
+			var o = {translate: Petolio.translateChosen()};
+			var pets = $("#multi_pets");
+			var petso = { translate: Petolio.translateChosen() };
+			var a = {ajax: {
+            	url: SITE_URL + "pets/find-user",
+				min_search: 3,
+				req_param: "user",
+				res_value: "value",
+				res_text: "text",
+				res_html: "text",
+				success_callback: function(v){
+					// return the find-user result
+					return v.results;
+				}
+            }};
+
+			if(y.attr('title'))
+				y.data('placeholder', y.attr('title'));
+
+			if(y.is("input"))
+				$.extend(o, a);
+
+			y.chosen(o);
+
+			if(pets.attr('id') == 'multi_pets') {
+				$("#multi_users_chzn_shadow").change(function(e) {
+					// populate the pets chosen field
+					var data = $("#multi_users_chzn_shadow").val();
+			    	$.ajax({
+						url: SITE_URL + 'pets/find-pet',
+						type: 'post',
+						data: 'users=' + data,
+						cache: false,
+						success: function (x) {
+							if(x.success) {
+								if(pets.attr('title'))
+									pets.data('placeholder', pets.attr('title'));
+
+								pets.html('');
+								$.each(x.results, function(key, value) {
+									pets.append('<option value="' + value.value + '">' + value.text + '</option>');
+								});
+
+								pets.trigger("liszt:updated");
+							}
+						},
+						error: Petolio.showError
+					});
+				});
+
+				pets.chosen(petso);
+			}
+		};
+
+		function invitePartners() {
+			// create the dom window
+			$('<div id="dialog-invites" title="' + store.translate.labels[0] + '" class="ui-state-highlight">'+
+					'<div style="margin: 8px 0px 2px 0px; line-height: 18px;">'+
+						store.translate.labels[1] +'<br /><div class="fivepx"></div>'+
+						'<input multiple="multiple" type="text" title="' + store.translate.labels[2] + '" name="invited_users[]" class="chzn-select chzn-custom" style="width:260px;" id="multi_users" value="" />' +
+						'<br /><br />'+ store.translate.labels[3] +'<br /><div class="fivepx"></div>'+
+						'<select title="' + store.translate.labels[4] + '" name="invited_pets[]" multiple="multiple" class="chzn-select chzn-custom" style="width:260px;" id="multi_pets"></select>' +
+						'<br /><br /><br /><br /><br /><br /><br /><br /><br />'+
+					'</div>'+
+				'</div>').dialog({
+	    			resizable: false,
+	    			modal: true,
+	    			width: 300,
+	    			minHeight: 50,
+	    			buttons: [{
+						// Send Invites
+						text: store.translate.buttons[0],
+						click: function() {
+							var self = $(this),
+								d = $('#multi_pets').val();
+
+							// user didnt select anyone
+							if (d == null) {
+								Petolio.showMessage(store.translate.labels[6]);
+								return;
+							}
+
+							// add the selected users to data
+							data.pets = d;
+
+	    					// close main window and save
+	    	                self.dialog("close");
+	    	                __save(data);
+	    				}
+					}, {
+						// Close
+						text: store.translate.buttons[1],
+						click: function() {
+							$(this).dialog("close");
+	    				}
+					}],
+	    			close: function() {
+	    				$("#dialog-invites").remove();
+	    			}
+				});
+
+			// the save function
+			function __save(data) {
+				// close the add/edit dialog
+				$("#dialog-invites").dialog("close");
+
+				if ( !data.service ) {
+					data.service = store.service;
+				}
+
+	            // show loading (maybe sending a lot of emails)
+				Petolio.showLoading(store.translate.labels[7]);
+
+				// perform the save ajax request
+		    	$.ajax({
+					url: SITE_URL + 'services/invite',
+					type: 'post',
+					data: data,
+					cache: false,
+					success: function (x) {
+						if(x.success) {
+							Petolio.hideLoading();
+		    				Petolio.showMessage(store.translate.labels[8], function() {});
+						} else Petolio.showError();
+					},
+					error: Petolio.showError
+				});
+			};
+		};
+
+		function inviteMembers() {
+			// create the dom window
+			$('<div id="dialog-invites" title="' + store.translate.labels[0] + '" class="ui-state-highlight">'+
+					'<div style="margin: 8px 0px 2px 0px; line-height: 18px;">'+
+						store.translate.labels[9] +'<br /><div class="fivepx"></div>'+
+						'<input multiple="multiple" type="text" title="' + store.translate.labels[2] + '" name="invited_users[]" class="chzn-select chzn-custom" style="width:260px;" id="multi_users" value="" />' +
+						'<br /><br />'+ store.translate.labels[10] +'<br /><div class="fivepx"></div>'+
+						'<textarea name="message" id="invite_message" class="box" style="height: 100px;" />'+
+					'</div>'+
+				'</div>').dialog({
+	    			resizable: false,
+	    			modal: true,
+	    			width: 300,
+	    			minHeight: 350,
+	    			buttons: [{
+						// Send Invites
+						text: store.translate.buttons[0],
+						click: function() {
+							var self = $(this),
+								d = $('#multi_users_chzn_shadow').val();
+
+							// user didnt select anyone
+							if (d == null) {
+								Petolio.showMessage(store.translate.labels[11]);
+								return;
+							}
+
+							// add the selected users to data
+							data.users = d;
+							data.message = $('#invite_message').val();
+
+	    					// close main window and save
+	    	                self.dialog("close");
+	    	                __save(data);
+	    				}
+					}, {
+						// Close
+						text: store.translate.buttons[1],
+						click: function() {
+							$(this).dialog("close");
+	    				}
+					}],
+	    			close: function() {
+	    				$("#dialog-invites").remove();
+	    			}
+				});
+
+			// the save function
+			function __save(data) {
+				// close the add/edit dialog
+				$("#dialog-invites").dialog("close");
+
+				if (!data.service) {
+					data.service = store.service;
+				}
+
+	            // show loading (maybe sending a lot of emails)
+				Petolio.showLoading(store.translate.labels[7]);
+
+				// perform the save ajax request
+		    	$.ajax({
+					url: SITE_URL + 'services/invite-members',
+					type: 'post',
+					data: data,
+					cache: false,
+					success: function (x) {
+						if(x.success) {
+							Petolio.hideLoading();
+		    				Petolio.showMessage(store.translate.labels[8], function() {});
+						} else Petolio.showError();
+					},
+					error: Petolio.showError
+				});
+			};
+		};
+
+		function listen() {
+			var h = window.location.hash.substring(1),
+				_p = function() {
+					Service.invitePartners();
+					chooser();
+				}, _m = function() {
+					Service.inviteMembers();
+					chooser();
+				};
+
+			if(h == 'invite_partners') _p();
+			if(h == 'invite_members') _m();
+
+			$('#invite_partners, input[name="invite_partners"]').click(function(e) {
+				e.preventDefault();
+				 _p();
+			});
+			$('#invite_members, input[name="invite_members"]').click(function(e) {
+				e.preventDefault();
+				_m();
+			});
+		}
+
+		return {
+			init: __construct,
+			listen: listen,
+			invitePartners: invitePartners,
+			inviteMembers: inviteMembers
+		};
+	}();
+
+	READY(Event.listen);
+	READY(function() {
+		Service.init({
+			service: '<?php echo $this->service->getId(); ?>',
+			translate: {
+				buttons: [
+				  		'<?php echo $this->translate->_("Send Invites"); ?>',
+				  		'<?php echo $this->translate->_("Cancel"); ?>'
+				],
+				labels: [
+						'<?php echo $this->translate->_("Invite users"); ?>',
+						'<?php echo $this->translate->_("Select a user and his pets to invite them to your service."); ?>',
+				  		'<?php echo $this->translate->_("Select users"); ?>',
+						'<?php echo $this->translate->_("Chose one or more pets from the selected users"); ?>',
+						'<?php echo $this->translate->_("Select pets"); ?>',
+						'<?php echo $this->translate->_("Error"); ?>',
+						'<?php echo $this->translate->_("You must select at least one pet"); ?>',
+						'<?php echo $this->translate->_("Please wait while loading..."); ?>',
+						'<?php echo $this->translate->_("Invitations sent with success"); ?>',
+						'<?php echo $this->translate->_("Select a users to invite them to your service."); ?>',
+						'<?php echo $this->translate->_("Message"); ?>',
+						'<?php echo $this->translate->_("You must select at least one user"); ?>'
+				]
+			}
+		});
+	});
+
+	READY(Service.listen);
+</script>
+<?php //endif; ?>
+<script type="text/javascript">
+	READY(function() {
+		$('.sp-desc').ellipsis();
+	});
+</script>
+<script type="text/javascript">
+	var Recommend = function() {
+		var _load = function() {
+			Petolio.loadJs('social/base.js');
+			var params = {
+				scope: 'po_services',
+				id: <?php echo $this->service->getId(); ?>,
+			};
+			Social.load('recommend', $("#recommend-social"), params);
+		}, __construct = function() {
+			_load();
+		};
+
+		return {
+			init: __construct
+		};
+	}();
+
+	READY(Recommend.init);
+</script>
+<script type="text/javascript">
+	var StarRatings = function() {
+		var _load = function() {
+			Petolio.loadJs('social/base.js');
+			var params = {
+				scope: 'po_services',
+				id: <?php echo $this->service->getId(); ?>,
+			};
+			Social.load('starRatings', $("#service-stars"), params);
+		}, __construct = function() {
+			_load();
+		};
+
+		return {
+			init: __construct
+		};
+	}();
+
+	READY(StarRatings.init);
+</script>
+<script type="text/javascript">
+	(function($) {
+		READY(function() {
+			$("div.partner-item").on('mouseenter', function() {
+				$(this).find("div.partner-icons").css("display", "none").fadeIn(1000);
+			});
+	
+			$("div.partner-item").on('mouseleave', function() {
+				$(this).find("div.partner-icons").css("display", "block").fadeOut(1000);
+			});
+		
+		});
+	})(jQuery);
+</script>

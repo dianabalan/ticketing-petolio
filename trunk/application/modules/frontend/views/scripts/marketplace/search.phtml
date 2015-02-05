@@ -1,0 +1,216 @@
+<?php 
+	$keyword = $this->request->getParam('keyword');
+	$owner = $this->request->getParam('owner');
+	$type = $this->request->getParam('type');
+	$radius = $this->request->getParam('radius');
+	$address = $this->request->getParam('address');
+	$nearme = $this->request->getParam('nearme', 0);
+	$user_latitude = $this->request->getParam('user_latitude', '');
+	$user_longitude = $this->request->getParam('user_longitude', '');
+?>
+<div class="search-box">
+	<form id="front_search_form" action="<?php echo $this->url(array('controller'=>'marketplace'), 'default', true)."/index"; ?>">
+		<input type="text" name="keyword" 
+			value="<?php echo isset($keyword) ? $keyword : $this->translate->_('Search...'); ?>" 
+			label="<?php echo $this->translate->_('Search...'); ?>" />
+		<input type="submit" class="search_submit" value="" />
+		<div class="clear"></div>
+	</form>
+</div>
+<div class="search-more">
+	<a href="javascript:void(0);" class="rreset"><?php echo $this->translate->_("Reset"); ?></a>
+	<a href="javascript:void(0);" hide="<?php echo $this->translate->_("Close search options"); ?>" 
+		show="<?php echo $this->translate->_("More search options"); ?>" class="mmore">
+		<?php echo $this->translate->_("More search options"); ?></a>
+	<div class="advanced-search">
+		<div class="nub"></div>
+		<?php
+			// filter by type
+			$types = null;
+			foreach ($this->types as $key => $item) {
+				if($item['indent'] == 0) {
+					if(!is_null($types))
+						$types .= "</optgroup>";
+					$types .= "<optgroup label='{$item['name']}'>";
+			
+				} else {
+					$selected = null;
+					if($key == $type)
+						$selected = ' selected="selected"';
+			
+					$types .= "<option value='{$key}'{$selected}>{$item['name']}</option>";
+				}
+			}
+
+		?>
+		<form id="advanced_search_form" action="<?php echo $this->url(array('controller'=>'marketplace'), 'default', true)."/index"; ?>">
+			<table width="100%" cellspacing="5" cellpadding="5" border="0">
+				<tr>
+					<td><label><?php echo $this->translate->_("Keywords"); ?></label></td>
+					<td style="padding-left: 5px;"><input type="text" name="keyword" value="<?php echo $keyword; ?>" /></td>
+				</tr>
+				<tr>
+					<td><label><?php echo $this->translate->_("Owner"); ?></label></td>
+					<td style="padding-left: 5px;"><input type="text" name="owner" value="<?php echo $owner; ?>" /></td>
+				</tr>
+				<tr>
+					<td><label><?php echo $this->translate->_("Type"); ?></label></td>
+					<td style="padding-left: 5px;">
+						<select name="type">
+							<option value=""><?php echo $this->translate->_("All"); ?></option>
+							<?php echo $types; ?>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td><label><?php echo $this->translate->_("Address"); ?></label></td>
+					<td style="padding-left: 5px;"><input type="text" name="address" id="search_address" value="<?php echo $address; ?>" /></td>
+				</tr>
+				<tr>
+					<td><label><?php echo $this->translate->_("Radius"); ?></label></td>
+					<td style="padding-left: 5px;">
+						<select name="radius" id="search_radius">
+							<?php
+								// figure out radius
+								$sradius = null;
+								foreach (range(10, 50, 10) as $range) {
+									$selected = null;
+									if($radius == $range)
+										$selected = ' selected="selected"';
+									$sradius .= "<option value='{$range}'{$selected}>{$range} km</option>";
+								}
+								echo $sradius;
+							?>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<input type="hidden" name="user_latitude" value="<?php echo $user_latitude; ?>" />
+						<input type="hidden" name="user_longitude" value="<?php echo $user_longitude; ?>" />
+						<input type="checkbox" name="nearme" value="1" style="width: 15px; margin: 10px 5px 0px 140px" <?php if($nearme == 1): ?>checked="checked"<?php endif; ?> />
+						<label style="width: auto; padding-top: 8px;"><?php echo $this->translate->_("Show services near me"); ?></label>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<input class="submit" style="float: right;" type="button" id="search_reset" value="<?php echo $this->translate->_("Reset"); ?>" />
+						<input class="submit" style="float: right;" type="submit" value="<?php echo $this->translate->_("Go"); ?>" />
+					</td>
+				</tr>
+			</table>
+		</form>
+		<script type="text/javascript" src="/js/search.js"></script>
+		<script type="text/javascript">
+			var MarketsLocation = function() {
+				var geocoder = null;
+				var cached = null;
+
+				var setCoords = function(position) {
+					var lat = position.coords && position.coords.latitude ? position.coords.latitude : position.latitude,
+						lng = position.coords && position.coords.longitude ? position.coords.longitude : position.longitude;
+
+					cached = {latitude: lat, longitude: lng};
+
+					$("input[name='user_latitude']").val(lat);
+					$("input[name='user_longitude']").val(lng);
+					
+					Petolio.hideLoading();							
+				}, __e = function() {
+					Petolio.hideLoading();
+					Petolio.showMessage('<?php echo $this->translate->_("Could not determine your location..."); ?>');
+				};
+
+				var findAddress = function() {
+					var input = $('#search_address');
+	
+					if (input.val().length > 0) {
+						geocoder.geocode({'address': input.val()}, function(results, status) {
+							if(status == google.maps.GeocoderStatus.OK) {
+								var latitude = results[0].geometry.location.lat();
+								var longitude = results[0].geometry.location.lng();
+							
+								cached = {latitude: latitude, longitude: longitude};
+								setCoords(cached);
+
+								Petolio.go($("#advanced_search_form").attr('action') + '/' + $("#advanced_search_form").serializeURL());
+							} else input.css({borderColor: 'red'});
+						});
+					} else {
+						Petolio.go($("#advanced_search_form").attr('action') + '/' + $("#advanced_search_form").serializeURL());
+					}
+						
+				};
+			
+				var initialize = function() {
+					geocoder = new google.maps.Geocoder();
+						
+					$("input[name='nearme']").click(function(e) {
+
+						if ($(this).is(':checked')) {
+
+							if (!$.isEmptyObject(cached)) {
+								setCoords(cached);
+							}
+							
+							Petolio.showLoading('<?php echo $this->translate->_("Trying to find your location..."); ?>');
+							$.ajax({
+								url : SITE_URL + "marketplace/get-user-address",
+								type : 'post',
+								cache : false,
+								success : function(data) {
+									if ( data.latitude && data.longitude && data.latitude.length > 0 && data.longitude.length > 0 ) {
+										cached = {latitude: data.latitude, longitude: data.longitude};
+										setCoords(cached);
+									} else if ( data.address && data.address.length > 0 ) {
+										var input = $('#search_address');
+										input.val(data.address);
+										input.css({borderColor: '#8F8F8F'});
+
+										geocoder.geocode({'address': input.val()}, function(results, status) {
+											if(status == google.maps.GeocoderStatus.OK) {
+												var latitude = results[0].geometry.location.lat();
+												var longitude = results[0].geometry.location.lng();
+												cached = {latitude: latitude, longitude: longitude};
+												setCoords(cached);
+											} else input.css({borderColor: 'red'});
+										});
+
+										Petolio.hideLoading();
+									} else {
+										if(navigator.geolocation) {
+											navigator.geolocation.getCurrentPosition(setCoords, __e, {
+												enableHighAccuracy: true,
+												maximumAge: Infinity,
+												timeout: 10000
+											});
+										}
+									}
+								}
+							});
+						}
+					});
+
+					$('#advanced_search_form').unbind("submit");
+					$('#advanced_search_form').submit(function(e){
+						e.preventDefault();
+						findAddress();
+					});
+				};
+
+				function __construct() {
+					$('body').append('<script type="text/javascript" src="'+ window.location.protocol +'//maps.googleapis.com/maps/api/js?v=3.7&sensor=false&callback=MarketsLocation.go" />');
+				};
+				
+				return {
+					init: __construct,
+					go: initialize,
+				};
+			}();
+			
+			READY(function() {
+				MarketsLocation.init();
+			});
+		</script>
+		</div>
+</div>

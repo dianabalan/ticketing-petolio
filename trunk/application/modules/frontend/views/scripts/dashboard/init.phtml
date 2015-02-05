@@ -1,0 +1,94 @@
+<div class="dashboard_translate" style="display: none;"><?php echo json_encode(array(
+	// social
+	'entry_url' => $this->url(array('controller'=>'dashboard', 'action'=>'view', 'id' => '{id}'), 'default', true),
+
+	// like
+	'view_ratings' => $this->translate->_("View Likes"),
+	'slf_ratings_1' => $this->translate->_("You like this."),
+	'non_ratings_1' => $this->translate->ngettext('%1$s %2$s like this.', '%1$s %2$s likes this.', 1),
+	'all_ratings_1' => $this->translate->ngettext('You and %1$s %2$s like this.', 'You and %1$s %2$s likes this.', 1),
+	'slf_ratings_2' => $this->translate->_("You like this."),
+	'non_ratings_2' => $this->translate->ngettext('%1$s %2$s like this.', '%1$s %2$s likes this.', 2),
+	'all_ratings_2' => $this->translate->ngettext('You and %1$s %2$s like this.', 'You and %1$s %2$s likes this.', 2),
+	'person' => $this->translate->_('person'),
+	'people' => $this->translate->_('people'),
+	'close' => $this->translate->_("Close"),
+
+	// comment
+	'blank' => $this->translate->_("Comment here..."),
+	'delete_comment' => $this->translate->_("Delete Comment?"),
+
+	// share
+	'share' => $this->translate->_("Share"),
+	'share_title' => $this->translate->_("Share Entry"),
+	'share_txt' => $this->translate->_("Do you want to post this entry on your small talk?"),
+	'share_confirm' => $this->translate->_("This entry has been shared on your small talk."),
+	'public' => $this->translate->_("Public"),
+	'friends' => $this->translate->_("Friends"),
+	'only_me' => $this->translate->_("Only Me"),
+	'custom' => $this->translate->_("Custom"),
+
+	// custom
+	'custom_perms' => $this->translate->_("Custom Permissions"),
+	'custom_txt' => $this->translate->_("Please select the users you want to give access to this entry. Only they will be able to see it."),
+	'custom_allowed' => $this->translate->_("Allowed People"),
+	'custom_error' => $this->translate->_("You need to select at least 1 user."),
+	'save' => $this->translate->_("Save"),
+	'cancel' => $this->translate->_("Cancel"),
+
+	// post
+	'delete_entry' => $this->translate->_("Delete Small Talk Entry?"),
+	'post_blank' => $this->translate->_("What's on your mind?"),
+	'attached_picture' => $this->translate->_('Attached Picture'),
+	'attached_video' => $this->translate->_('Attached Video'),
+	'attached_audio' => $this->translate->_('Attached Audio'),
+	'attach_picture' => $this->translate->_('Attach Picture'),
+	'attach_video' => $this->translate->_('Attach Video'),
+	'attach_audio' => $this->translate->_('Attach Audio'),
+	'link_picture' => $this->translate->_('Link Picture'),
+	'link_video' => $this->translate->_('Link Video'),
+	'link_audio' => $this->translate->_('Link Audio'),
+	'upload_picture' => $this->translate->_('Upload Picture'),
+	'upload_video' => $this->translate->_('Upload Video'),
+	'upload_audio' => $this->translate->_('Upload Audio'),
+	'attach_picture_txt' => $this->translate->_('You can choose between linking a picture from a website or uploading a picture from your computer'),
+	'attach_audio_txt' => $this->translate->_('You can choose between linking an audio from a website or uploading an audio from your computer'),
+	'picture_txt' => $this->translate->_('Picture Location'),
+	'video_txt' => $this->translate->_('Video Location'),
+	'audio_txt' => $this->translate->_('Audio Location'),
+	'valid_picture' => $this->translate->_('valid image url'),
+	'valid_picture_upload' => $this->translate->_('jpg | png | gif'),
+	'valid_video' => $this->translate->_('valid youtube url'),
+	'valid_audio' => $this->translate->_('valid audio url'),
+	'valid_audio_upload' => $this->translate->_('mp3 | m4a | oga | wav'),
+	'link' => $this->translate->_('Link'),
+	'upload' => $this->translate->_('Upload'),
+	'upload_picture_empty' => $this->translate->_('Please select an image file to upload'),
+	'upload_audio_empty' => $this->translate->_('Please select an audio file to upload'),
+	'upload_loading' => $this->translate->_('Your file is uploading, please wait...'),
+	'upload_abort' => $this->translate->_('Abort Upload'),
+
+	// options
+	'disable_email' => $this->translate->_("Disable Email Notification"),
+	'disable_q' => $this->translate->_("Are you sure you want to disable email notification?"),
+	'enable_email' => $this->translate->_("Enable Email Notification"),
+	'enable_q' => $this->translate->_("Are you sure you want to enable email notification?"),
+
+	// new
+	'new_one' => $this->translate->_("%s new entry. Click to show it"),
+	'new_many' => $this->translate->_("%s new entries. Click to show them"),
+
+	// truncate
+	'read_more' => $this->translate->_("Read more"),
+	'read_less' => $this->translate->_("Read less")
+)); ?>
+</div>
+<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/dashboard/base.js'); ?>"></script>
+<script type="text/javascript">
+	READY(function() {
+		Dashboard.load(
+				'<?php echo (isset($override_user) ? $override_user : (!is_null($this->identity) ? $this->identity->id : '0')); ?>', 
+				'<?php echo $dashboard_location; ?>',
+				<?php echo (isset($this->profile_user) ? $this->profile_user : '0'); ?>);
+	});
+</script>

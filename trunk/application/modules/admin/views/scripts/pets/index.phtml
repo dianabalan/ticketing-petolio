@@ -1,0 +1,108 @@
+<h1><a href="<?php echo $this->url(array("controller" => "pets", "action" => "index"), "admin", true); ?>"><?php echo $this->translate->_("Pets"); ?></a> &raquo; <?php echo $this->translate->_("List Pets"); ?></h1>
+<div class="rbcontent" id="search_fields">
+	<form name="search" action="<?php echo $this->url; ?>" method="get">
+	<input type="hidden" name="order" id="order" value="<?php echo $this->order; ?>" />
+	<input type="hidden" name="dir" id="dir" value="<?php echo $this->dir; ?>" />
+	<table>
+	<col width="430" />
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Keywords"); ?>:</label>
+					<input type="text" name="keyword" value="<?php echo $this->keyword; ?>" />
+				</div>
+			</td>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Type"); ?>:</label>
+					<select name="species">
+						<option></option>
+						<?php
+							foreach ($this->types as $value) {
+								$hover = $value['value'] == $this->species ? ' selected="selected"' : null;
+								echo "<option value='{$value['value']}' {$hover}>{$value['name']}</option>";
+							}
+						?>
+					</select>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Owner"); ?>:</label>
+					<input type="text" name="owner" value="<?php echo $this->owner; ?>" />
+				</div>
+			</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Archived"); ?>:</label>
+					<select name="archived">
+						<option></option>
+						<option value="1" <?php echo $this->archived == '1' ? 'selected="selected"' : ''; ?>><?php echo $this->translate->_("Yes"); ?></option>
+						<option value="0" <?php echo $this->archived == '0' ? 'selected="selected"' : ''; ?>><?php echo $this->translate->_("No"); ?></option>
+					</select>
+				</div>
+			</td>
+			<td>
+				<div class="filter_item">
+					<label></label>
+					<input type="button" value="<?php echo $this->translate->_("Search"); ?>" data-type="submit" />
+					<input type="button" value="<?php echo $this->translate->_("Reset"); ?>" data-type="reset" />
+				</div>
+			</td>
+		</tr>
+	</table>
+	</form>
+</div>
+<?php if(count($this->pets) > 0): ?>
+	<?php echo $this->paginationControl($this->pets, 'Elastic', 'controls.phtml', array('translate' => $this->translate)); ?>
+	<table class="main">
+		<thead>
+			<tr>
+				<th class="<?php $col = "d1.value"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Name"); ?></th>
+				<th class="<?php $col = "type"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Type"); ?></th>
+				<th class="<?php $col = "x.name"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Owner"); ?></th>
+				<th class="<?php $col = "a.date_created"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Created on"); ?></th>
+				<th class="<?php $col = "a.to_adopt"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("To Adopt"); ?></th>
+				<th class="<?php $col = "a.deleted"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Archived"); ?></th>
+				<th class="<?php $col = "flagged_count"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Flagged"); ?></th>
+				<th width="1%"></th>
+				<th width="1%"></th>
+				<th width="1%"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach($this->pets as $pet): ?>
+				<tr>
+					<td><a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'edit-pet', 'id'=> $pet["id"]), 'admin', true); ?>"><?php echo $pet['name']; ?></a></td>
+					<td><?php echo Petolio_Service_Util::Tr($pet['type']); ?></td>
+					<td><a href="<?php echo $this->url(array('controller'=>'members', 'action'=>'edit-user', 'id'=> $pet["user_id"]), 'admin', true); ?>"><?php echo $pet['user_name']; ?></a></td>
+					<td><?php echo Petolio_Service_Util::formatDate($pet["date_created"], null, true, true); ?></td>
+					<td><?php echo $pet['to_adopt'] == 1 ? $this->translate->_("Yes") : $this->translate->_("No"); ?></td>
+					<td><?php echo $pet['deleted'] == 1 ? $this->translate->_("Yes") : $this->translate->_("No"); ?></td>
+					<td><?php echo $pet['flagged'] == 1 ? $this->translate->_("Yes") : $this->translate->_("No"); ?> (<a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'list-flags', 'id'=> $pet["id"]), 'admin', true); ?>"><?php echo $pet['flagged_count']; ?></a>)</td>
+					<td nowrap="nowrap" style="text-align: center;"><a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'send-msg', 'id'=> $pet["user_id"]), 'admin', true); ?>"><?php echo $this->translate->_("Msg") ?></a></td>
+					<td nowrap="nowrap" style="text-align: center;"><a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'edit-pet', 'id'=> $pet["id"]), 'admin', true); ?>"><?php echo $this->translate->_("Edit") ?></a></td>
+					<td nowrap="nowrap" style="text-align: center;"><a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'delete-pet', 'id'=> $pet["id"]), 'admin', true); ?>" class="reqconf" title="<?php echo $pet['deleted'] == 1 ? $this->translate->_("Are you sure you want to restore this pet?") : $this->translate->_("Are you sure you want to archive this pet?"); ?>"><?php echo $pet['deleted'] == 1 ? $this->translate->_("Restore") : $this->translate->_("Archive"); ?></a></td>
+				</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+	<?php echo $this->paginationControl($this->pets, 'Elastic', 'controls.phtml', array('translate' => $this->translate)); ?>
+	<form style="background: #fff;">
+		<input type="button" onclick="document.location='<?php echo $this->url(array('action' => 'export-csv')); ?>';" class="submit" value="<?php echo $this->translate->_("Export records to CVS"); ?>" />
+		<div class="clear"></div>
+	</form>
+<?php else: ?>
+	<div class="error"><?php echo $this->translate->_("No records found."); ?></div>
+<?php endif; ?>
+<script type="text/javascript">
+	READY(function() {
+		Admin.loadJs('filters/base.js');
+		Filters.load('/pets/index');
+	});
+</script>

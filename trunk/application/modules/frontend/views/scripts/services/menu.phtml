@@ -1,0 +1,116 @@
+<?php
+
+// marketplace links
+$accounts = array(
+	array(
+		'link' => $this->url(array('controller'=>'marketplace', 'action'=>'index'), 'default', true),
+		'name' => $this->translate->_("Services"),
+		'class' => 'lm-services_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'products', 'action'=>'index'), 'default', true),
+		'name' => $this->translate->_("Products"),
+		'class' => 'lm-products_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'adoption', 'action'=>'index'), 'default', true),
+		'name' => $this->translate->_("Adoptions"),
+		'class' => 'lm-pets_sm'
+	)
+);
+
+$links = null;
+foreach($accounts as $link)
+	$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+
+$this->placeholder('sidebar')
+     ->append("<h3>".$this->translate->_("Market Place")."</h3>
+     	<ul class=\"leftsubmenu\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
+
+// service links
+$accounts = array(
+	array(
+		'link' => $this->url(array('controller'=>'services', 'action'=>'index'), 'default', true),
+		'name' => $this->translate->_("Overview"),
+		'class' => 'lm-services_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'services', 'action'=>'add'), 'default', true),
+		'name' => $this->translate->_("Add Service"),
+		'class' => 'lm-services_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'services', 'action'=>'archives'), 'default', true),
+		'name' => $this->translate->_("Service Archives"),
+		'class' => 'lm-services_sm'
+	)
+);
+
+$links = null;
+foreach($accounts as $link) {
+	if (isset($link['class']) && strlen($link['class']) > 0)
+		$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+	else
+		$links .= "<li><a href='{$link['link']}'>{$link['name']}</a></li>";
+}
+
+if ($this->auth->hasIdentity() && $this->auth->getIdentity()->type == 2) {
+	$this->placeholder('sidebar')
+	     ->append("<h3>".$this->translate->_("Service")."</h3>
+	     	<ul class=\"leftsubmenu\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
+}
+
+// search by service name
+$searchbox_html = "<h3>".$this->translate->_("Search")."</h3>
+	<form id='services_search_form'>
+		<table width='100%' cellspacing='3' cellpadding='3' border='0'>
+			<tr>
+				<td><label>".$this->translate->_("Keywords")."</label></td>
+				<td style='padding-left: 5px;'><input type='text' name='name' size='23' value='{$this->search_name}' /></td>
+			</tr>
+			<tr>
+				<td colspan='2'><input class='srcbtn' type='submit' value='".$this->translate->_("Go")."' /><input class='srcbtn' type='button' id='search_reset' value='".$this->translate->_("Reset")."' /></td>
+			</tr>
+		</table>
+	</form>";
+
+// add search bar
+if($this->search)
+	$this->placeholder('sidebar')
+	->append($searchbox_html);
+
+?>
+<script type="text/javascript">
+(function($){
+	$.fn.serializeURL = function() {
+		var url = '';
+
+		jQuery.map($(this).serializeArray(), function(n, i){
+			if(n['value'])
+				url += n['name'] + '/' + n['value'] + '/';
+		});
+
+		return url;
+	};
+})(jQuery);
+
+READY(function(){
+	$('#services_search_form').submit(function(e){
+		e.preventDefault();
+		url = SITE_URL + 'services/index/' + $(this).serializeURL();
+
+		Petolio.go(url);
+
+	});
+
+	$("#search_reset").click(function(e) {
+		e.preventDefault();
+		$("#services_search_form input").each(function(index) {
+			if ( $(this).attr('type') == 'text' ) {
+				$(this).attr('value', '');
+			}
+		});
+		$("#services_search_form").submit();
+	});
+});
+</script>

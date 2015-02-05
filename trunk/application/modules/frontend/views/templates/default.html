@@ -1,0 +1,52 @@
+<style type="text/css">
+	div.microsite_default {
+		width: 800px;
+	}
+		div.microsite_default > img {
+			display: block;
+		}
+		
+		div.microsite_default > ul.menu {
+			margin: 10px 0px;
+			padding: 0px;
+			display: block;
+			width: 303px;
+			border: 1px solid #A2A2A2;
+			border-left: none;
+			height: 30px;
+		}
+		
+		div.microsite_default > ul.menu > li {
+			float: left;
+			display: block;
+			width: 100px;
+			height: 30px;
+			text-align: center;
+			border-left: 1px solid #A2A2A2;
+			background: #EEEEEE;
+			line-height: 30px;
+			font-weight: bold;
+		}
+		
+		div.microsite_default > ul.menu > li.clear {
+			display: none;
+		}
+		
+		div.microsite_default > div.content {
+			font-size: 12px;
+			line-height: 18px;
+		}
+</style>
+<div class="microsite_default">
+	<img src="/images/userfiles/attributes/{attr:default_logo}" />
+	<ul class="menu">
+		<li>{menu:1}</li>
+		<li>{menu:2}</li>
+		<li>{menu:3}</li>
+		<li class="clear"></li>
+	</ul>
+	{body}
+		<div class="content">{attr:default_content}</div>
+		{admin}
+	{/body}
+</div>

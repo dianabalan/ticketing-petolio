@@ -1,0 +1,451 @@
+<?php
+
+// automatic definitions
+$automatic_definition = array(
+	'img' => array(
+		array(
+			'pet_1' => $this->translate->_('%1$s has uploaded a new photo for his pet %2$s'),
+			'service_1' => $this->translate->_('%1$s has uploaded a new photo for his service %2$s'),
+			'microsite_1' => $this->translate->_('%1$s has uploaded a new photo for his microsite %2$s'),
+			'pet_2' => $this->translate->_('%1$s has uploaded a new photo for her pet %2$s'),
+			'service_2' => $this->translate->_('%1$s has uploaded a new photo for her service %2$s'),
+			'microsite_2' => $this->translate->_('%1$s has uploaded a new photo for her microsite %2$s')
+		),
+		'<a href="{user_link}" style="font-weight: bold;">{user_name}</a>',
+		'<a href="{arg_4}">{arg_5}</a>'
+	),
+	'img+' => array(
+		array(
+			'pet_1' => $this->translate->_('%1$s has uploaded %2$s new photos for his pet %3$s'),
+			'service_1' => $this->translate->_('%1$s has uploaded %2$s new photos for his service %3$s'),
+			'microsite_1' => $this->translate->_('%1$s has uploaded %2$s new photos for his microsite %3$s'),
+			'pet_2' => $this->translate->_('%1$s has uploaded %2$s new photos for her pet %3$s'),
+			'service_2' => $this->translate->_('%1$s has uploaded %2$s new photos for her service %3$s'),
+			'microsite_2' => $this->translate->_('%1$s has uploaded %2$s new photos for her microsite %3$s')
+		),
+		'<a href="{user_link}" style="font-weight: bold;">{user_name}</a>',
+		'{count_results}',
+		'<a href="{arg_4}">{arg_5}</a>'
+	),
+	'aud' => array(
+		array(
+			'pet_1' => $this->translate->_('%1$s has uploaded a new audio for his pet %2$s'),
+			'service_1' => $this->translate->_('%1$s has uploaded a new audio for his service %2$s'),
+			'microsite_1' => $this->translate->_('%1$s has uploaded a new audio for his microsite %2$s'),
+			'pet_2' => $this->translate->_('%1$s has uploaded a new audio for her pet %2$s'),
+			'service_2' => $this->translate->_('%1$s has uploaded a new audio for her service %2$s'),
+			'microsite_2' => $this->translate->_('%1$s has uploaded a new audio for her microsite %2$s')
+		),
+		'<a href="{user_link}" style="font-weight: bold;">{user_name}</a>',
+		'<a href="{arg_4}">{arg_5}</a>'
+	),
+	'aud+' => array(
+		array(
+			'pet_1' => $this->translate->_('%1$s has uploaded %2$s new audios for his pet %3$s'),
+			'service_1' => $this->translate->_('%1$s has uploaded %2$s new audios for his service %3$s'),
+			'microsite_1' => $this->translate->_('%1$s has uploaded %2$s new audios for his microsite %3$s'),
+			'pet_2' => $this->translate->_('%1$s has uploaded %2$s new audios for her pet %3$s'),
+			'service_2' => $this->translate->_('%1$s has uploaded %2$s new audios for her service %3$s'),
+			'microsite_2' => $this->translate->_('%1$s has uploaded %2$s new audios for her microsite %3$s')
+		),
+		'<a href="{user_link}" style="font-weight: bold;">{user_name}</a>',
+		'{count_results}',
+		'<a href="{arg_4}">{arg_5}</a>'
+	),
+	'vid' => array(
+		array(
+			'pet_1' => $this->translate->_('%1$s has uploaded a new video for his pet %2$s'),
+			'service_1' => $this->translate->_('%1$s has uploaded a new video for his service %2$s'),
+			'microsite_1' => $this->translate->_('%1$s has uploaded a new video for his microsite %2$s'),
+			'pet_2' => $this->translate->_('%1$s has uploaded a new video for her pet %2$s'),
+			'service_2' => $this->translate->_('%1$s has uploaded a new video for her service %2$s'),
+			'microsite_2' => $this->translate->_('%1$s has uploaded a new video for her microsite %2$s')
+		),
+		'<a href="{user_link}" style="font-weight: bold;">{user_name}</a>',
+		'<a href="{arg_4}">{arg_5}</a>'
+	),
+	'vid+' => array(
+		array(
+			'pet_1' => $this->translate->_('%1$s has uploaded %2$s new videos for his pet %3$s'),
+			'service_1' => $this->translate->_('%1$s has uploaded %2$s new videos for his service %3$s'),
+			'microsite_1' => $this->translate->_('%1$s has uploaded %2$s new videos for his microsite %3$s'),
+			'pet_2' => $this->translate->_('%1$s has uploaded %2$s new videos for her pet %3$s'),
+			'service_2' => $this->translate->_('%1$s has uploaded %2$s new videos for her service %3$s'),
+			'microsite_2' => $this->translate->_('%1$s has uploaded %2$s new videos for her microsite %3$s')
+		),
+		'<a href="{user_link}" style="font-weight: bold;">{user_name}</a>',
+		'{count_results}',
+		'<a href="{arg_4}">{arg_5}</a>'
+	)
+);
+
+// old definitions
+$old_definition = array(
+	'img' => array(
+		$this->translate->_('%1$s has uploaded a new photo for %2$s %3$s %4$s'),
+		'<a href="{user_link}" style="font-weight: bold;">{user_name}</a>',
+		'{user_gender}',
+		'{arg_2}',
+		'<a href="{arg_4}">{arg_5}</a>'
+	),
+	'img+' => array(
+		$this->translate->_('%1$s has uploaded %2$s new photos for %3$s %4$s %5$s'),
+		'<a href="{user_link}" style="font-weight: bold;">{user_name}</a>',
+		'{count_results}',
+		'{user_gender}',
+		'{arg_2}',
+		'<a href="{arg_4}">{arg_5}</a>'
+	),
+	'aud' => array(
+		$this->translate->_('%1$s has uploaded a new audio for %2$s %3$s %4$s'),
+		'<a href="{user_link}" style="font-weight: bold;">{user_name}</a>',
+		'{user_gender}',
+		'{arg_2}',
+		'<a href="{arg_4}">{arg_5}</a>'
+	),
+	'aud+' => array(
+		$this->translate->_('%1$s has uploaded %2$s new audios for %3$s %4$s %5$s'),
+		'<a href="{user_link}" style="font-weight: bold;">{user_name}</a>',
+		'{count_results}',
+		'{user_gender}',
+		'{arg_2}',
+		'<a href="{arg_4}">{arg_5}</a>'
+	),
+	'vid' => array(
+		$this->translate->_('%1$s has uploaded a new video for %2$s %3$s %4$s'),
+		'<a href="{user_link}" style="font-weight: bold;">{user_name}</a>',
+		'{user_gender}',
+		'{arg_2}',
+		'<a href="{arg_4}">{arg_5}</a>'
+	),
+	'vid+' => array(
+		$this->translate->_('%1$s has uploaded %2$s new videos for %3$s %4$s %5$s'),
+		'<a href="{user_link}" style="font-weight: bold;">{user_name}</a>',
+		'{count_results}',
+		'{user_gender}',
+		'{arg_2}',
+		'<a href="{arg_4}">{arg_5}</a>'
+	)
+);
+
+// logged in user avatar
+if (!is_null($this->identity)) {
+	$user = new Petolio_Model_PoUsers();
+	$user->find($this->identity->id);
+
+	// avatar control
+	$user_avatar = $this->partial('avatar.phtml', array(
+		'user' => $user
+	));
+}
+
+?>
+<?php if(count($this->results) > 0): foreach($this->results as $idx => $entry): ?>
+	<?php
+		// older entries must work as well
+		$new = false;
+		if(strtotime($entry['date_created']) > strtotime('2012-05-08 22:00'))
+			$new = true;
+
+		// avatar control
+		$avatar = $this->partial('avatar.phtml', array(
+			'user' => array('id' => $entry['user_id'], 'avatar' => $entry['user_avatar']),
+			'for' => 'dashboard'
+		));
+
+		// delimiter control
+		$delimiter = '<div class="delimiter"></div>';
+		if($idx == 0) $delimiter = null;
+
+		// add entry description
+		$errors = array();
+		list($tpl, $rest) = Petolio_Service_Util::get_string_between($entry['data'], "{{", "}}", $errors);
+		$tpl = reset($tpl);
+
+		// found in automatic ?
+		if(isset($tpl) && isset($automatic_definition[$tpl])) {
+			$unserialized = unserialize($entry['serialized']);
+
+			// new entry
+			if($new) {
+				// no gender? defaulted to male
+				if(is_null($entry['user_gender']))
+					$entry['user_gender'] = 1;
+
+				// use this definition
+				$used_definition = $automatic_definition[$tpl];
+
+				// overwrite header for m or f
+				$used_definition[0] = $used_definition[0][$unserialized['args'][2] . '_' . $entry['user_gender']];
+				$translated = call_user_func_array("sprintf", $used_definition);
+
+				// translate common
+				$translated = str_replace("{user_link}", $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $entry["user_id"]), 'default', true), $translated);
+				$translated = str_replace("{user_name}", $entry['user_name'], $translated);
+				$translated = str_replace("{count_results}", $unserialized['total'], $translated);
+
+				// translate arguments
+				foreach($unserialized as $key => $data)
+					if(is_array($data))
+						foreach($data as $idx => $arg)
+							if(is_string($arg))
+								$translated = str_replace("{arg_{$idx}}", $arg, $translated);
+
+			// older entries
+			} else {
+				$template = $old_definition[$tpl];
+				$translated = call_user_func_array("sprintf", $template);
+				$unserialized = unserialize($entry['serialized']);
+
+				// translate common
+				$translated = str_replace("{user_link}", $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $entry["user_id"]), 'default', true), $translated);
+				$translated = str_replace("{user_name}", $entry['user_name'], $translated);
+				$translated = str_replace("{user_gender}", $entry['user_gender'] == "2" ? $this->translate->_('her') : $this->translate->_('his'), $translated);
+				$translated = str_replace("{count_results}", $unserialized['total'], $translated);
+
+				// translate arguments
+				foreach($unserialized as $key => $data)
+					if(is_array($data))
+						foreach($data as $idx => $arg)
+							if(is_string($arg))
+								$translated = str_replace("{arg_{$idx}}", $this->translate->_($arg), $translated);
+			}
+
+			// replace the description with the translation
+			$entry['data'] = str_replace("{{{$tpl}}}", "<div class='desc'>{$translated}</div>", $entry['data']);
+		}
+
+		// automatic text ?
+		$activity = false;
+		if(isset($tpl) && $tpl == 'txt') {
+			$unserialized = unserialize($entry['serialized']);
+
+			// translate the fifth arguments
+			foreach($unserialized['args'][5] as $idx => $one) {
+				// dont translate if magic key
+				if(strpos($one, "{") === false && strpos($one, "}") === false)
+					// dont translate if html
+					if($one == strip_tags($one))
+						$unserialized['args'][5][$idx] = $this->translate->_($one);
+			}
+
+			// translate main
+			list($main, $rest) = Petolio_Service_Util::get_string_between($unserialized['args'][4], "{translate}", "{/translate}", $errors);
+			$unserialized['args'][4] = str_replace(array(reset($main), "{translate}", "{/translate}"), array($this->translate->_(reset($main)), '', ''), $unserialized['args'][4]);
+
+			// add link
+			$errors = array();
+			$the_url = \Petolio_Service_Util::get_string_between(end($unserialized['args'][5]), '{', '}', $errors);
+			if(count($the_url[0]) > 0)
+				$unserialized['args'][4] = str_replace(array("{link}", "{/link}"), array($the_url[1][0], $the_url[1][1]), $unserialized['args'][4]);
+
+			// call sprintf
+			$translated = call_user_func_array("sprintf", array_merge(array($unserialized['args'][4]), $unserialized['args'][5]));
+
+			// translate common
+			$translated = str_replace("{user_link}", $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $entry["user_id"]), 'default', true), $translated);
+			$translated = str_replace("{user_name}", $entry['user_name'], $translated);
+
+			// translate special social for older entries
+			if(!$new) {
+				$translated = str_replace("{entries}", $this->translate->_("Small Talk entries"), $translated);
+				$translated = str_replace("{pictures}", $this->translate->_("Pictures"), $translated);
+				$translated = str_replace("{audios}", $this->translate->_("Audios"), $translated);
+				$translated = str_replace("{videos}", $this->translate->_("Videos"), $translated);
+				$translated = str_replace("{pet}", $this->translate->_("Pet"), $translated);
+			}
+
+			// replace the description with the translation
+			$entry['data'] = str_replace("{{txt}}", "<div class='desc'>{$translated}</div>", $entry['data']);
+			$activity = true;
+		}
+
+		// transform any petolio url to the current domain
+		$entry['data'] = str_replace(array(
+			'new.petolio.local', // localhost mirror
+			'new.petolio.riffcode.ro', // test mirror
+			'petolio.com', 'petolio.de' // official mirror
+		), str_replace('www.', '', $_SERVER['HTTP_HOST']), $entry['data']);
+
+		// comment identificator
+		if($entry['scope'] == 'po_dashboard')
+			$entry['entity_id'] = $entry['id'];
+
+		// entry identificator
+		$ident = "{$entry['entity_id']}|{$entry['scope']}|{$entry['user_id']}";
+
+		// relax
+		if(count($entry['attached']['comments']) > 0 || $entry['attached']['self'] || $entry['attached']['all_ratings'] > 0)
+			$relax = "style='display: block; ". ($this->small ? 'width: 278px;' : null) ."'";
+		else $relax = "style='display: none;' ". ($this->small ? 'width: 278px;' : null) ."";
+	?>
+	<?php //echo $delimiter; ?>
+	<div class="entry" data-id="<?php echo $entry['id']; ?>" data-identity="<?php echo $ident; ?>">
+		<?php if(!is_null($this->identity) && $this->identity->id == $entry['user_id']): ?>
+			<div class="opt">
+				<span class="privacy_wrap">
+					<i class="<?php echo $this->privacy[$entry['attached']['privacy']]; ?>"></i>
+					<i class="p_down"></i>
+					<ul>
+						<dfn></dfn>
+						<li><i class="p_public margin"></i><a href="javascript:void(0);"><?php echo $this->translate->_("Public"); ?></a></li>
+						<li><i class="p_friends margin"></i><a href="javascript:void(0);"><?php echo $this->translate->_("Friends"); ?></a></li>
+						<li><i class="p_me margin"></i><a href="javascript:void(0);"><?php echo $this->translate->_("Only Me"); ?></a></li>
+						<li><i class="p_custom margin"></i><a href="javascript:void(0);"><?php echo $this->translate->_("Custom"); ?></a></li>
+					</ul>
+				</span>
+				<span class="delete_entry">
+					<a href="javascript:void(0);" name="entry_delete" class="icn delete"></a>
+				</span>
+			</div>
+		<?php endif; ?>
+		<table>
+		<col width="1%" /><col />
+			<tr>
+				<td valign="top" style="vertical-align: top; min-width: 70px; display: block;">
+					<?php if(!$this->hideavatar): ?>
+					<div class="big-avatar">
+						<img style="display: block; margin-top: 1px; border: 1px solid white; width: 100px;" src="<?php echo $avatar; ?>" />
+					</div>
+					<?php endif; ?>
+				</td>
+				<td>
+					<div class="entry-content-container">
+						<div class="arrow-left"></div>
+						<?php if($this->hideavatar): ?>
+						<div class="bubble"></div>
+						<?php endif; ?>
+						<div class="entry-content">
+							<?php if($this->small)
+									echo str_replace(array('class="data"', 'class="pictures"'), array('class="data navbar" style="width: 278px;"', 'class="pictures navbar" style="width: 277px;"'), $entry['data']);
+								else
+									echo $entry['data'];
+							?>
+							<div class="data links small" <?php if($this->small) echo 'style="width: 278px;"'; ?>>
+								<?php echo $this->partial('dashboard/surf_links.phtml', array(
+						        	'entry' => $entry,
+									'activity' => $activity,
+									'privacy' => $this->privacy,
+						        	'translate' => $this->translate,
+									'identity' => $this->identity
+					    		)); ?>
+							</div>
+						</div>
+					</div>
+					<div class="data ratings small" <?php if($this->small) echo 'style="width: 278px;"'; ?>>
+						<?php echo $this->partial('dashboard/surf_ratings.phtml', array(
+				        	'entry' => $entry,
+							'translate' => $this->translate
+			    		)); ?>
+			    	</div>
+					<div class="data comments small" <?php if($this->small) echo 'style="width: 278px;"'; ?>>
+						<?php echo $this->partial('dashboard/surf_comments.phtml', array(
+				        	'entry' => $entry,
+				        	'translate' => $this->translate,
+							'identity' => $this->identity
+			    		)); ?>
+					</div>
+					<?php if (!is_null($this->identity)): ?>
+						<div class="data post small" style="display: none;">
+							<div style="z-index: 7;">
+								<span></span>
+								<div style="padding: 4px 5px 5px 5px;">
+									<table>
+									<col width="1%" /><col />
+										<tr>
+											<td valign="top" style="vertical-align: top;">
+												<div class="avatar">
+													<img style="display: block; margin-top: 1px; border: 1px solid white;" src="<?php echo $user_avatar; ?>" />
+												</div>
+											</td>
+											<td>
+												<textarea class="normal" autocomplete="off" name="comment_body"><?php echo $this->translate->_("Comment here..."); ?></textarea>
+												<div style="color: grey; padding-top: 1px;">
+													<span class="comment_count">1500</span> <?php echo $this->translate->_("characters remaining"); ?>
+												</div>
+											</td>
+										</tr>
+									</table>
+								</div>
+								<em></em>
+							</div>
+						</div>
+					<?php endif; ?>
+					<div <?php echo $relax; ?> class="data relax"></div>
+				</td>
+			</tr>
+		</table>
+	</div>
+<?php endforeach; ?>
+<?php if($this->more !== 0): ?>
+	<?php if($this->more === true): ?>
+		<div class="more">
+			<a href="javascript:void(0);" name="more"><?php echo $this->translate->_("View more entries"); ?></a>
+			<span style="display: none;"></span>
+		</div>
+	<?php else: ?>
+		<!-- FOR THE USER PROFILE PAGE, display when they joined Petolio -->
+		<?php if($this->hideavatar && $this->user):
+			echo $this->partial('dashboard/surf_joined.phtml', array(
+	        	'user' => $this->user,
+				'translate' => $this->translate
+	   		));
+		else: ?>
+		<div class="more">
+			<i><?php echo $this->translate->_("There are no more entries to show"); ?></i>
+		</div>
+		<?php endif; ?>
+	<?php endif; ?>
+<?php endif; ?>
+<?php else: ?>
+	<?php if($this->hideavatar && $this->user):
+			echo $this->partial('dashboard/surf_joined.phtml', array(
+	        	'user' => $this->user,
+				'translate' => $this->translate
+	   		));
+	elseif($this->small): ?>
+		<i><?php echo $this->translate->_("No one has posted anything yet!"); ?></i>
+	<?php else: ?>
+		<div class="empty">
+			<?php if($this->switch == -1): ?>
+				<i><?php echo $this->translate->_("This person has not posted anything yet!"); ?></i>
+			<?php endif; if($this->switch == 0): ?>
+				<i><?php echo $this->translate->_("Your small talk is empty! Post something right now!"); ?></i>
+			<?php endif; if($this->switch == 1): ?>
+				<i><?php echo $this->translate->_("Your friends haven't posted anything yet!"); ?></i>
+			<?php endif; if($this->switch == 2): ?>
+				<i><?php echo $this->translate->_("No one has posted anything yet!"); ?></i>
+			<?php endif; ?>
+		</div>
+	<?php endif; ?>
+<?php endif; ?>
+<div class="new_start" data-timestamp="<?php echo time(); ?>"></div>
+<?php if($this->small): ?>
+	<script type='text/javascript' src='<?php echo Petolio_Service_Util::autoVersion('/js/jquery/jquery.expander.min.js'); ?>'></script>
+	<script type="text/javascript">
+		var DashboardMini = function() {
+			var store = {},
+				translate = {
+					read_more: '<?php echo $this->translate->_("Read more"); ?>',
+					read_less: '<?php echo $this->translate->_("Read less"); ?>',
+				},
+
+			// truncate entries and comments
+			_trnc = function() {
+				$('div.entries > div.entry div.data div.truncate').jTruncate({moreText: translate.read_more, lessText: translate.read_less, length: 500});
+				$('div.entries > div.entry div.comments span.truncate').jTruncate({moreText: translate.read_more, lessText: translate.read_less, length: 250});
+
+			// constructor
+			}, __construct = function() {
+				_trnc();
+			};
+
+			// public, yay
+			return {
+				init: __construct
+			};
+		}();
+
+		READY(DashboardMini.init);
+	</script>
+<?php endif; ?>

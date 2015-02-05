@@ -1,0 +1,60 @@
+<?php $url = $this->product ? array('product' => $this->product->getId()) : array(); ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->title ? $this->translate->_("Inbox"). ": {$this->title}" : $this->translate->_("Inbox"); ?></h1>
+		<?php if(isset($this->inbox) && count($this->inbox) > 0): ?>
+			<br />
+			<div class="left">
+				<?php if(!$this->product) : ?><input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'messages', 'action'=>'compose'), 'default', true); ?>');" type="button" value="<?php echo $this->translate->_("Compose a New Message"); ?>" id="submit" name="compose" style="margin: 0px 5px 0px 0px;" /><?php endif; ?>
+				<input type="button" value="<?php echo $this->translate->_("Mark as Read"); ?>" id="submit" name="read" style="margin: 0px 5px 0px 0px;" />
+				<input type="button" value="<?php echo $this->translate->_("Delete"); ?>" id="submit" name="delete" style="margin: 0px 5px 0px 0px;" />
+				<div class="clear"></div>
+			</div>
+			<div class="clear tenpx"></div>
+			<?php echo $this->paginationControl($this->inbox, 'Elastic', 'pagination-controls.phtml', array('pos' => 'top')); ?>
+			<table cellspacing="0" cellpadding="5" class="grid">
+			<col width="23" /><col width="17" /><col width="180" /><col /><col width="170" /><col width="1" />
+				<tr>
+					<th><input type="checkbox" class="master" style="width: auto; margin: 0px;"/></th>
+					<th></th>
+					<th><a href="<?php echo $this->url(array('order' => 'from', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("From"); ?><?php if($this->order == 'from'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+					<th><a href="<?php echo $this->url(array('order' => 'subject', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Subject"); ?><?php if($this->order == 'subject'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+					<th><a href="<?php echo $this->url(array('order' => 'date', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Date"); ?><?php if($this->order == 'date'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+					<th></th>
+				</tr>
+				<?php foreach($this->inbox as $msg): ?>
+					<tr>
+						<td><input type="checkbox" class="slave" rel="<?php echo $msg['id']; ?>" style="width: auto; margin: 0px;" /></td>
+						<td><img src="/images/<?php if($msg['rstatus'] == 0): ?>new<?php else: ?>old<?php endif; ?>.png" style="display: block;" /></td>
+						<td><?php echo isset($msg['name']) ? $msg['name'] : $this->translate->_("System"); ?></td>
+						<td><a href="<?php echo $this->url(array_merge($url, array('controller'=>'messages', 'action'=>'view', 'id' => $msg['id'])), 'default', true); ?>"><?php if($msg['rstatus'] == 0): ?><b><?php endif; echo isset($msg['subject']) ? $msg['subject'] : $this->translate->_("No subject"); if($msg['rstatus'] == 0): ?></b><?php endif; ?></a></td>
+						<td><?php echo Petolio_Service_Util::formatDate($msg['date_sent'], null, true, true); ?></td>
+						<td align="right" nowrap="nowrap"><a href="<?php echo $this->url(array('controller'=>'messages', 'action'=>'delete', 'id' => $msg['id']), 'default', true); ?>" class="icon_link delete reqconf" title="<?php echo $this->translate->_("Delete Message"); ?>?"><span><?php echo $this->translate->_("Delete"); ?></span></a></td>
+					</tr>
+				<?php endforeach; ?>
+			</table>
+			<?php echo $this->paginationControl($this->inbox, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot')); ?>
+			<div class="clear tenpx"></div>
+			<div class="left">
+				<?php if(!$this->product) : ?><input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'messages', 'action'=>'compose'), 'default', true); ?>');" type="button" value="<?php echo $this->translate->_("Compose a New Message"); ?>" id="submit" name="compose" style="margin: 0px 5px 0px 0px;" /><?php endif; ?>
+				<input type="button" value="<?php echo $this->translate->_("Mark as Read"); ?>" id="submit" name="read" style="margin: 0px 5px 0px 0px;" />
+				<input type="button" value="<?php echo $this->translate->_("Delete"); ?>" id="submit" name="delete" style="margin: 0px 5px 0px 0px;" />
+				<div class="clear"></div>
+			</div>
+			<div class="clear"></div>
+		<?php else: ?>
+			<br />
+			<b class="red bigger"><?php echo $this->translate->_("No messages found."); ?></b>
+		<?php endif; ?>
+	</div>
+</div>
+<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/msgint.js'); ?>"></script>
+<script type="text/javascript">
+READY(function() {
+	Msgint.init({
+		error: '<?php echo $this->translate->_("Please select some messages first."); ?>',
+		reqconf: '<?php echo $this->translate->_("Delete the selected messages?"); ?>'
+	});
+});
+</script>

@@ -1,0 +1,230 @@
+<?php
+
+// marketplace links
+$accounts = array(
+	array(
+		'link' => $this->url(array('controller'=>'marketplace', 'action'=>'index'), 'default', true),
+		'name' => $this->translate->_("Services"),
+		'class' => 'lm-services_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'products', 'action'=>'index'), 'default', true),
+		'name' => $this->translate->_("Products"),
+		'class' => 'lm-products_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'adoption', 'action'=>'index'), 'default', true),
+		'name' => $this->translate->_("Adoptions"),
+		'class' => 'lm-pets_sm'
+	)
+);
+
+$links = null;
+foreach($accounts as $link)
+	$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+
+$this->placeholder('sidebar')
+     ->append("<h3>".$this->translate->_("Market Place")."</h3>
+     	<ul class=\"leftsubmenu\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
+
+// adoption links
+$accounts = array(
+	array(
+		'link' => $this->url(array('controller'=>'adoption', 'action'=>'index'), 'default', true),
+		'name' => $this->translate->_("Overview"),
+		'class' => 'lm-pets_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'adoption', 'action'=>'adoptions'), 'default', true),
+		'name' => $this->translate->_("My pets for adoption"),
+		'class' => 'lm-pets_sm'
+	)
+);
+
+// my adoption interests if we have any
+if ($this->showAdoptionInterest) {
+	$accounts[] = array(
+		'link' => $this->url(array('controller'=>'adoption', 'action'=>'interested'), 'default', true),
+		'name' => $this->translate->_("My adoption interests"),
+		'class' => 'lm-pets_sm');
+}
+
+// construct links
+$links = null;
+foreach($accounts as $link) {
+	if (isset($link['class']) && strlen($link['class']) > 0)
+		$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+	else
+		$links .= "<li><a href='{$link['link']}'>{$link['name']}</a></li>";
+}
+
+// add links
+if ($this->auth->hasIdentity()) {
+	$this->placeholder('sidebar')
+		->append("<h3 data-hide='true'>".$this->translate->_("Adopt a Pet")."</h3>
+			<ul class=\"leftsubmenu\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
+}
+
+if($this->search) {
+	// vars
+	$keyword = $this->request->getParam('keyword');
+	$country = $this->request->getParam('country');
+	$category = $this->request->getParam('category');
+	$zipcode = $this->request->getParam('zipcode');
+	$address = $this->request->getParam('address');
+	$location = $this->request->getParam('location');
+	$owner = $this->request->getParam('owner');
+
+	if($this->mine) {
+		// search by pet name
+		$searchbox_html = "<h3>".$this->translate->_("Search Adoptions")."</h3>
+			<form id='pets_search_form'>
+				<table width='100%' cellspacing='3' cellpadding='3' border='0'>
+					<tr>
+						<td><label>".$this->translate->_("Keywords")."</label></td>
+						<td style='padding-left: 5px;'><input type='text' name='keyword' value='{$keyword}' /></td>
+					</tr>";
+
+		// filter by pet type
+		$types = null;
+		foreach ($this->types as $id => $name) {
+			$hover = $id == $this->request->getParam('species') ? ' selected="selected"' : null;
+			$types .= "<option value='{$id}'{$hover}>{$name}</option>";
+		}
+
+		$searchbox_html .= 	"
+					<tr>
+						<td><label>".$this->translate->_("Type")."</label></td>
+						<td style='padding-left: 5px;'><select name='species'><option value=''>".$this->translate->_("All")."</option>{$types}</select></td>
+					</tr>
+					<tr>
+						<td colspan='2'><input class='srcbtn' type='submit' value='".$this->translate->_("Go")."' /><input class='srcbtn' type='button' id='search_reset' value='".$this->translate->_("Reset")."' /></td>
+					</tr>
+				</table>
+			</form>";
+	} else {
+		// countries
+		$scountry = "<option value=''> ".$this->translate->_('Select Country')."</option>";
+		foreach($this->country_list as $id => $val) {
+			$sel = $country && $country == $id ? 'selected="selected"' : null;
+			$scountry .= "<option value='{$id}' {$sel}>{$val}</option>";
+		}
+
+		// categories
+		$scategory = "<option value=''> ".$this->translate->_('All')."</option>";
+		$sel = isset($category) && $category == 0 ? 'selected="selected"' : null;
+		$scategory .= "<option value='0' {$sel}> ".$this->translate->_('Pet Owners')."</option>";
+		foreach($this->category_list as $id => $val) {
+			$sel = isset($category) && $category == $id ? 'selected="selected"' : null;
+			$scategory .= "<option value='{$id}' {$sel}>{$val}</option>";
+		}
+
+		// search by pet name
+		$category_html = "<h3>".$this->translate->_("Adoption Categories")."</h3>
+			<form id='adoption_categories_form'>
+				<table width='100%' cellspacing='3' cellpadding='3' border='0'>
+					<tr>
+						<td><label>".$this->translate->_("Category")."</label></td>
+						<td style='padding-left: 5px;'><select name='category'>{$scategory}</select></td>
+					</tr>
+					<tr>
+						<td colspan='2'><input class='srcbtn' type='submit' value='".$this->translate->_("Go")."' /><input class='srcbtn' type='button' id='category_reset' value='".$this->translate->_("Reset")."' /></td>
+					</tr>
+				</table>
+			</form>";
+
+		// add search bar
+		$this->placeholder('sidebar')
+			 ->append($category_html);
+
+		// search by pet name
+		$searchbox_html = "<h3>".$this->translate->_("Search Adoptions")."</h3>
+			<form id='adoption_search_form'>
+				<table width='100%' cellspacing='3' cellpadding='3' border='0'>
+					<tr>
+						<td><label>".$this->translate->_("Keywords")."</label></td>
+						<td style='padding-left: 5px;'><input type='text' name='keyword' value='{$keyword}' /></td>
+					</tr>
+					<tr>
+						<td><label>".$this->translate->_("Country")."</label></td>
+						<td style='padding-left: 5px;'><select name='country'>{$scountry}</select></td>
+					</tr>
+					<tr>
+						<td><label>".$this->translate->_("Zipcode")."</label></td>
+						<td style='padding-left: 5px;'><input type='text' name='zipcode' value='{$zipcode}' /></td>
+					</tr>
+					<tr>
+						<td><label>".$this->translate->_("Address")."</label></td>
+						<td style='padding-left: 5px;'><input type='text' name='address' value='{$address}' /></td>
+					</tr>
+					<tr>
+						<td><label>".$this->translate->_("State")."</label></td>
+						<td style='padding-left: 5px;'><input type='text' name='location' value='{$location}' /></td>
+					</tr>
+					<tr>
+						<td><label>".$this->translate->_("Owner")."</label></td>
+						<td style='padding-left: 5px;'><input type='text' name='owner' value='{$owner}' /></td>
+					</tr>
+					<tr>
+						<td colspan='2'><input class='srcbtn' type='submit' value='".$this->translate->_("Go")."' /><input class='srcbtn' type='button' id='search_reset' value='".$this->translate->_("Reset")."' /></td>
+					</tr>
+				</table>
+			</form>";
+	}
+
+	// add search bar
+	$this->placeholder('sidebar')
+		 ->append($searchbox_html);
+}
+
+?>
+<script type="text/javascript">
+(function($){
+	$.fn.serializeURL = function() {
+		var url = '';
+
+		jQuery.map($(this).serializeArray(), function(n, i){
+			if(n['value'])
+				url += n['name'] + '/' + n['value'] + '/';
+		});
+
+		return url;
+	};
+})(jQuery);
+
+READY(function(){
+	var c = '<?php echo $this->request->getParam('category'); ?>',
+		t = '<?php echo $this->request->getParam('species'); ?>';
+
+	$('#adoption_categories_form').submit(function(e){
+		e.preventDefault();
+		url = SITE_URL + 'adoption/index/' + $(this).serializeURL();
+
+		if(t.length > 0) url += 'species/' + t;
+		Petolio.go(url);
+	});
+
+	$('#adoption_search_form').submit(function(e){
+		e.preventDefault();
+		url = SITE_URL + 'adoption/index/' + $(this).serializeURL();
+
+		if(c.length > 0) url += 'category/' + c;
+		if(t.length > 0) url += '/species/' + t;
+		Petolio.go(url);
+	});
+
+	$("#category_reset").click(function(e) {
+		e.preventDefault();
+		url = SITE_URL + 'adoption/index/';
+		Petolio.go(url);
+	});
+
+	$("#search_reset").click(function(e) {
+		e.preventDefault();
+		url = SITE_URL + 'adoption/<?php echo isset($this->search) ? $this->action : 'index'; ?>/';
+
+		if(c.length > 0) url += 'category/' + c;
+		Petolio.go(url);
+	});
+});
+</script>

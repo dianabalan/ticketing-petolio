@@ -1,0 +1,39 @@
+<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/plus.js'); ?>"></script>
+<script type="text/javascript">
+	READY(function() {
+		Plus.init({
+			translate: {
+				errors: [
+					'<?php echo $this->translate->_("You have no services"); ?>',
+					'<?php echo $this->translate->_("Please select a service"); ?>',
+					'<?php echo $this->translate->_("Please select one or more pets"); ?>'
+				],
+				buttons: [
+			  		'<?php echo $this->translate->_("OK"); ?>',
+			  		'<?php echo $this->translate->_("Cancel"); ?>',
+			  		'<?php echo $this->translate->_("Send Invitation"); ?>',
+				],
+				dialog_a: [
+					'<?php echo $this->translate->_("Choose a service"); ?>',
+					'<?php echo $this->translate->_("Please choose a service you would like to invite this user or this pet as member or partner"); ?>',
+					'<?php echo $this->translate->_("Select a service"); ?>',
+				],
+				dialog_m: [
+					'<?php echo $this->translate->_("Invite for membership"); ?>',
+					'<?php echo $this->translate->_("User"); ?>',
+					'<?php echo $this->translate->_("Message"); ?>'
+				],
+				dialog_p: [
+					'<?php echo $this->translate->_("Invite for partnership"); ?>',
+					'<?php echo $this->translate->_("User"); ?>',
+					'<?php echo $this->translate->_("Selected pet"); ?>',
+					'<?php echo $this->translate->_("Choose a pet"); ?>',
+					'<?php echo $this->translate->_("Select a pet"); ?>'
+				],
+				general: [
+					'<?php echo $this->translate->_("Your invitation has been sent successfully"); ?>'
+				]
+			}
+		});
+	});
+</script>

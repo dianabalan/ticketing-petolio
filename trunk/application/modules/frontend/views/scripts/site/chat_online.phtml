@@ -1,0 +1,69 @@
+<div id="mVd">
+	
+	<div class="up search">
+		<form id='front_search_form'>
+			<input type="text" name="search" value="<?php echo $this->translate->_('Search...'); ?>" />
+			<select name="module">
+				<option value="news/index/keyword/{string}/"><?php echo $this->translate->_('News'); ?></option>
+				<option value="adoption/index/keyword/{string}/"><?php echo $this->translate->_('Adoptions'); ?></option>
+				<option value="pets/index/keyword/{string}/"><?php echo $this->translate->_('Pets'); ?></option>
+				<option value="accounts/index/name/{string}/"><?php echo $this->translate->_('Members'); ?></option>
+				<option value="events/index/name/{string}/"><?php echo $this->translate->_('Events'); ?></option>
+				<option value="products/index/keyword/{string}/"><?php echo $this->translate->_('Products'); ?></option>
+				<option value="marketplace/index/keyword/{string}/"><?php echo $this->translate->_('Services'); ?></option>
+				<option value="galleries/index/title/{string}/"><?php echo $this->translate->_('Gallery'); ?></option>
+				<option value="help/index/keyword/{string}/"><?php echo $this->translate->_('Help'); ?></option>
+				<option value="messages/inbox/name/{string}/"><?php echo $this->translate->_('Messages'); ?></option>
+			</select>
+			<input type="submit" class="search_submit" value="" />
+			<div class="clear"></div>
+		</form>
+	</div>
+	<?php
+		// include online
+		include 'online.phtml';
+
+		// include chat
+ 		include 'chat.phtml';
+	?>
+</div>
+<script type="text/javascript">
+	var Search = function() {
+		var store = {
+			translate: {
+				search: '<?php echo $this->translate->_('Search...'); ?>'
+			}
+
+		// constructor
+		}, __construct = function() {
+			var sys = $('#front_search_form'),
+				input = $("input[name='search']", sys),
+				module = $('select', sys);
+
+			// on focus
+			input.focus(function() {
+				var f = $(this, sys);
+				if(f.val() == store.translate.search) f.val('');
+			});
+
+			// on blur
+			input.blur(function() {
+				var f = $(this, sys);
+				if(f.val() == '') f.val(store.translate.search);
+			});
+
+			// on submit
+			sys.submit(function(e){
+				e.preventDefault();
+				Petolio.go(SITE_URL + module.val().replace('{string}', input.val()));
+			});
+		};
+
+		// public, yay
+		return {
+			init: __construct
+		}
+	}();
+
+	READY(Search.init);
+</script>

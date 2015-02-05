@@ -1,0 +1,32 @@
+<?php
+	// picture control
+	$image = "/images/no-pet.jpg";
+	if ($this->pet["picture"] && strlen($this->pet["picture"]) > 0) {
+		$image = "/images/userfiles/pets/{$this->pet["id"]}/gallery/thumb_{$this->pet["picture"]}";
+	}
+?>
+<div class="pin">
+	<a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'view', 'pet' => $this->pet["id"]), 'default', true); ?>">
+		<img src="<?php echo $image; ?>" alt="<?php echo $this->translate->_("Pet Picture"); ?>" />
+	</a>
+	<span>
+		<?php 
+			printf($this->translate->_('%1$s by %2$s'), 
+				'<a href="'.$this->url(array('controller'=>'pets', 'action'=>'view', 
+				'pet' => $this->pet["id"]), 'default', true).'" title="'.$this->pet["name"].'">'.$this->pet["name"].'</a>', 
+				'<a href="'.$this->url(array('controller'=>'accounts', 'action'=>'view', 
+				'user' => $this->pet["user_id"]), 'default', true).'" title="'.$this->pet["user_name"].'">'.$this->pet["user_name"].'</a>');
+
+			if($this->pet["dateofbirth"]) {
+				echo '<br/>'.Petolio_Service_Util::formatTime(strtotime($this->pet["dateofbirth"]), true);
+			}
+			
+			echo '<br/>'.$this->Tr($this->pet["breed"]);
+			if($this->pet["gender"]) {
+				echo strlen($this->Tr($this->pet["breed"])) > 0 ? ', ' : '';
+				echo $this->Tr($this->pet["gender"]);
+			}
+						
+		?>
+	</span>
+</div>

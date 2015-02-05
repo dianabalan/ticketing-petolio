@@ -1,0 +1,99 @@
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Compose"); ?></h1>
+		<br />
+		<?php echo $this->form; ?>
+	</div>
+</div>
+<script type="text/javascript">
+var Compose = function() {
+	var url = SITE_URL + 'messages/save',
+		error = <?php echo isset($this->users_error) ? 'true' : 'false'; ?>,
+		draft = <?php echo isset($this->draft) ? $this->draft : 'false'; ?>,
+		stop = false,
+		start = false,
+		lock = false;
+
+	function showError() {
+		$("ul.chzn-choices").css({ borderColor: 'red' });
+	};
+
+	function checkTime(i) {
+		return i < 10 ? "0" + i : i;
+	};
+
+	function saveDraft() {
+		window.setTimeout(saveDraft, 10000);
+		if(stop || lock)
+			return true;
+
+		var x = $("#multi_users").val() || null,
+			y = $("#subject").val() || null,
+			z = $("#message").val() || null,
+			t = new Date(),
+			h = checkTime(t.getHours()),
+			m = checkTime(t.getMinutes()),
+			s = checkTime(t.getSeconds());
+
+		if(x === null || y === null || z === null)
+			if(start === false)
+				return true;
+
+		lock = true;
+		start = true;
+		if(!$('#draft').length)
+			$('#submit').after('<div class="left grey" style="display: none; margin: 5px 10px 0px 10px;" id="draft"><?php echo $this->translate->_("Loading..."); ?></div>');
+
+		$('#draft').fadeIn();
+		$('#draft').html('<?php echo $this->translate->_("Saving Draft..."); ?>');
+    	$.ajax({
+			url: url + (draft ? '/draft/' + draft : ''),
+			data: {to: x, subj: y, msg: z},
+			type: 'post',
+			cache: false,
+			success: function (d) {
+				if(d.success) {
+					lock = false;
+					draft = d.draft;
+
+					var time = h + ":" + m + ":" + s;
+					insertHidden();
+
+					$('#draft').fadeOut(function(){
+						$('#draft').html('<?php echo $this->translate->_("Draft saved on"); ?> '+ time).fadeIn().delay(5000).fadeOut();
+					});
+				}
+			}
+		});
+	};
+
+	function bind() {
+		$('#submit').click(function() {
+			stop = true;
+		});
+	};
+
+	function insertHidden() {
+		if(!$('#draft_hidden').length)
+			$('#submit').closest('form').append('<input type="hidden" id="draft_hidden" name="draft" value="'+ draft +'" />');
+	};
+
+	function __construct() {
+		if(draft)
+			insertHidden();
+
+		if(error)
+			showError();
+
+		saveDraft();
+		bind();
+	};
+
+	return {
+		init: __construct
+	};
+}();
+
+READY(Compose.init);
+</script>

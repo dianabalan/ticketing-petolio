@@ -1,0 +1,107 @@
+<?php
+
+// marketplace links
+$accounts = array(
+	array(
+		'link' => $this->url(array('controller'=>'marketplace', 'action'=>'index'), 'default', true),
+		'name' => $this->translate->_("Services"),
+		'class' => 'lm-services_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'products', 'action'=>'index'), 'default', true),
+		'name' => $this->translate->_("Products"),
+		'class' => 'lm-products_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'adoption', 'action'=>'index'), 'default', true),
+		'name' => $this->translate->_("Adoptions"),
+		'class' => 'lm-pets_sm'
+	)
+);
+
+$links = null;
+foreach($accounts as $link)
+	$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+
+$this->placeholder('sidebar')
+     ->append("<h3>".$this->translate->_("Market Place")."</h3>
+     	<ul class=\"leftsubmenu\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
+
+// map
+if($this->coords) {
+	// figure out radius
+	$radius = null;
+	foreach (range(10, 50, 10) as $range)
+		$radius .= "<option value='{$range}'>{$range} km</option>";
+
+	// search by location
+	$this->placeholder('sidebar')->append(
+		"<div class='bradius-bottom'><h3>".$this->translate->_("Search Services Map")."</h3>
+		<ul class='leftsubmenu' style='border-bottom: 1px dashed #ccc; padding-bottom: 5px; margin-bottom: 10px;'><li style='width: 100%;'><a href='javascript:void(0);' id='nearme' class='lm-services_sm'><span>".$this->translate->_("Show services near me")."</span></a></li><div class='clear'></div></ul>
+			<form id='search'>
+				<table width='100%' cellspacing='3' cellpadding='3' border='0'>
+					<tr>
+						<td><label>".$this->translate->_("Address")."</label></td>
+						<td style='padding-left: 5px;'><input type='text' id='search_address' value='{$this->address}' /></td>
+					</tr>
+					<tr>
+						<td><label>".$this->translate->_("Radius")."</label></td>
+						<td style='padding-left: 5px;'><select id='search_radius'>{$radius}</select></td>
+					</tr>
+					<tr><td colspan='2'><input class='srcbtn' type='submit' value='".$this->translate->_("Go")."' /><input class='srcbtn' type='button' id='map_reset' value='".$this->translate->_("Reset")."' /></td></tr>
+				</table>
+			</form></div>");
+
+// services
+} else {
+	// map view
+	$this->placeholder('sidebar')->append(
+		"<h3>".$this->translate->_("Map View")."</h3>
+		<div style='height: 4px;'></div>
+		<a href='{$this->url(array('controller'=>'marketplace', 'action'=>'map'), 'default', true)}'
+			style='display: block; margin: 0px auto; width: 342px; height: 120px; background: transparent url(/images/map.png) top left no-repeat;'></a>
+	");
+}
+
+?>
+<script type="text/javascript">
+(function($){
+	$.fn.serializeURL = function() {
+		var url = '';
+
+		jQuery.map($(this).serializeArray(), function(n, i){
+			if(n['value'])
+				url += n['name'] + '/' + n['value'] + '/';
+		});
+
+		return url;
+	};
+})(jQuery);
+
+READY(function(){
+	$('#marketplace_search_form').submit(function(e){
+		e.preventDefault();
+		Petolio.go(SITE_URL + 'marketplace/index/' + $(this).serializeURL());
+	});
+
+	$("#search_reset").click(function(e) {
+		e.preventDefault();
+		$("#marketplace_search_form").find('input, select').each(function(index) {
+			if($(this).attr('class') != 'srcbtn')
+				$(this).val('');
+		});
+
+		$("#marketplace_search_form").submit();
+	});
+
+	<?php if($this->coords): ?>
+		$('#search').submit(MarketsMap.search);
+		$('#nearme').click(MarketsMap.nearme);
+	<?php endif; ?>
+
+	$("#map_reset").click(function(e) {
+		e.preventDefault();
+		Petolio.go(SITE_URL + 'marketplace/map/');
+	});
+});
+</script>

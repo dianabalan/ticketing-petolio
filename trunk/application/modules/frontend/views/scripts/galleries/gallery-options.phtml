@@ -1,0 +1,66 @@
+<?php
+$this->placeholder('sidebar')->captureStart();
+
+if($this->auth->hasIdentity() && $this->gallery->getOwnerId() == $this->auth->getIdentity()->id) {
+	$options = array(
+		array(
+			'link' => $this->url(array('controller'=>'galleries', 'action'=>'view', 'gallery'=>$this->gallery->getId()), 'default', true),
+			'name' => $this->translate->_("View gallery"),
+			'class' => 'lm-galleries_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'galleries', 'action'=>'edit', 'gallery'=>$this->gallery->getId()), 'default', true),
+			'name' => $this->translate->_("Edit Gallery"),
+			'class' => 'lm-galleries_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'galleries', 'action'=>'pictures', 'gallery'=>$this->gallery->getId()), 'default', true),
+			'name' => $this->translate->_("Pictures"),
+			'class' => 'lm-galleries_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'galleries', 'action'=>'videos', 'gallery'=>$this->gallery->getId()), 'default', true),
+			'name' => $this->translate->_("Videos"),
+			'class' => 'lm-galleries_sm'
+		)
+	);
+
+} else {
+	$options = array(
+		array(
+			'link' => $this->url(array('controller'=>'galleries', 'action'=>'view', 'gallery'=>$this->gallery->getId()), 'default', true),
+			'name' => $this->translate->_("View gallery"),
+			'class' => 'lm-galleries_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'accounts', 'action'=>'view', 'user'=>$this->gallery->getOwnerId()), 'default', true),
+			'name' => $this->translate->_("View Owner's Profile"),
+			'class' => 'lm-galleries_sm'
+		)
+	);
+}
+
+$links = null;
+foreach($options as $link) {
+	$id = $class = $rel = null;
+	$name = $link['name'];
+
+	if(isset($link['id']))
+		$id = " id='{$link['id']}'";
+
+	if(isset($link['class'])) {
+		$class = " class='{$link['class']}' title='{$link['name']}'";
+		$name = "{$link['name']}";
+	}
+
+	if(isset($link['rel']))
+		$rel = " rel='{$link['rel']}'";
+
+	$links .= "<li><a href='{$link['link']}'{$id}{$class}{$rel}>{$name}</a></li>";
+}
+
+?>
+<h3><?php echo $this->translate->_("Gallery Options"); ?></h3>
+<ul class="leftsubmenu" data-context="true"><?php echo $links; ?></ul>
+<div class="clear">&nbsp;</div>
+<?php $this->placeholder('sidebar')->captureEnd(); ?>

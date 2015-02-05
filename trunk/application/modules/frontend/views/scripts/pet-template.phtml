@@ -1,0 +1,86 @@
+<?php
+
+// pet url
+$url = isset($this->alternate) ? $this->alternate : $this->url(array('controller'=>'pets', 'action'=>'view', 'pet' => $this->pet["id"]), 'default', true);
+
+// take out the adoption interest link and show it elsewhere
+$interest = false;
+foreach($this->links as $idx => $link) {
+	if($link['class'] == "adoptpet reqconf") {
+		$interest = $link;
+		unset($this->links[$idx]);
+	}
+}
+
+// picture control
+$image = "/images/no-pet.jpg";
+if ($this->pet["picture"] && strlen($this->pet["picture"]) > 0) {
+	$image = "/images/userfiles/pets/{$this->pet["id"]}/gallery/thumb_{$this->pet["picture"]}";
+}
+
+?>
+<div class="pet-item" rel="<?php echo $this->pet["id"]; ?>">
+	<?php if ($interest !== false): ?>
+		<a href="<?php echo $interest['url']; ?>" title="<?php echo $interest['title']; ?>" 
+			style="background: transparent url('/images/adopt-<?php echo $this->translate->getLocale() ?>.png') top left no-repeat;" 
+			class="adopt reqconf"></a>
+	<?php endif; ?>
+	<a class="cluetip<?php echo $this->allow ? null : " noclick"; ?>" href="<?php echo $this->allow ? $url : "javascript:void(0);"; ?>" 
+			rel="<?php echo '#pet_' . $this->pet["id"]; ?>">
+		<img src="<?php echo $image; ?>" alt="<?php echo $this->translate->_("Pet Picture"); ?>" />
+	</a>
+	<table class="tooltipinfo" style="display: none;" cellpadding="0" cellspacing="0" id="<?php echo 'pet_' . $this->pet["id"]; ?>">
+		<tr>
+			<th valign="top"><?php echo $this->translate->_('Name'); ?></th>
+			<td><?php echo $this->pet["name"]; ?></td>
+		</tr>
+		<tr>
+			<th valign="top"><?php echo $this->translate->_('Species'); ?></th>
+			<td><?php echo $this->pet["type"]; ?></td>
+		</tr>
+		<?php if(strlen($this->pet["breed"]) > 0): ?>
+			<tr>
+				<th valign="top"><?php echo $this->translate->_('Breed'); ?></th>
+				<td><?php echo $this->pet["breed"]; ?></td>
+			</tr>
+		<?php endif; ?>
+	</table>
+	<?php if(is_null($this->notes)): ?>
+	<div class="pet-details">
+		<a class="name<?php echo $this->allow ? null : " noclick"; ?>" href="<?php echo $this->allow ? $url : "javascript:void(0);"; ?>" 
+			title="<?php echo $this->pet["name"]; ?>"><?php echo $this->pet["name"]; ?></a>
+		<span>
+			<?php echo $this->pet["type"]; ?><?php echo strlen($this->pet["breed"]) > 0 ? " - {$this->pet["breed"]}" : null; ?>
+		</span>
+		<?php if((isset($this->links) && count($this->links) > 0) || $this->sp): ?>
+		<span class="links">
+			<?php foreach($this->links as $link): ?>
+				<a href='<?php echo $link['url']; ?>' class='icn <?php echo $link['class']; ?>' title='<?php echo $link['title']; ?>'>&nbsp;</a>
+			<?php endforeach; if($this->sp): ?>
+				<a href='javascript:void(0);' class='icn plus' data-owner="<?php echo $this->pet['user_id']; ?>" 
+						data-owner_name="<?php echo $this->pet['user_name']; ?>" data-pet="<?php echo $this->pet['id']; ?>" 
+						data-pet_name="<?php echo $this->pet["name"]; ?>" 
+						title='<?php echo $this->translate->_('Invite member for Membership / Partnership'); ?>'>&nbsp;</a>
+			<?php endif; ?>
+		</span>
+		<?php endif; ?>
+	  	<?php if ($this->selection): ?>
+		    <span>
+		    	<table style="margin: 0 auto; width: auto;">
+		    		<tr>
+		    			<td>
+		    				<input type="checkbox" class="data-check" name="data[]" value="<?php echo $this->pet['id']; ?>" 
+		    					<?php if(in_array($this->pet['id'], $this->selection_data)) echo 'checked="checked"'; ?> />
+		    			</td>
+		   				<td>
+		   					<a href="javascript:void(0);" class="icon_link data-selection">
+		   						<span><?php echo $this->translate->_('Select'); ?></span>
+		   					</a>
+		   				</td>
+		   			</tr>
+		   		</table>
+		    </span>
+	  	<?php endif; ?>
+  	</div>
+  	<?php endif; ?>
+</div>

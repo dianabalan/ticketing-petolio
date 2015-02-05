@@ -1,0 +1,32 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1>
+			<?php
+				echo $this->translate->_("Add Service");
+				if ( isset($this->attribute_set_name) ) {
+					echo ': '.$this->Tr($this->attribute_set_name);
+				}
+			?>
+		</h1>
+		<br />
+		<?php echo str_replace(array('<form id="Employees" enctype="application/x-www-form-urlencoded" class="subform" method="post" action="">', '</dl></fieldset></form>'), array('', '</dl></fieldset>'), $this->form); ?>
+		<div class="cl"></div>
+		<div id="service-type-data"></div>
+	</div>
+</div>
+<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/service.js'); ?>"></script>
+<script type="text/javascript">
+	<?php
+		if ( isset($this->subform_data) && is_array($this->subform_data) ):
+			echo 'READY(function() {'.chr(10);
+			foreach ($this->subform_data as $data) {
+				echo "items = ".$data["items"].";".chr(10);
+				echo 'addSubformData(items, \''.$data["group_name"].'\');'.chr(10);
+			}
+			echo '});'.chr(10);
+		endif;
+	?>
+	var isRequired = '<?php echo $this->translate->_('is required'); ?>';
+</script>

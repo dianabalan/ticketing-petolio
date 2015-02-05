@@ -1,0 +1,79 @@
+<?php if($this->header): echo $this->header; ?>
+<?php else: ?>
+	<?php include "menu.phtml"; ?>
+	<div id="right">
+		<div class="rightbox">
+		<?php if ($this->hasIdentity && $this->admin): ?>
+			<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<?php endif; ?>
+<?php endif; ?>
+		<?php if($this->flagged): ?>
+			<h1><?php echo $this->translate->_("Microsite"); ?></h1>
+			<br />
+			<div class="c_error">
+				<div><b><?php echo $this->translate->_("Cannot display this microsite because it was flagged by the community."); ?></b></div>
+				<ul>
+					<?php foreach(array_unique($this->flagged) as $item): ?>
+						<li><?php echo $item; ?></li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+		<?php else: ?>
+			<?php if ($this->hasIdentity && !$this->admin): ?>
+				<div class="context"><div class="in">
+					<a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a>
+					<a href="javascript:void(0);" class="icon_link caution openflag"><span><?php echo $this->translate->_("Flag as inappropriate"); ?></span></a>
+					<div class="dialog-flag" title="<?php echo $this->translate->_("Flag as inappropriate"); ?>">
+						<div id="in-flag" style="margin: 8px 0px 2px 0px; line-height: 18px;" rel="<?php echo $this->microsite->getId(); ?>_<?php echo $this->microsite->getUserId(); ?>">
+							<span id="flag-text"><?php echo $this->translate->_("Please select the category that most closely reflects your concern about the content presented before you."); ?><br /><br /></span>
+							<?php echo $this->flag; ?><br />
+							<span class="grey"><small>
+								<?php echo $this->translate->_("You may only flag as inappropriate once per content."); ?><br /><br />
+								<?php echo $this->translate->_("Anything more than that would be against our Terms and Conditions and it may lead to the suspension or your account or a permanent ban."); ?><br /><br />
+								<?php echo $this->translate->_("Abusing this feature is also a violation of our Terms and Conditions, so please don't do it."); ?>
+							</small></span>
+						</div>
+					</div>
+				</div></div>
+				<?php $flag_opt = 'PoMicrosites'; include "../application/modules/frontend/views/scripts/flag.phtml"; ?>
+			<?php endif; ?>
+			<h1><?php echo $this->translate->_("Microsite"); ?></h1>
+			<br />
+			<?php if($this->microsite->getActive() == 0): ?>
+				<div class="c_error">
+					<ul>
+						<li><?php echo $this->translate->_("Your microsite is currently deactivated."); ?></li>
+					</ul>
+				</div>
+				<br />
+			<?php endif; ?>
+			<?php
+				$body = $this->html;
+				if($this->location) {
+					$body = str_replace("{body}", $this->partial("microsites/{$this->location}.phtml", array(
+			        	'translate' => $this->translate,
+			    		'microsite' => $this->microsite,
+			        	'listing' => $this->listing,
+			    		'admin' => $this->admin,
+			    		'frame' => $this->frame
+			    	)), $body);
+			    } else {
+			    	if($this->admin)
+						$body = str_replace("{admin}",
+							"<div class='fivepx'></div><div class='fivepx'></div>" .
+							"<a href='{$this->url(array('controller'=>'microsites', 'action'=>'edit'), 'default', true)}' class='icon_link edit' target='_parent' style='float: right;'>" .
+								"<span>". $this->translate->_("Edit Microsite") ."</span>".
+							"</a>" .
+							"<div class='clear'></div>",
+						$body);
+					else $body = str_replace("{admin}", "", $body);
+			    }
+
+				echo $body;
+			?>
+		<?php endif; ?>
+<?php if($this->footer): echo $this->footer; ?>
+<?php else: ?>
+		</div>
+	</div>
+<?php endif; ?>

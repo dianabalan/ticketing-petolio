@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title><?php echo $this->translate->_('Print QR Code'); ?></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<style type="text/css">
+		body {
+			font-family: Verdana;
+			font-size: 11px;
+		}
+
+		table {
+			width: 100%;
+			border-spacing:0;
+			border-collapse:collapse;
+		}
+
+		table td {
+			text-align: center;
+			border: 1px dashed black;
+		}
+	</style>
+</head>
+<body onload="window.print();">
+	<br /><br />
+	<table>
+		<tr>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+		</tr>
+		<tr>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+		</tr>
+		<tr>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+		</tr>
+		<tr>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+		</tr>
+		<tr>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+			<td><img src="<?php echo $this->qr; ?>" alt="<?php echo $this->translate->_("QR Code"); ?>" /></td>
+		</tr>
+	</table>
+</body>
+</html>

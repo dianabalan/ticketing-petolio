@@ -1,0 +1,300 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_('Medical Records'); ?></h1>
+		<br />
+		<?php echo $this->paginationControl($this->paginator, 'Elastic', 'pagination-controls.phtml', array('pos' => 'top')); ?>
+		<table cellspacing="0" cellpadding="5" class="grid">
+			<?php if($this->admin): ?>
+				<col width="23" /><col /><col width="100" /><col width="100" /><col width="130" /><col width="160" />
+			<?php else: ?>
+				<col /><col width="100" /><col width="100" /><col width="160" />
+			<?php endif; ?>
+			<tr>
+				<?php if($this->admin): ?>
+					<th><input type="checkbox" class="master" /></th>
+				<?php endif; ?>
+				<th><a href="<?php echo $this->url(array('order' => 'headline', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Headline 1"); ?><?php if($this->order == 'headline'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+				<th><a href="<?php echo $this->url(array('order' => 'start', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Start date"); ?><?php if($this->order == 'start'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+				<th><a href="<?php echo $this->url(array('order' => 'end', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("End date"); ?><?php if($this->order == 'end'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+				<?php if($this->admin): ?>
+					<th><a href="<?php echo $this->url(array('order' => 'rights', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Access Rights"); ?><?php if($this->order == 'rights'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+				<?php endif; ?>
+				<th></th>
+			</tr>
+			<?php if(isset($this->records) && count($this->records) > 0): foreach($this->records as $record): ?>
+				<tr>
+					<?php if($this->admin): ?><td><input type="checkbox" class="slave" rel="record|<?php echo $record->getId(); ?>" style="width: auto; margin: 0px;"/></td><?php endif; ?>
+					<td><a href="<?php echo $this->url(array('controller'=>'medical', 'action'=>'view', 'id' => $record->getId()), 'default', true); ?>"><?php echo $record->getHeadline1(); ?></a></td>
+					<td><?php echo Petolio_Service_Util::formatDate($record->getStartDate(), Petolio_Service_Util::MEDIUMDATE, false); ?></td>
+					<td><?php echo Petolio_Service_Util::formatDate($record->getEndDate(), Petolio_Service_Util::MEDIUMDATE, false); ?></td>
+					<?php if($this->admin): ?><td><a href="#" class="access_rights" rel="<?php echo $record->getId(); ?>"><?php echo $record->getRights(); ?></a></td><?php endif; ?>
+					<td align="right" nowrap="nowrap">
+						<a href="<?php echo $this->url(array('controller'=>'medical', 'action'=>'add-subentries', 'id' => $record->getId()), 'default', true); ?>" class="icon_link appointment" title="<?php echo $this->translate->_('New'); ?>"><span><?php echo $this->translate->_('New'); ?></span></a>
+						<a href="<?php echo $this->url(array('controller'=>'medical', 'action'=>'export', 'id' => $record->getId()), 'default', true); ?>" class="icon_link pdf" title="<?php echo $this->translate->_('Export'); ?>"><span><?php echo $this->translate->_('Export'); ?></span></a>
+						<?php if($this->admin): ?><a href="<?php echo $this->url(array('controller'=>'medical', 'action'=>'send', 'id' => $record->getId()), 'default', true); ?>" class="icon_link send" title="<?php echo $this->translate->_('Send'); ?>"><span><?php echo $this->translate->_('Send'); ?></span></a><?php endif; ?>
+					</td>
+				</tr>
+			<?php endforeach; if($this->admin): ?>
+				<tr style="background: #F8F8F8;">
+					<td><img src="/images/link.png" alt="file-link" style="display: block;" /></td>
+					<td colspan="6" class="grey" style="padding-top: 7px;">
+						<?php printf($this->translate->_("%s Items Selected"), "<span id='sel'>0</span>"); ?>.
+						<span id="links" class="grey">
+							<a href="javascript:void(0);" id="sel_edit" class="icon_link edit"><span><?php echo $this->translate->_("Edit Rights"); ?></span></a>
+							<a href="javascript:void(0);" id="sel_delete" class="icon_link delete"><span><?php echo $this->translate->_("Delete"); ?></span></a>
+						</span>
+					</td>
+				</tr>
+			<?php endif; else: ?>
+				<tr><td colspan="6" class="red"><?php echo $this->translate->_("No medical records found."); ?></td></tr>
+			<?php endif; ?>
+		</table>
+		<?php echo $this->paginationControl($this->paginator, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot')); ?>
+		<?php if(isset($this->rights)): ?>
+			<hr />
+			<div class="cls"></div>
+			<?php echo $this->partial('medical/rights.phtml', array (
+				'dialog' => false,
+				'friends' => $this->friends,
+				'partners' => $this->partners,
+				'rights' => $this->rights,
+				'translate' => $this->translate,
+				'mass_selection' => $this->mass_selection,
+				'mass_action' => $this->mass_action
+			)); ?>
+		<?php endif; if($this->admin): ?>
+			<hr />
+			<div class="left"><input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'medical', 'action'=>'add', 'pet'=>$this->pet->getId()), 'default', true); ?>');" type="button" value="<?php echo $this->translate->_("Add Medical Record"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+		<?php endif; ?>
+		<div class="clear"></div>
+	</div>
+</div>
+<script type="text/javascript">
+	var ChznUsr = function() {
+		var error = <?php echo isset($this->users_error) ? 'true' : 'false'; ?>,
+			translate = ['<?php echo $this->translate->_("View allowed users"); ?>', '<?php echo $this->translate->_("Close"); ?>'],
+			record_id = 0,
+			page = 1;
+
+		function showError() {
+			$("#multi_item_4").find('ul.chzn-choices').css({ borderColor: 'red' });
+		};
+
+		function enable(i) {
+			var p = $(i).attr('id'),
+				w = $('div[id="multi_'+ p +'_block"]');
+
+			if(w.length)
+				w.remove();
+		};
+
+		function disable(i, s) {
+			var p = $(i).attr('id'),
+				a = $('div[id="multi_'+ p +'"]'),
+				w = $('div[id="multi_'+ p +'_block"]'),
+				z = 500 - s;
+
+			if(!a.length || w.length)
+				return;
+
+			a.append('<div id="multi_'+ p +'_block" style="position: absolute; margin-top: -2px; width: 100%; height: 100%; background: white; opacity: 0.6; top: 0px; left: 0px; z-index: '+ z +';" />');
+		};
+
+		function decide(e) {
+			$.each($('input[type="radio"]'), function(s, i){
+				if(i.checked) enable(i);
+				else disable(i, s + 1 * s);
+			});
+		};
+
+		function post(u, p) {
+		    var f = ['<form method="POST" action="'+ u +'">'];
+
+		    f.push('<input type="hidden" name="mass_action" value="'+ p.mass_action +'"/>');
+		    $.each(p.record, function(k, v) { f.push('<input type="hidden" name="mass_records[]" value="'+ v +'"/>'); });
+		    f.push('</form>');
+
+		    $(f.join('')).appendTo('body').get(0).submit();
+		};
+
+		function selection() {
+			var a = $('#sel'),
+				m = $('input[class="master"]'),
+				s = $('input[class="slave"]'),
+				b = $('#sel_edit'),
+				c = $('#sel_delete'),
+				d = $('input[name="mass_selection"]');
+
+			if(d.length > 0) {
+				$.each(d.val().split(','), function(s, i){
+					$('input[rel="'+ i +'"]').get(0).checked = true;
+				});
+
+				__doit();
+			}
+
+			b.click(__send);
+			c.click(__send);
+			s.click(__doit);
+			m.click(function(){
+				__doit(function(i){
+					if(!i.disabled)
+						i.checked = m.get(0).checked;
+				});
+			});
+
+			function __send(e) {
+				var x = 0,
+					w = [],
+					i = $(e.currentTarget),
+					d = {
+						mass_action: i.attr('id'),
+						record: []
+					};
+
+				s.each(function(s, i) {
+					if(i.checked){
+						w = $(i).attr('rel').split('|');
+						d[w[0]].push(w[1]);
+						x++;
+					}
+				});
+
+				if(x > 0)
+					post(document.URL, d);
+			};
+
+			function __doit(f) {
+				var x = 0,
+					l = $('#links');
+
+				s.each(function(s, i) {
+					if(typeof(f) == 'function')
+						f.call(this, i);
+					if(i.checked)
+						x++;
+				});
+				a.html(x);
+
+				if(x > 0) l.removeClass('grey');
+				else l.addClass('grey');
+			};
+		};
+
+		function chooser() {
+			var x = $(".chzn-select");
+			$.each(x, function(s, i){
+				var y = $(i),
+					o = {translate: Petolio.translateChosen()},
+					a = {ajax: {
+		            	url: SITE_URL + "pets/find-user",
+						min_search: 3,
+						req_param: "user",
+						res_value: "value",
+						res_text: "text",
+						res_html: "text",
+						success_callback: function(v){
+							return v.results;
+						}
+		            }};
+
+				if(y.attr('title'))
+					y.data('placeholder', y.attr('title'));
+
+				if(y.is("input"))
+					$.extend(o, a);
+
+				y.chosen(o);
+			});
+
+			$('td > div[id*="multi_"]').css({ position: 'relative', marginTop: '-1px' });
+			$("#multi_partners_chzn").css({ zIndex: '495' });
+			$("#multi_friends_chzn").css({ zIndex: '493' });
+			$("#multi_users_chzn").css({ zIndex: '491' });
+		};
+
+		function view() {
+	    	Petolio.showLoading();
+	    	Petolio.ajax({
+				url: 'medical/users',
+				type: 'post',
+				data: {id: record_id, page: page},
+				cache: false,
+				success: function (x) {
+					Petolio.hideLoading();
+					dialog(x, pagination, function(){
+						page = 1;
+					});
+				}
+			});
+		};
+
+		function pagination() {
+			var p = parseInt($(this).attr('rel'));
+
+			// only numbers allowed
+			if(!isNaN(p))
+				page = p;
+
+			view();
+		};
+
+		function dialog(x, p, c) {
+	    	var identity = 'dialog-access-right';
+	    	$("#"+ identity).remove();
+
+	    	$('<div id="'+ identity +'" title="'+ translate[0] +'" class="ui-state-highlight">'+
+				'<div style="position: relative; margin: 8px 0px 3px 0px;">' +
+					(x.text ? x.text : '') +
+					(x.html ? x.html : '') +
+				'</div>'+
+			'</div>').dialog({
+				resizable: false,
+				modal: true,
+				width: 500,
+				minHeight: 50,
+				buttons: [{
+					text: translate[1],
+					click: function() {
+						$(this).dialog("close");
+					}
+				}],
+				close: function() {
+					$("#"+ identity).remove();
+					if(c)
+						c.apply(this, Array.prototype.slice.call(arguments, 4));
+				},
+				open: function() {
+					$("#"+ identity).find('[class="rating_pagination"] a').click(p);
+					$("#"+ identity).find('a').blur();
+				}
+			});
+		};
+
+		function bind() {
+			decide();
+
+			$('input[type="radio"]').click(decide);
+			$('a.access_rights').click(function() {
+				record_id = $(this).attr('rel');
+				view();
+			});
+		};
+
+		function __construct() {
+			selection();
+			chooser();
+			bind();
+			if(error)
+				showError();
+		};
+
+		return {
+			init: __construct
+		};
+	}();
+
+	READY(ChznUsr.init);
+</script>

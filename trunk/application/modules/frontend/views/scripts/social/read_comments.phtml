@@ -1,0 +1,153 @@
+<div class="comment_translate" style="display: none;"><?php echo json_encode(array(
+	'blank' => $this->translate->_("Comment here..."),
+	'post' => $this->translate->_("Post Comment"),
+	'delete_comment' => $this->translate->_("Delete Comment?"),
+	'read_more' => $this->translate->_("Read more"),
+	'read_less' => $this->translate->_("Read less")
+)); ?>
+</div>
+<?php if ($this->hasIdentity) {
+	$user = new Petolio_Model_PoUsers();
+	$user->find($this->identity->id);
+
+	// avatar control
+	$avatar = $this->partial('avatar.phtml', array(
+		'user' => $user,
+		'for' => 'dashboard'
+	));
+} ?>
+<div class="comment_loading" style="display: none; position: absolute; top: 7px; left: 50%; text-align: center; width: 100px; border: 1px solid #A5CC7D; background: #CEECB0; margin-left: -55px; padding: 2px 5px;"><?php echo $this->translate->_("Loading..."); ?></div>
+<h3 style="padding: 0px 0px 10px 0px;"><?php printf(count($this->plugin->data) == 1 ? $this->translate->_("%s Comment") : $this->translate->_("%s Comments"), count($this->plugin->data)); ?></h3>
+<?php if ($this->hasIdentity || $this->plugin->data) { ?><div style="height: 10px;"></div><?php } ?>
+<?php if ($this->hasIdentity) { ?>
+	<table cellpadding="0" cellspacing="0" style="width: 100%;">
+	<col width="1%" /><col />
+	<tr>
+		<td valign="top" style="vertical-align: top; min-width: 70px; display: block;">
+			<div class="big-avatar">
+				<img style="display: block; margin-top: 1px; border: 1px solid white; width: 100px;" src="<?php echo $avatar; ?>" />
+			</div>
+			<!-- 
+			<img style="display: block; float: right; margin-top: 1px; border: 1px solid white;" src="<?php echo $avatar; ?>" />
+			<div style="clear: both;"></div>
+			 -->
+		</td>
+		<td style="vertical-align: top; padding-left: 8px;">
+			<?php
+				/* lets see if:
+				 * 1. this is a comments block for pet pictures and videos
+				 * 2. we have any banner to display
+				 */
+				$banners = new Petolio_Model_PoAdBanners();
+				if ( strcasecmp($this->scope, "po_files") == 0 ) {
+					$files = new Petolio_Model_PoFiles();
+					$files->find($this->id);
+					if ( $files->getId() ) {
+						$folders = new Petolio_Model_PoFolders();
+						$folders->find($files->getFolderId());
+						if ( $folders->getId() && $folders->getPetId() ) {
+							$banners->getNextAd(1, 2, $folders->getPetId(), Zend_Registry::get('Zend_Translate')->getLocale());
+						}
+					}
+				}
+			?>
+			<?php if ( $banners->getId() ): ?>
+			<table style="width: 100%;">
+				<tr>
+					<td>
+						<textarea class="comment small" name="comment_body"><?php echo $this->translate->_("Comment here..."); ?></textarea>
+					</td>
+					<td width="190">
+						<div class="promotion_box small_promo">
+							<a href="<?php echo $banners->getLink(); ?>" title="<?php echo $banners->getTitle(); ?>" target="_blank">
+								<img src="/images/userfiles/banners/<?php echo $banners->getFile(); ?>" width="<?php echo $banners->getWidth(); ?>" height="<?php echo $banners->getHeight(); ?>" border="0" alt="<?php echo $banners->getTitle(); ?>" />
+							</a>
+						</div>
+					</td>
+			</table>
+			<script type="text/javascript">
+				READY(function() {
+					$(".promotion_box a").click(function() {
+				    	Petolio.ajax({
+							url: "site/banner-click", type: "post", data: {id: <?php echo $banners->getId(); ?>}, cache: false, success: function (x) {}
+						});
+					});
+				});
+			</script>
+			<?php else: ?>
+			<textarea class="comment" name="comment_body"><?php echo $this->translate->_("Comment here..."); ?></textarea>
+			<?php endif; ?>
+
+			<div style="float: left;"><div style="color: grey; margin-top: 6px; font-size: 11px;"><span class="comment_count">1500</span> <?php echo $this->translate->_("characters remaining"); ?></div></div>
+			<div style="float: right;"><input type="submit" name="comment_submit" class="submit" style="margin-top: 6px;" value="<?php echo $this->translate->_("Post Comment"); ?>" /></div>
+			<div class="clear tenpx"></div>
+		</td>
+	</tr>
+	</table>
+<?php } ?>
+<div class="entries">
+<?php if($this->plugin->data): foreach($this->plugin->data as $idx => $comment): ?>
+<?php
+ 	// avatar control
+	$avatar = $this->partial('avatar.phtml', array(
+		'user' => array('id' => $comment['user_id'], 'avatar' => $comment['avatar']),
+		'for' => 'dashboard'
+	));
+
+	// delimiter control
+	$delimiter = '<div style="background: #ccc; border-bottom: 1px solid white; height: 1px; margin: 8px 0px;"></div>';
+	if(!$this->hasIdentity && $idx == 0) $delimiter = null;
+?>
+	<?php // echo $delimiter; ?>
+<div class="entry">
+	<table>
+	<col width="1%" /><col />
+	<tr>
+		<td valign="top" style="vertical-align: top; min-width: 70px; display: block;">
+			<div class="big-avatar">
+				<img style="display: block; margin-top: 1px; border: 1px solid white; width: 100px;" src="<?php echo $avatar; ?>" />
+			</div>
+			<!-- 
+			<img style="display: block; float: right; margin-top: 1px; border: 1px solid white;" src="<?php echo $avatar; ?>" />
+			<div style="clear: both;"></div>
+			 -->
+		</td>
+		<td>
+			<div class="entry-content-container">
+				<div class="arrow-left"></div>
+				<div class="entry-content" style="background-color: #ffffff;">
+					<a style="font-weight: bold; color: green;" href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $comment['user_id']), 'default', true); ?>"><?php echo $comment['name']; ?></a>
+					<span class="data truncate" style="font-size: 12px;"><?php echo $comment['text']; ?></span>
+					<div style="font-size: 11px; color: grey; padding-top: 4px;" rel="<?php echo $comment['id']; ?>">
+						<?php echo Petolio_Service_Util::formatTime(strtotime($comment["date_created"])); ?>
+						<?php if($this->hasIdentity && ($this->identity->id == $comment['user_id'] || $this->plugin->admin)) { ?>&nbsp;&bull;&nbsp;
+							<a style="color: green; font-size: 11px;" href="javascript:void(0);" name="comment_delete"><?php echo $this->translate->_("Delete"); ?></a>
+						<?php } ?>
+					</div>
+				</div>
+			</div>
+		</td>
+	</tr>
+	</table>
+</div>
+<?php endforeach; endif; ?>
+</div>
+<?php if($this->plugin->pagination): ?>
+	<div class="comment_pagination">
+		<div style="background: #ccc; border-bottom: 1px solid white; height: 1px; margin: 8px 0px;"></div>
+		<div style="height: 6px;"></div>
+		<?php if(isset($this->plugin->pagination['previous'])) { ?>
+			<a href="javascript:void(0);" style="padding: 2px 5px; border: 1px solid #ccc; background: white;" rel="<?php echo $this->plugin->pagination['previous']; ?>">&laquo; <?php echo $this->translate->_("Previous"); ?></a>
+		<?php } ?>
+		<?php if(isset($this->plugin->pagination['pages'])): foreach($this->plugin->pagination['pages'] as $page): ?>
+			<?php $p = is_array($page) ? reset($page) : $page;
+				$p = $p == 'delimiter' ? '&hellip;' : $p;
+			?>
+			<a href="javascript:void(0);" style="padding: 2px 5px; border: 1px solid <?php if(is_array($page)): ?>green<?php else: ?>#ccc<?php endif; ?>; background: white;" rel="<?php echo $p; ?>"><?php echo $p; ?></a>
+		<?php endforeach; endif; ?>
+		<?php if(isset($this->plugin->pagination['next'])) { ?>
+			<a href="javascript:void(0);" style="padding: 2px 5px; border: 1px solid #ccc; background: white;" rel="<?php echo $this->plugin->pagination['next']; ?>"><?php echo $this->translate->_("Next"); ?> &raquo;</a>
+		<?php } ?>
+		<div style="height: 6px;"></div>
+	</div>
+<?php endif; ?>

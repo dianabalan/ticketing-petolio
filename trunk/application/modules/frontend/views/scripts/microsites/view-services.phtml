@@ -1,0 +1,20 @@
+<div id="microsite-services" style="display: none;">
+	<h2><?php echo $this->translate->_('Services'); ?></h2>
+	<?php echo $this->paginationControl($this->yourServices, 'Elastic', 'microsites/services-controls.phtml', array('pos' => 'top')); ?>
+	<table cellspacing="0" cellpadding="5" class="grid">
+		<col width="35%" /><col width="35%" /><col width="30%" />
+		<tr>
+			<th><a href="<?php echo $this->url(array('order' => 'name', 'dir' => $this->rdir)); ?>#micro-services" class="showloading"><?php echo $this->translate->_("Name"); ?><?php if($this->order == 'name'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+			<th><a href="<?php echo $this->url(array('order' => 'type', 'dir' => $this->rdir)); ?>#micro-services" class="showloading"><?php echo $this->translate->_("Type"); ?><?php if($this->order == 'type'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+			<th><a href="<?php echo $this->url(array('order' => 'date', 'dir' => $this->rdir)); ?>#micro-services" class="showloading"><?php echo $this->translate->_("Date"); ?><?php if($this->order == 'date'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+		</tr>
+		<?php foreach($this->yourServices as $service): ?>
+			<tr>
+				<td><a target="_blank" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'view', 'service' => $service["id"]), 'default', true); ?>"><?php echo $service["name"]; ?></a></td>
+				<td><a target="_blank" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'index', 'type' => $service["attribute_set_id"]), 'default', true); ?>"><?php echo $service["type"]; ?></a></td>
+				<td><?php echo Petolio_Service_Util::formatDate($service["date_created"], null, true, true); ?></td>
+			</tr>
+		<?php endforeach; ?>
+	</table>
+	<?php echo $this->paginationControl($this->yourServices, 'Elastic', 'microsites/services-controls.phtml', array('pos' => 'bot')); ?>
+</div>

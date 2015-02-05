@@ -1,0 +1,93 @@
+<?php
+
+// momths
+$_languages = array (
+	'ln' => $this->translate->_('Latin'),
+	'en' => $this->translate->_('English'),
+	'de' => $this->translate->_('Deutch')
+);
+
+?>
+<h1><a href="<?php echo $this->url(array("controller" => "translations", "action" => "list-translations"), "admin", true); ?>"><?php echo $this->translate->_("Translations"); ?></a> &raquo; <?php echo $this->translate->_("List Translations"); ?></h1>
+<div class="rbcontent" id="search_fields">
+	<form name="search" action="<?php echo $this->url; ?>" method="get">
+	<input type="hidden" name="order" id="order" value="<?php echo $this->order; ?>" />
+	<input type="hidden" name="dir" id="dir" value="<?php echo $this->dir; ?>" />
+	<table>
+	<col width="430" />
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Label"); ?>:</label>
+					<input type="text" name="label" value="<?php echo $this->label; ?>" />
+				</div>
+			</td>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Language"); ?>:</label>
+					<select name="language">
+						<option></option>
+						<option value="ln" <?php echo $this->language == 'ln' ? 'selected="selected"' : ''; ?>><?php echo $this->translate->_("Latin"); ?></option>
+						<option value="en" <?php echo $this->language == 'en' ? 'selected="selected"' : ''; ?>><?php echo $this->translate->_("English"); ?></option>
+						<option value="de" <?php echo $this->language == 'de' ? 'selected="selected"' : ''; ?>><?php echo $this->translate->_("Deutch"); ?></option>
+					</select>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Value"); ?>:</label>
+					<input type="text" name="value" value="<?php echo $this->value; ?>" />
+				</div>
+			</td>
+			<td>
+
+				<div class="filter_item">
+					<label></label>
+					<input type="button" value="<?php echo $this->translate->_("Search"); ?>" data-type="submit" />
+					<input type="button" value="<?php echo $this->translate->_("Reset"); ?>" data-type="reset" />
+				</div>
+			</td>
+		</tr>
+	</table>
+	</form>
+</div>
+<?php if(count($this->trans) > 0): ?>
+	<?php echo $this->paginationControl($this->trans, 'Elastic', 'controls.phtml', array('translate' => $this->translate)); ?>
+	<table class="main">
+		<thead>
+			<tr>
+				<th class="<?php $col = "label"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Label"); ?></th>
+				<th class="<?php $col = "language"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Language"); ?></th>
+				<th class="<?php $col = "value"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Value"); ?></th>
+				<th width="1%"></th>
+				<th width="1%"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach($this->trans as $tran): ?>
+				<tr>
+					<td><a href="<?php echo $this->url(array('controller'=>'translations', 'action'=>'edit-translation', 'id'=> $tran["id"]), 'admin', true); ?>"><?php echo $tran['label']; ?></a></td>
+					<td><?php echo $_languages[$tran['language']]; ?></td>
+					<td><?php echo $tran['value']; ?></td>
+					<td nowrap="nowrap" style="text-align: center;"><a href="<?php echo $this->url(array('controller'=>'translations', 'action'=>'edit-translation', 'id'=> $tran["id"]), 'admin', true); ?>"><?php echo $this->translate->_("Edit") ?></a></td>
+					<td nowrap="nowrap" style="text-align: center;"><a href="<?php echo $this->url(array('controller'=>'translations', 'action'=>'delete-translation', 'id'=> $tran["id"]), 'admin', true); ?>" class="reqconf" title="<?php echo $this->translate->_("Are you sure you want to delete this translation?"); ?>"><?php echo $this->translate->_("Delete"); ?></a></td>
+				</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+	<?php echo $this->paginationControl($this->trans, 'Elastic', 'controls.phtml', array('translate' => $this->translate)); ?>
+<?php else: ?>
+	<div class="error"><?php echo $this->translate->_("No records found."); ?></div>
+<?php endif; ?>
+<form style="background: #fff;">
+	<input type="button" onclick="document.location='<?php echo $this->url(array('action' => 'add-translation')); ?>';" class="submit" value="<?php echo $this->translate->_("Add Translation"); ?>" />
+	<div class="clear"></div>
+</form>
+<script type="text/javascript">
+	READY(function() {
+		Admin.loadJs('filters/base.js');
+		Filters.load('/translations/list-translations');
+	});
+</script>

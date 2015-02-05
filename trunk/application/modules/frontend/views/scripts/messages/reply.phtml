@@ -1,0 +1,116 @@
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Reply to message"); ?></h1>
+		<br />
+		<?php echo $this->form; ?>
+	</div>
+</div>
+<script type="text/javascript">
+$.fn.selectRange = function(start, end) {
+    return this.each(function() {
+        if (this.setSelectionRange) {
+            this.focus();
+            this.setSelectionRange(start, end);
+        } else if (this.createTextRange) {
+            var range = this.createTextRange();
+            range.collapse(true);
+            range.moveEnd('character', end);
+            range.moveStart('character', start);
+            range.select();
+        }
+    });
+};
+
+var Compose = function() {
+	var url = SITE_URL + 'messages/save',
+		parent = '<?php echo $this->message['id']; ?>';
+		draft = <?php echo isset($this->draft) ? $this->draft : 'false'; ?>,
+		user = {id: '<?php echo $this->message['from_user_id']; ?>', name: '<?php echo $this->message['name']; ?>'},
+		stop = false,
+		lock = false;
+
+	function addTo() {
+		$("#subject").closest('div').before(
+			'<div>'+
+			'<label for="captcha_picture"><?php echo $this->translate->_("To"); ?>:</label>'+
+			'<input type="hidden" name="to_user_id" id="to_user_id" value="' + user.id + '" />' +
+			'<input type="text" id="multi_users" value="'+ user.name +'" disabled="disabled" style="background: none; border: none; padding: 6px 0px 4px;" />'+
+			'<div class="cls"></div>'+
+		'</div>');
+	};
+
+	function checkTime(i) {
+		return i < 10 ? "0" + i : i;
+	};
+
+	function saveDraft() {
+		window.setTimeout(saveDraft, 10000);
+		if(stop || lock)
+			return true;
+
+		var x = $("#to_user_id").val(),
+			y = $("#subject").val() || null,
+			z = $("#message").val() || null,
+			t = new Date(),
+			h = checkTime(t.getHours()),
+			m = checkTime(t.getMinutes()),
+			s = checkTime(t.getSeconds());
+
+		lock = true;
+		if(!$('#draft').length)
+			$('#submit').after('<div class="left grey" style="display: none; margin: 5px 10px 0px 10px;" id="draft"><?php echo $this->translate->_("Loading..."); ?></div>');
+
+		$('#draft').fadeIn();
+		$('#draft').html('<?php echo $this->translate->_("Saving Draft..."); ?>');
+    	$.ajax({
+			url: url + (draft ? '/draft/' + draft : ''),
+			data: {to: x, subj: y, msg: z, parent: parent},
+			type: 'post',
+			cache: false,
+			success: function (d) {
+				if(d.success) {
+					lock = false;
+					draft = d.draft;
+
+					var time = h + ":" + m + ":" + s;
+					insertHidden();
+
+					$('#draft').fadeOut(function(){
+						$('#draft').html('Draft saved on '+ time).fadeIn().delay(5000).fadeOut();
+					});
+				}
+			}
+		});
+	};
+
+	function bind() {
+		$('#submit').click(function() {
+			stop = true;
+		});
+	};
+
+	function insertHidden() {
+		if(!$('#draft_hidden').length)
+			$('#submit').closest('form').append('<input type="hidden" id="draft_hidden" name="draft" value="'+ draft +'" />');
+	};
+
+	function __construct() {
+		addTo();
+
+		if(draft)
+			insertHidden();
+
+		saveDraft();
+		bind();
+
+		$('#message').selectRange(0);
+	};
+
+	return {
+		init: __construct
+	};
+}();
+
+READY(Compose.init);
+</script>

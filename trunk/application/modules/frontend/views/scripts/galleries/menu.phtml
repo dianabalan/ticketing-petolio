@@ -1,0 +1,37 @@
+<?php
+
+// get vars
+$title = $this->request->getParam('title');
+$owner = $this->request->getParam('owner');
+$fromdate = base64_decode($this->request->getParam('fromdate'));
+$todate = base64_decode($this->request->getParam('todate'));
+
+// gallery links
+$accounts = array(
+	array(
+		'link' => $this->url(array('controller'=>'galleries', 'action'=>'mygalleries'), 'default', true),
+		'name' => $this->translate->_("My Gallery List"),
+		'class' => 'lm-galleries_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'galleries', 'action'=>'add'), 'default', true),
+		'name' => $this->translate->_("Add Gallery"),
+		'class' => 'lm-galleries_sm'
+	)
+);
+
+// construct links
+$links = null;
+foreach($accounts as $link)
+	if ( isset($link['class']) && strlen($link['class']) > 0 )
+		$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+	else
+		$links .= "<li><a href='{$link['link']}'>{$link['name']}</a></li>";
+
+// add links
+if ($this->auth->hasIdentity()) {
+	$this->placeholder('sidebar')
+		->append("<h3>".$this->translate->_("Options")."</h3>
+			<ul class=\"leftsubmenu\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
+}
+?>

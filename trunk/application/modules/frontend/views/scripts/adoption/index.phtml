@@ -1,0 +1,100 @@
+<?php include "menu.phtml";
+
+$url = array();
+$from = $this->translate->_("All");
+if(strlen($this->request->getParam('category'))) {
+	$cat = $this->request->getParam('category');
+
+	if($cat == 0) $from = $this->translate->_("Pet Owners");
+	else $from = $this->category_list[$cat];
+	$url = array('category' => $cat);
+}
+
+?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<div>
+			<div class="left"><img src="/images/new/large/adoption.png" alt="<?php echo $this->title; ?>" /></div>
+			<ul class="title-menu">
+				<li><h3><?php echo $this->title; ?></h3></li>
+				<li><a href="<?php echo $this->url(array('controller'=>'marketplace', 'action'=>'index'), 'default', true); ?>">
+					<?php echo $this->translate->_("Services"); ?></a></li>
+				<li><a href="<?php echo $this->url(array('controller'=>'products', 'action'=>'index'), 'default', true); ?>">
+					<?php echo $this->translate->_("Products"); ?></a></li>
+				<li>
+					<div style="float: right; position: relative; top: 9px; height: 40px;">
+						<select class="chzn-select" name="select_species" id="select_species">
+							<?php 
+								$species = $this->request->getParam('species');
+								foreach ($this->types as $idx => $type):
+									$sel = isset($species) && $species == $idx ? 'selected="selected"' : null;
+									echo "<option value=\"{$idx}\" {$sel}>{$type}</option>";
+								endforeach;
+							?>
+						</select>
+					</div>
+					<script type="text/javascript">
+						READY(function() {
+							$("#select_species").bind('change', function(e) {
+								var d = $(this).val();
+								Petolio.go('/adoption/index/species/' + d);
+							});
+						});
+					</script>
+					<?php
+						$action = $this->url(array('controller'=>'adoption'), 'default', true)."/index";
+					
+						echo $this->partial("adoption/search.phtml", array(
+							"request" => $this->request,
+							"translate" => $this->translate,
+							"country_list" => $this->country_list,
+							"category_list" => $this->category_list,
+							"types" => $this->types,
+							"action" => $action
+						));
+					?>
+				</li>
+			</ul>
+			<div class="clear"></div>
+		</div>
+		<?php if(isset($this->adoption) && count($this->adoption) > 0): ?>
+			<div class="clear"></div>
+			<?php echo $this->paginationControl($this->adoption, 'Elastic', 'pagination-controls.phtml', array('pos' => 'top')); ?>
+			<div id="pin-container">
+			<?php
+				foreach($this->adoption as $pet):
+					echo $this->partial('adoption/pet-pin-item.phtml', array(
+							'pet' => $pet,
+							'translate' => $this->translate
+					));
+				endforeach;
+			?>
+			</div>
+			<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/jquery/masonry.pkgd.min.js'); ?>"></script>
+			<script type="text/javascript">
+				READY(function() {
+					var $container = $('#pin-container');
+
+					// initialize
+					$container.masonry({
+						itemSelector: '.pin',
+						gutter: 7,
+					});
+
+					// redraw the layout after all the images were loaded
+					$(window).load(function() {
+						$container.masonry();
+					});
+
+				});
+			</script>
+			
+			<?php echo $this->paginationControl($this->adoption, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot')); ?>
+		<?php else: ?>
+			<b class="red bigger"><?php echo $this->translate->_("No pets for adoption."); ?></b>
+			<br />
+		<?php endif; ?>
+		<div class="clear"></div>
+	</div>
+</div>

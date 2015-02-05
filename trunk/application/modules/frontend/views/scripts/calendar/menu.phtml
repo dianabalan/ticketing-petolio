@@ -1,0 +1,40 @@
+<?php
+
+$accounts = array();
+$accounts[] = array(
+	'link' => $this->url(array('controller'=>'calendar', 'action'=>'index'), 'default', true),
+	'name' => $this->translate->_("Overview"),
+	'class' => 'lm-calendar_sm'
+);
+
+$accounts[] = array(
+	'link' => "javascript:Calendar.Todo.addEditWindow({}, null);",
+	'name' => $this->translate->_("Add To-Do"),
+	'class' => 'lm-calendar_sm'
+);
+
+$accounts[] = array(
+	'link' => "javascript:Calendar.addEditWindow({}, null);",
+	'name' => $this->translate->_("Add Appointment"),
+	'class' => 'lm-calendar_sm'
+);
+
+$accounts[] = array(
+	'link' => "javascript:Calendar.Chat.addEditWindow({}, null);",
+	'name' => $this->translate->_("Add Chat Channel"),
+	'class' => 'lm-calendar_sm'
+);
+
+$accounts[] = array(
+	'link' => "javascript:Calendar.addEditWindow({}, null, true);",
+	'name' => $this->translate->_("Add Event with Attendees"),
+	'class' => 'lm-calendar_sm'
+);
+
+$links = null;
+foreach($accounts as $link)
+	$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+
+$this->placeholder('sidebar')
+     ->append("<h3>".$this->translate->_("Calendar")."</h3>
+     	<ul class=\"leftsubmenu fullwidth\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");

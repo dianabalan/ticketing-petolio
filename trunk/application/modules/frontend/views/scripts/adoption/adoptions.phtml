@@ -1,0 +1,69 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<div>
+			<div class="left"><img src="/images/new/large/adoption.png" alt="<?php echo $this->title; ?>" /></div>
+			<ul class="title-menu">
+				<li><h3><?php echo $this->title; ?></h3></li>
+				<li>
+					<?php
+						echo $this->partial("pets/search.phtml", array(
+							"request" => $this->request,
+							"translate" => $this->translate,
+							"yours" => true,
+							"types" => $this->types,
+							"action" => $this->url(array('controller'=>'adoption', 'action'=>'adoptions'), 'default', true)
+						));
+					?>
+				</li>
+			</ul>
+		</div>
+		<div class="clear"></div>
+		<?php if(isset($this->adoption) && count($this->adoption) > 0): ?>
+			<?php echo $this->paginationControl($this->adoption, 'Elastic', 'pagination-controls.phtml', array('pos' => 'top')); ?>
+			<div id="pin-container">
+				<?php foreach($this->adoption as $pet): ?>
+				    <?php echo $this->partial('pet-template.phtml', array(
+			        	'translate' => $this->translate,
+			        	'pet' => $pet,
+				    	'sp' => ($this->identity && $this->identity->type == 2 && $pet['user_id'] != $this->identity->id),
+			    		'allow' => true,
+			    		'links' => array(array(
+			    			'class' => 'restore reqconf',
+			    			'title' => sprintf($this->translate->_("Restore adoption of %s?"), $pet['name']),
+			    			'url' => $this->url(array('controller'=>'adoption', 'action'=>'restore', 'pet' => $pet["id"]), 'default', true)
+			    		), array(
+			    			'class' => 'question',
+			    			'title' => sprintf($this->translate->_("View interests for %s"), $pet['name']),
+							'url' => $this->url(array('controller'=>'adoption', 'action'=>'interests', 'pet' => $pet["id"]), 'default', true)
+			    		)),
+				    	'alternate' => $this->url(array('controller'=>'adoption', 'action'=>'view', 'pet' => $pet["id"]), 'default', true)
+			    	)); ?>
+				<?php endforeach; ?>
+			</div>
+			<div class="clear"></div>
+			<?php echo $this->paginationControl($this->adoption, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot')); ?>
+		<?php else: ?>
+			<b class="red bigger"><?php echo $this->translate->_("No pets for adoption."); ?></b>
+		<?php endif; ?>
+	</div>
+</div>
+<?php include "../application/modules/frontend/views/scripts/plus.phtml"; ?>
+<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/jquery/masonry.pkgd.min.js'); ?>"></script>
+<script type="text/javascript">
+	READY(function() {
+		var $container = $('#pin-container');
+
+		// initialize
+		$container.masonry({
+			itemSelector: '.pet-item',
+			gutter: 7,
+		});
+
+		// redraw the layout after all the images were loaded
+		$(window).load(function() {
+			$container.masonry();
+		});
+	});
+</script>

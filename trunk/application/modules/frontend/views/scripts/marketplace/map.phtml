@@ -1,0 +1,293 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<?php if(!(isset($this->services) && count($this->services) > 0)): ?>
+			<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<?php endif; ?>
+		<h1><?php echo $this->translate->_("Services Map"); ?></h1>
+		<br />
+		<div id="map_canvas"></div>
+	</div>
+</div>
+<script type="text/javascript">
+	var MarketsMap = function() {
+		var coords = {lat: <?php echo $this->coords[0]; ?>, long: <?php echo $this->coords[1]; ?>},
+			map, markers, geocoder, bounds, overlay, current_zoom = -2,
+			infoWindow, cached = {}, stop_zoom = false, idle = false;
+
+		function initializeMap() {
+			var myOptions = {
+				zoom: 1, // this is very important to be 1!!! Chrome doesn't display the map correctly if you add points outsite the viewport
+				maxZoom: 15,
+				mapTypeId: google.maps.MapTypeId.ROADMAP
+			};
+
+			geocoder = new google.maps.Geocoder();
+			markers = new Array();
+			bounds = new google.maps.LatLngBounds();
+			overlay = new google.maps.OverlayView();
+			map = new google.maps.Map($('#map_canvas').get(0), myOptions);
+			infoWindow = new google.maps.InfoWindow({});
+			overlay.setMap(map);
+			overlay.draw = function() {};
+
+	    	Petolio.ajax({
+				url: 'marketplace/getmarkets',
+				type: 'post',
+				data: <?php echo json_encode($this->request->getParams()); ?>,
+				cache: false,
+				success: function (x) {
+					if (x.count > 0) {
+						clearMarkers();
+						placeMarkers(x);
+						map.fitBounds(bounds);
+					}
+				}
+			});
+
+			google.maps.event.addListener(map, 'idle', function() {
+				idle = true;
+			});
+
+			addDragendListener();
+			addZoomListener();
+		};
+
+		function findAddressNearMe() {
+			var rad = $('#search_radius').val(),
+				__s = function(position) {
+				var lat = position.coords && position.coords.latitude ? position.coords.latitude : position.latitude,
+					lng = position.coords && position.coords.longitude ? position.coords.longitude : position.longitude;
+
+				cached = {latitude: lat, longitude: lng};
+				map.setCenter(new google.maps.LatLng(lat, lng));
+				map.setZoom(13);
+				findNearPoint(lng, lat, rad);
+
+				Petolio.hideLoading();
+			}, __e = function() {
+				Petolio.hideLoading();
+				Petolio.showMessage('<?php echo $this->translate->_("Could not determine your location..."); ?>');
+			}, __p = function() {
+				Petolio.showLoading('<?php echo $this->translate->_("Trying to find your location..."); ?>');
+			};
+
+			stop_zoom = true;
+			if(!$.isEmptyObject(cached))
+				return __s(cached);
+
+			__p();
+			$.ajax({
+				url : SITE_URL + "marketplace/get-user-address",
+				type : 'post',
+				cache : false,
+				success : function(data) {
+					if ( data.latitude && data.longitude && data.latitude.length > 0 && data.longitude.length > 0 ) {
+						cached = {latitude: data.latitude, longitude: data.longitude};
+						map.setCenter(new google.maps.LatLng(data.latitude, data.longitude));
+						map.setZoom(13);
+						findNearPoint(data.longitude, data.latitude, rad);
+
+						Petolio.hideLoading();
+					} else if ( data.address && data.address.length > 0 ) {
+						var input = $('#search_address');
+						input.val(data.address);
+						input.css({borderColor: '#8F8F8F'});
+
+						geocoder.geocode({'address': input.val()}, function(results, status) {
+							if(status == google.maps.GeocoderStatus.OK) {
+								var lat = results[0].geometry.location.lat();
+								var long = results[0].geometry.location.lng();
+								var point = new google.maps.LatLng(lat, long);
+
+								map.setCenter(point);
+								map.setZoom(13);
+								bounds.extend(point);
+								findNearPoint(long, lat, rad);
+							} else input.css({borderColor: 'red'});
+						});
+
+						Petolio.hideLoading();
+					} else {
+						if(navigator.geolocation) {
+							navigator.geolocation.getCurrentPosition(__s, __e, {
+								enableHighAccuracy: true,
+								maximumAge: Infinity,
+								timeout: 10000
+							});
+						}
+					}
+				}
+			});
+		};
+
+		function addZoomListener() {
+			google.maps.event.addListener(map, 'zoom_changed', function() {
+				if (map.getZoom() != current_zoom && stop_zoom == false && idle == true) {
+					idle = false;
+					current_zoom = map.getZoom();
+
+					var nw = overlay.getProjection().fromContainerPixelToLatLng(new google.maps.Point(0, 0));
+					var se = overlay.getProjection().fromContainerPixelToLatLng(new google.maps.Point($("#map_canvas").width(), $("#map_canvas").height()));
+
+					var params = {
+							longitude_from : nw.lng(),
+							latitude_from : se.lat(),
+							longitude_to : se.lng(),
+							latitude_to : nw.lat()
+						};
+
+					Petolio.ajax({
+						url: 'marketplace/getmarkets',
+						type: 'post',
+						data: $.extend({}, params, <?php echo json_encode($this->request->getParams()); ?>),
+						cache: false,
+						success: function (x) {
+							if (x.count > 0) {
+								clearMarkers();
+								placeMarkers(x);
+							}
+						}
+					});
+				}
+			});
+		};
+
+		function addDragendListener() {
+			google.maps.event.addListener(map, 'dragend', function() {
+				if(idle == true) {
+					idle = false;
+
+					var nw = overlay.getProjection().fromContainerPixelToLatLng(new google.maps.Point(0, 0));
+					var se = overlay.getProjection().fromContainerPixelToLatLng(new google.maps.Point($("#map_canvas").width(), $("#map_canvas").height()));
+
+					var params = {
+							longitude_from : nw.lng(),
+							latitude_from : se.lat(),
+							longitude_to : se.lng(),
+							latitude_to : nw.lat()
+						};
+					
+			    	Petolio.ajax({
+						url: 'marketplace/getmarkets',
+						type: 'post',
+						data: $.extend({}, params, <?php echo json_encode($this->request->getParams()); ?>),
+						cache: false,
+						success: function (x) {
+							if (x.count > 0) {
+								clearMarkers();
+								placeMarkers(x);
+							}
+						}
+					});
+				}
+			});
+		};
+
+		function findAddress(e) {
+			e.preventDefault();
+
+			var input = $('#search_address'),
+				rad = $('#search_radius').val();
+
+			input.css({borderColor: '#8F8F8F'});
+
+			geocoder.geocode({'address': input.val()}, function(results, status) {
+				if(status == google.maps.GeocoderStatus.OK) {
+					var lat = results[0].geometry.location.lat();
+					var long = results[0].geometry.location.lng();
+					var point = new google.maps.LatLng(lat, long);
+
+					map.setCenter(point);
+					map.setZoom(13);
+					bounds.extend(point);
+					findNearPoint(long, lat, rad);
+				} else input.css({borderColor: 'red'});
+			});
+		};
+
+		function findNearPoint(lng, lat, rad) {
+			Petolio.ajax({
+				url: 'marketplace/getmarkets',
+				type: 'post',
+				data: {
+					longitude : lng,
+					latitude : lat,
+					radius : rad
+				},
+				cache: false,
+				success: function (x) {
+					if (x.count > 0) {
+						clearMarkers();
+						placeMarkers(x);
+						map.fitBounds(bounds);
+					}
+					stop_zoom = false;
+				}
+			});
+		};
+
+		function clearMarkers() {
+			for ( var i = 0; i < markers.length; i++) {
+				markers[i].setMap(null);
+			}
+
+			markers = new Array();
+			bounds = new google.maps.LatLngBounds();
+		};
+
+		function placeMarkers(data) {
+			jQuery.each(data.items, function(i, item) {
+				var point = new google.maps.LatLng(parseFloat(item.latitude), parseFloat(item.longitude));
+				bounds.extend(point);
+
+				var marker = new google.maps.Marker({
+					position : point,
+					map : map
+				});
+				marker.setTitle(item.name);
+
+				google.maps.event.addListener(marker, 'click', function() {
+					if (infoWindow)
+						infoWindow.close();
+
+					// Content for the infoWindow
+					var html = "<div style='height: 85px'><span style='font-size: 12px'><b>" + item.name + "</b> - " + item.type
+						+ "</span><br /><a href='/accounts/view/user/" + item.userid + "'>" + item.username + "</a><br />" + item.address + "<hr />"
+						+ "<a href='/services/view/service/" + item.id + "'>" + item.view + "</a></div>";
+
+					infoWindow.setContent(html);
+					infoWindow.open(map, marker);
+				});
+
+				markers[markers.length] = marker;
+				var point = new google.maps.LatLng(parseFloat(item.latitude), parseFloat(item.longitude));
+
+				bounds.extend(point);
+			});
+		};
+
+		function __construct(s) {
+			store = s;
+
+			$('body').append('<script type="text/javascript" src="'+ window.location.protocol +'//maps.googleapis.com/maps/api/js?v=3.7&sensor=false&callback=MarketsMap.go" />');
+		};
+
+		function fitb() {
+			map.fitBounds(bounds);
+		};
+
+		return {
+			init: __construct,
+			go: initializeMap,
+			search: findAddress,
+			nearme: findAddressNearMe,
+			placeMarkers: placeMarkers,
+			fitb: fitb
+		};
+	}();
+
+	READY(function() {
+		MarketsMap.init();
+	});
+</script>

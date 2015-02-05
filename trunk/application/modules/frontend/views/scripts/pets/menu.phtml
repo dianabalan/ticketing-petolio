@@ -1,0 +1,167 @@
+<?php
+
+// vars
+$keyword = $this->request->getParam('keyword');
+$country = $this->request->getParam('country');
+$zipcode = $this->request->getParam('zipcode');
+$address = $this->request->getParam('address');
+$location = $this->request->getParam('location');
+$owner = $this->request->getParam('owner');
+
+// countries
+$scountry = "<option value=''> ".$this->translate->_('Select Country')."</option>";
+foreach($this->country_list as $id => $val) {
+	$sel = $country && $country == $id ? 'selected="selected"' : null;
+	$scountry .= "<option value='{$id}' {$sel}>{$val}</option>";
+}
+
+// pet links
+$accounts = array(
+	array(
+		'link' => $this->url(array('controller'=>'pets'), 'default', true),
+		'name' => $this->translate->_("All Pets"),
+		'class' => 'lm-pets_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'pets', 'action'=>'mypets'), 'default', true),
+		'name' => $this->translate->_("My Pets"),
+		'class' => 'lm-pets_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'pets', 'action'=>'add'), 'default', true),
+		'name' => $this->translate->_("Add Pet"),
+		'class' => 'lm-pets_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'pets', 'action'=>'archives'), 'default', true),
+		'name' => $this->translate->_("Pet Archives"),
+		'class' => 'lm-pets_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'pets', 'action'=>'favorites'), 'default', true),
+		'name' => $this->translate->_("My Favorite Pets"),
+		'class' => 'lm-pets_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'adoption', 'action'=>'adoptions'), 'default', true),
+		'name' => $this->translate->_("My Pets for Adoption"),
+		'class' => 'lm-pets_sm'
+	)
+);
+if ($this->showAdoptionInterest) {
+	$accounts[] = array(
+		'link' => $this->url(array('controller'=>'adoption', 'action'=>'interested'), 'default', true),
+		'name' => $this->translate->_("My Adoption Interests"),
+		'class' => 'lm-pets_sm');
+}
+
+
+$links = null;
+foreach($accounts as $link) {
+	if (isset($link['class']) && strlen($link['class']) > 0)
+		$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+	else
+		$links .= "<li><a href='{$link['link']}'>{$link['name']}</a></li>";
+}
+
+if ($this->auth->hasIdentity()) {
+	$hide = $this->action == "index" ? "data-hide='true'" : null;
+
+	$this->placeholder('sidebar')
+	     ->append("<h3 {$hide}>".$this->translate->_("Pets")."</h3>
+	     	<ul class=\"leftsubmenu\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
+}
+
+// teh search box
+if($this->search) {
+	// search by pet name
+	$searchbox_html = "<h3>".$this->translate->_("Search")."</h3>
+		<form id='pets_search_form'>
+			<table width='100%' cellspacing='3' cellpadding='3' border='0'>
+				<tr>
+					<td><label>".$this->translate->_("Keywords")."</label></td>
+					<td style='padding-left: 5px;'><input type='text' name='keyword' value='{$keyword}' /></td>
+				</tr>";
+
+	if(is_null($this->yours))
+		$searchbox_html .= "
+				<tr>
+					<td><label>".$this->translate->_("Country")."</label></td>
+					<td style='padding-left: 5px;'><select name='country'>{$scountry}</select></td>
+				</tr>
+				<tr>
+					<td><label>".$this->translate->_("Zipcode")."</label></td>
+					<td style='padding-left: 5px;'><input type='text' name='zipcode' value='{$zipcode}' /></td>
+				</tr>
+				<tr>
+					<td><label>".$this->translate->_("Address")."</label></td>
+					<td style='padding-left: 5px;'><input type='text' name='address' value='{$address}' /></td>
+				</tr>
+				<tr>
+					<td><label>".$this->translate->_("State")."</label></td>
+					<td style='padding-left: 5px;'><input type='text' name='location' value='{$location}' /></td>
+				</tr>
+				<tr>
+					<td><label>".$this->translate->_("Owner")."</label></td>
+					<td style='padding-left: 5px;'><input type='text' name='owner' value='{$owner}' /></td>
+				</tr>";
+
+	// filter by pet type
+	$types = null;
+	foreach ($this->types as $id => $name) {
+		$hover = $id == $this->request->getParam('species') ? ' selected="selected"' : null;
+		$types .= "<option value='{$id}'{$hover}>{$name}</option>";
+	}
+
+	$searchbox_html .= 	"
+				<tr>
+					<td><label>".$this->translate->_("Type")."</label></td>
+					<td style='padding-left: 5px;'><select name='species'><option value=''>".$this->translate->_("All")."</option>{$types}</select></td>
+				</tr>
+				<tr>
+					<td colspan='2'><input class='srcbtn' type='submit' value='".$this->translate->_("Go")."' /><input class='srcbtn' type='button' id='search_reset' value='".$this->translate->_("Reset")."' /></td>
+				</tr>
+			</table>
+		</form>";
+
+	$this->placeholder('sidebar')
+		 ->append($searchbox_html);
+}
+
+?>
+<script type="text/javascript">
+(function($){
+	$.fn.serializeURL = function() {
+		var url = '';
+
+		jQuery.map($(this).serializeArray(), function(n, i){
+			if(n['value'])
+				url += n['name'] + '/' + n['value'] + '/';
+		});
+
+		return url;
+	};
+})(jQuery);
+
+READY(function(){
+	var l = '<?php echo $this->request->getParam('list'); ?>';
+
+	$('#pets_search_form').submit(function(e){
+		e.preventDefault();
+		url = SITE_URL + 'pets/<?php echo isset($this->search) ? $this->action : 'index'; ?>/' + $(this).serializeURL();
+
+		if(l.length > 0) url += 'list/' + l;
+		Petolio.go(url);
+	});
+
+	$("#search_reset").click(function(e) {
+		e.preventDefault();
+		$("#pets_search_form").find('input, select').each(function(index) {
+			if($(this).attr('class') != 'srcbtn')
+				$(this).val('');
+		});
+
+		$("#pets_search_form").submit();
+	});
+});
+</script>
