@@ -1,0 +1,204 @@
+/* - Help Forum Integration - */
+/* -------------------------- */
+.imported {
+	padding-top: 0px !important;
+	padding-bottom: 0px !important;
+	margin-top: -7px !important;
+	margin-bottom: -7px !important;
+}
+
+.description_box {
+	margin-bottom: 0px !important;
+}
+
+.imported p {
+	padding: 7px 0;
+}
+
+.imported .usercontent {
+	padding: 7px 0;
+}
+
+.imported .postmsg p, .imported .postmsg li, #punhelp p samp {
+	font-family: 'FuturaBkBTBook', Verdana, Arial, Helvetica, sans-serif;
+}
+
+.imported .usercontent h1, .imported .usercontent h2, .imported .usercontent h3,
+.imported .usercontent h4, .imported .usercontent h5, .imported .usercontent h6 {
+	padding: 7px 0 0 0;
+}
+
+.imported .postmsg h5, #punhelp h5 {
+	font-size: 1.231em;
+	font-weight: bold;
+	padding: 7px 0;
+}
+
+.imported .usercontent ul, .imported .postmsg ul {
+	list-style: disc;
+	padding: 4px 13px 4px 30px;
+}
+
+.imported .usercontent ol, .imported .postmsg ol {
+	list-style: decimal;
+	padding: 4px 13px 4px 30px;
+}
+
+.imported .usercontent ol.alpha, .imported .postmsg ol.alpha {
+	list-style: lower-alpha;
+}
+
+.imported .usercontent li, .imported .postmsg li {
+	padding: 0 3px;
+}
+
+.imported .usercontent li p, .imported .postmsg li p {
+	padding: 0;
+}
+
+.imported span.bbu {
+	text-decoration: underline;
+}
+
+.imported span.bbs, .imported del {
+	text-decoration: line-through;
+}
+
+.imported .postmsg ins, #punhelp samp ins {
+	text-decoration: none;
+}
+
+.imported .blockpost .postmsg .postedit {
+	font-size: 0.857em;
+}
+
+.imported .blockform .postsignature, .imported .blockpost .postsignature {
+	font-size: 0.923em;
+}
+
+.imported .codebox {
+	border-style: solid;
+	border-width: 1px;
+	margin: 0.75em 1em;
+	padding: 0;
+}
+
+.imported .quotebox {
+	border-style: solid;
+	border-width: 1px 1px 1px 3px;
+	margin: 0.75em 1em;
+	padding: 0 0.75em;
+}
+
+.imported .quotebox cite {
+	display: block;
+	padding: 0.75em 0 0 0;
+	font-weight: bold;
+	line-height: 1.462em;
+}
+
+.imported .quotebox blockquote {
+	overflow: hidden;
+	width: 100%;
+}
+
+.imported .codebox pre {
+	overflow-y:hidden;
+	overflow: auto;
+	width: 100%;
+	direction: ltr;
+	text-align: left;
+}
+
+* html .imported .codebox pre {
+	padding-bottom: 10px;
+}
+
+*:first-child+html .imported .codebox pre {
+	padding-bottom: 10px;
+}
+
+.imported .codebox pre code {
+	padding: 0.75em;
+	white-space: pre;
+}
+
+.imported div[class*=codebox] pre code {
+	display: inline-block;
+}
+
+* html .imported .codebox pre code {
+	display: block;
+}
+
+.imported .codebox pre.vscroll {
+	height: 32em;
+	overflow: auto;
+	overflow-y: auto
+}
+
+.imported .postmsg img, #punhelp samp img {
+	vertical-align: text-top;
+}
+
+.imported .postmsg .postimg img {
+	max-width: 98%;
+	vertical-align: middle;
+	margin: 7px 0.5em 7px 0;
+}
+
+.imported .postmsg .postimg a:link img, .imported .postmsg .postimg a:visited img {
+	border-style: solid;
+	border-width: 2px;
+}
+
+.imported .blockpost {
+	background: #f6f6ea;
+	border-color: #bbc6b2 #d8dccf;
+}
+
+.imported .blockpost h2 {
+	background: #eaecda;
+	border-color: #ccd7c1;
+	color: #83866a;
+}
+
+.imported .blockpost .postbody, .imported .blockpost .postfoot {
+	background: #fcfcf4;
+	border-color: #dce6d8;
+}
+
+.imported .blockpost .postfootright li {
+	color: #fcfcf4;
+}
+
+.imported .postmsg, #punhelp code, #punhelp samp {
+	color: #333;
+}
+
+.imported .postsignature, .imported .postmsg .postedit {
+	color: #526550;
+}
+
+.imported .quotebox {
+	background: #f9fae5;
+	border-color: #bdbc7a;
+	color: #566579;
+}
+
+.imported .quotebox cite {
+	color: #83866a;
+}
+
+.imported .codebox, #punhelp .codebox code {
+	background: #333;
+	color: #fff;
+}
+
+.imported .postmsg hr {
+	background: #bbc6b2;
+}
+
+.imported .postmsg ins, #punhelp samp ins {
+	background-color: #ff0;
+}

@@ -1,0 +1,33 @@
+@CHARSET "UTF-8";
+
+body {
+	background: none;
+	background-color: #ffffff;
+	width: 750px;
+	min-width: 750px;
+	overflow-x: hidden;
+}
+
+.rightbox {
+	min-width: 721px;
+}
+
+.inner-footer {
+	margin-bottom: 0px;
+	color: #999;
+	font-size: 12px;
+}
+
+.inner-footer a {
+	font-size: 12px;
+}
+
+.distribution-container {
+	min-width: 700px;
+	width: 721px; 
+	padding: 10px; 
+	position: relative; 
+	border: 1px solid #d6d6d6; 
+	border-radius: 5px; 
+	margin-bottom: 18px;
+}
