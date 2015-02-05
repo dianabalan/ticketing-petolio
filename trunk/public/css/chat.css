@@ -1,0 +1,360 @@
+/* ---- Chat Channel ---- */
+/* ---------------------- */
+
+#chat > #ape {
+	height: 500px;
+	border: 1px solid #D6D6D6;
+	border-left: 0px;
+	border-right: 0px;
+}
+
+#chat > #ape > div.pipe {
+	height: 500px;
+	width: 100%;
+	position: relative;
+}
+
+#chat > #ape > #msg {
+	padding: 10px 0px;
+}
+
+
+/* ---- Message Part ---- */
+/* ---------------------- */
+
+#chat > #ape > div.pipe > #message{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 590px;
+	height: 474px;
+	border-bottom: 1px solid #d6d6d6;
+}
+
+#chat > #ape div.user > table div.message {
+	font-size: 12px;
+	color: #444;
+	padding: 5px 5px 5px 5px;
+	border: 1px solid #CCC;
+	background: whiteSmoke;
+	border-top: 0px;
+	line-height: 16px;
+}
+
+#chat > #ape div.user > table div.announce {
+	font-size: 12px;
+	color: #444;
+	padding: 5px 5px 5px 0px;
+	border-right: 1px solid #CCC;
+	background: transparent url('../images/chat_bg.png') top right repeat-y;
+	line-height: 16px;
+}
+
+#chat > #ape div.user > table div.message > span,
+#chat > #ape div.user > table div.announce > span {
+	display: block;
+	float: left;
+	width: 390px;
+	text-align: left;
+	word-wrap: break-word;
+}
+
+#chat > #ape div.user > table div.message > span a {
+	font-size: 12px;
+}
+
+#chat > #ape div.user > table div.announce > span a {
+	font-size: 12px;
+}
+
+#chat > #ape div.user > table div.message > dfn,
+#chat > #ape div.user > table div.announce > dfn {
+	display: block;
+	float: right;
+	text-align: right;
+	width: 110px;
+	color: #bbb;
+	font-style: normal;
+}
+
+#chat > #ape div.user > table div.announce > dfn {
+	font-size: 12px;
+}
+
+
+/* ----- Post Part ------ */
+/* ---------------------- */
+
+#chat > #ape > div.pipe > div.post {
+	position: absolute;
+	width: 586px;
+	height: 25px;
+	bottom: 0px;
+	left: 0px;
+}
+
+#chat > #ape > div.pipe > div.normal {
+	border-left: 4px solid green;
+}
+
+#chat > #ape > div.pipe > div.error {
+	border-left: 4px solid red;
+}
+
+#chat > #ape > div.pipe > div.post > textarea {
+	border: none;
+	display: block;
+	background: white;
+	border-radius: 0px;
+	font-size: 12px;
+	margin: 0px;
+	height: 15px;
+	width: 553px;
+	float: none;
+	resize: none;
+	outline: 0;
+	padding: 6px 0px 4px 5px;
+	float: left;
+}
+
+#chat > #ape > div.pipe > div.post > div.pop {
+	float: right;
+	position: relative;
+}
+
+#chat > #ape > div.pipe > div.post > div.pop > div.list {
+	position: absolute;
+	top: -60px;
+	left: -34px;
+	width: 62px;
+	display: none;
+}
+
+#chat > #ape > div.pipe > div.post > div.pop > div.list > div.emoticons-content {
+	background: whitesmoke;
+	border: 1px solid #CCC;
+	border-bottom: 0px;
+	padding: 5px;
+}
+
+#chat > #ape > div.pipe > div.post > div.pop > div.list > div.emoticons-content > img {
+	cursor: pointer;
+}
+
+#chat > #ape > div.pipe > div.post > div.pop > div.list > div.bottom {
+	height: 5px;
+	background: transparent url('../images/dashboard/social-bottom.png') -938px 0px no-repeat;
+}
+
+#chat > #ape > div.pipe > div.post > div.pop > div.img {
+	opacity: 0.5;
+	cursor: pointer;
+	padding: 5px 5px 5px 5px;
+}
+
+/* ----- Users Part ----- */
+/* ---------------------- */
+
+#chat > #ape > div.pipe > #users {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	width: 210px;
+	height: 500px;
+	background: whitesmoke;
+	outline: none;
+}
+
+#chat > #ape > div.pipe > #users div.user,
+#chat > #ape > div.pipe > #message div.user {
+	padding: 8px 8px 0px 8px;
+}
+
+#chat > #ape > div.pipe > #message div.user {
+	padding-left: 0px;
+}
+
+#chat > #ape > div.pipe > #users div.user:last-child {
+	padding-bottom: 13px !important;
+}
+
+#chat > #ape > div.pipe > #message div.user:last-child {
+	padding-bottom: 8px !important;
+}
+
+#chat > #ape div.user > table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	opacity: 0.5;
+}
+
+#chat > #ape div.user > table div.avatar {
+	margin-right: 5px;
+}
+
+#chat > #ape div.user > table div.avatar img {
+	display: block;
+	border: 1px solid white;
+	width: 50px;
+	height: 33px;
+}
+
+#chat > #ape #message div.user > table div.avatar img {
+	border-left: none;
+}
+
+#chat > #ape div.user > table div.desc {
+	font-size: 12px;
+	color: #444;
+}
+
+#chat > #ape div.user > table div.desc a {
+	font-size: 12px;
+}
+
+#chat > #ape div.user > table div.top {
+	height: 5px;
+	background: transparent url('../images/dashboard/social-top.png') top left no-repeat;
+}
+
+#chat > #ape div.user > table.loading,
+#chat > #ape div.user > table a.loading {
+	cursor: wait !important;
+}
+
+
+/* ----- Emoticons ------ */
+/* ---------------------- */
+
+#chat > #ape img {
+	border: 0px;
+}
+
+#chat > #ape img.emote {
+	height: 16px;
+	vertical-align: top;
+	width: 16px;
+	background: url('../images/emoticons.png') no-repeat;
+	overflow: hidden;
+}
+
+
+/* ----- Scrolling ------ */
+/* ---------------------- */
+
+#chat > #ape > div.pipe > #message > div.mCustomScrollBox > div.mCSB_container,
+#chat > #ape > div.pipe > #users > div.mCustomScrollBox > div.mCSB_container {
+	margin-right: 6px;
+}
+
+#chat > #ape > div.pipe > #message > div.mCustomScrollBox > div.mCS_no_scrollbar,
+#chat > #ape > div.pipe > #users > div.mCustomScrollBox > div.mCS_no_scrollbar {
+	margin-right: 0px;
+}
+
+#chat > #ape > div.pipe > #message > div.mCustomScrollBox > div.mCSB_scrollTools,
+#chat > #ape > div.pipe > #users > div.mCustomScrollBox > div.mCSB_scrollTools {
+	width: 6px;
+	opacity: 1;
+	padding: 0;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+#chat > #ape > div.pipe > #message > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.mCSB_draggerRail,
+#chat > #ape > div.pipe > #users > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.mCSB_draggerRail {
+	width: 6px;
+	background: #fff;
+	-webkit-border-radius: 0px;
+	-moz-border-radius: 0px;
+	border-radius: 0px;
+	cursor: s-resize;
+}
+
+#chat > #ape > div.pipe > #users > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.mCSB_draggerRail {
+	background: whitesmoke;
+}
+
+#chat > #ape > div.pipe > #message > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.mCSB_dragger,
+#chat > #ape > div.pipe > #users > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.mCSB_dragger {
+	height: 50px;
+}
+
+#chat > #ape > div.pipe > #message > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.mCSB_dragger > div.mCSB_dragger_bar,
+#chat > #ape > div.pipe > #users > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.mCSB_dragger > div.mCSB_dragger_bar {
+	width: 6px;
+	background: #d6d6d6 url('/images/scroll.png') center center no-repeat;
+	-webkit-border-radius: 0px;
+	-moz-border-radius: 0px;
+	border-radius: 0px;
+	cursor: pointer;
+}
+
+#chat > #ape > div.pipe > #message > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.ui-draggable-dragging > div.mCSB_dragger_bar,
+#chat > #ape > div.pipe > #users > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.ui-draggable-dragging > div.mCSB_dragger_bar,
+#chat > #ape > div.pipe > #message > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.mCSB_dragger > div.mCSB_dragger_bar:hover,
+#chat > #ape > div.pipe > #users > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.mCSB_dragger > div.mCSB_dragger_bar:hover {
+	background-color: green;
+}
+
+
+/* ------ History ------- */
+/* ---------------------- */
+
+#chat > #ape > div.pipe > #message div.history {
+	font-size: 12px;
+	color: #444;
+	padding: 8px 8px 0px 0px;
+}
+
+#chat > #ape > div.pipe > #message div.history > span {
+	display: block;
+	padding: 5px 5px 5px 27px;
+	border: 1px solid #CCC;
+	background: whiteSmoke url('../images/dashboard/comments.png') 5px 6px no-repeat;
+	line-height: 16px;
+}
+
+#chat > #ape > div.pipe > #message div.history > span.loading {
+	opacity: 0.5;
+	cursor: wait;
+}
+
+#chat > #ape > div.pipe > #message div.history > span.loading a {
+	cursor: wait;
+}
+
+#chat > #ape > div.pipe > #message div.history > span a {
+	font-size: 12px;
+	cursor: pointer;
+}
+
+#chat > #ape > div.pipe > #message div.history > span a.active {
+	font-weight: bold;
+	color: #000;
+}
+
+#chat > #ape > div.pipe > #message div.user > div.delimiter {
+	border-bottom: 1px dashed #CCC;
+}
+
+
+/* ------ Info Box ------ */
+/* ---------------------- */
+
+table.info {
+	font-size: 1.0em;
+	width: 100%;
+	margin: 0px auto;
+	border: 1px solid #EEE;
+	border-bottom: none;
+}
+
+table.info div.break {
+	word-wrap: break-word;
+	width: 100%;
+}

@@ -1,0 +1,562 @@
+/* -- online interface - */
+/* --------------------- */
+#online {}
+
+#online #bar {
+	position: fixed;
+	bottom: 0px;
+	height: 5px;
+	left: 0px;
+	right: 0px;
+	background: #646464;
+	z-index: 111;
+}
+
+#online #translate {
+	display: none;
+}
+
+
+/* --- online sidebar -- */
+/* --------------------- */
+#online #sidebar {
+	position: fixed;
+	top: 20px;
+	right: 0px;
+	bottom: 20px;
+	min-height: 170px;
+	border-radius: 10px 0 0 10px;
+	border: 1px solid #5c7941;
+	border-right: none;
+	background: #fff;
+	opacity: 0.95;
+	font-size: 1.2em;
+	box-shadow: -2px 0px 10px 2px rgba(0,0,0,0.1);
+	z-index: 112;
+}
+	#online #sidebar img {
+		border: 0;
+		margin: 0;
+	}
+
+
+#online #sidebar #sidebar_slider {
+	position: absolute;
+	top: 50%;
+	left: -36px;
+	width: 35px;
+	height: 114px;
+	margin: -57px 0 0;
+	border: 1px solid #5c7941;
+	border-right: none;
+	border-radius: 15px 0 0 15px;
+	background: #fff;
+	opacity: 0.95;
+	box-shadow: -3px 0px 6px 0px rgba(0,0,0,0.15);
+}
+
+#online #sidebar #sidebar_body {
+	position: relative;
+	height: 100%;
+}
+
+#online #sidebar #sidebar_infos {
+	position: absolute;
+	top: 3px;
+	left: 10px;
+	width: 256px;
+	height: 40px;
+	text-align: right;
+	color: #606060;
+}
+
+	#online #sidebar #sidebar_infos span {
+		position: relative;
+		float: left;
+		top: 3px;
+	}
+
+		#online #sidebar #sidebar_infos span img {
+			position: relative;
+			top: 4px;
+			padding-right: 5px;
+			width: 19px;
+			height: 19px;
+		}
+
+	#online #sidebar #sidebar_infos span.signing {
+	}
+
+	#online #sidebar #sidebar_infos span.error {
+	}
+
+	#online #sidebar #sidebar_infos span.offline {
+		font-weight: bold;
+	}
+
+	#online #sidebar #sidebar_infos span.online {
+		font-weight: bold;
+		color: green;
+	}
+
+	#online #sidebar #sidebar_infos a {
+		float: right;
+		display: block;
+		width: 30px;
+		height: 30px;
+		margin-left: 3px;
+	}
+
+#online #sidebar #sidebar_overlay {
+	position: absolute;
+	top: 40px;
+	bottom: 40px;
+	width: 100%;
+	background: #fff;
+	z-index: 109;
+	opacity: 0.7;
+}
+
+#online #sidebar #sidebar_users {
+	position: absolute;
+	top: 39px;
+	bottom: 39px;
+	width: 100%;
+	overflow: auto;
+	border: 1px dashed #5c7941;
+	border-left: none;
+	border-right: none;
+	z-index: 108;
+}
+
+#online #sidebar #sidebar_overlay span.msg,
+#online #sidebar #sidebar_users span.msg {
+	color: red;
+	font-weight: bold;
+	display: block;
+	padding: 12px;
+	text-align: center;
+}
+
+#online #sidebar #sidebar_search {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	width: 100%;
+	height: 39px;
+}
+
+	#online #sidebar #sidebar_search input {
+		width: 228px;
+		border: none;
+		font-size: 1.1em;
+		color: #737373;
+		padding: 11px 11px 11px 36px;
+		outline: none;
+		background: transparent url(../images/online/search-bg.png) no-repeat 12px 10px;
+	}
+
+
+#online div.sidebar_open {
+	width: 275px;
+}
+
+#online div.sidebar_closed {
+	width: 9px;
+}
+
+#online div.sidebar_open #sidebar_infos,
+#online div.sidebar_open #sidebar_overlay,
+#online div.sidebar_open #sidebar_users,
+#online div.sidebar_open #sidebar_search {
+	display: block;
+}
+
+#online div.sidebar_closed #sidebar_infos,
+#online div.sidebar_closed #sidebar_overlay,
+#online div.sidebar_closed #sidebar_users,
+#online div.sidebar_closed #sidebar_search {
+	display: none;
+}
+
+
+/* --- sidebar context -- */
+/* ---------------------- */
+#online #sidebar #sidebar_body #sidebar_context {
+	display: none;
+	position: absolute;
+	top: 35px;
+	right: 40px;
+	z-index: 110;
+}
+
+#online #sidebar #sidebar_body #sidebar_context div.top {
+	height: 5px;
+	background: transparent url('../images/dashboard/social-mirror.png') top right no-repeat;
+}
+
+#online #sidebar #sidebar_body #sidebar_context div.options {
+	padding: 0px 10px 5px 10px;
+	border: 1px solid #CCC;
+	background: whiteSmoke;
+	border-top: 0px;
+	box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+}
+
+#online #sidebar #sidebar_body #sidebar_context div.options a {
+	display: block;
+	text-align: right;
+	font-size: 12px;
+	padding-top: 5px;
+}
+
+
+/* --- sidebar users ---- */
+/* ---------------------- */
+#online #sidebar #sidebar_users div.user {
+	padding: 5px 10px;
+}
+
+#online #sidebar #sidebar_users div.user:hover {
+	background: #D9F4BD;
+	cursor: pointer;
+}
+
+#online #sidebar #sidebar_users div.user > table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+#online #sidebar #sidebar_users div.user > table div.avatar {
+	margin-right: 5px;
+}
+
+#online #sidebar #sidebar_users div.user > table div.avatar img {
+	display: block;
+	border: 1px solid white;
+	width: 50px;
+	height: 33px;
+}
+
+#online #sidebar #sidebar_users div.user > table div.desc {
+	font-size: 12px;
+	color: #444;
+}
+
+#online #sidebar #sidebar_users div.user > table div.online,
+#online #sidebar #sidebar_users div.user > table div.offline {
+	width: 19px;
+	height: 19px;
+	background: transparent url('/images/online/status-on.png') center center no-repeat;
+}
+
+#online #sidebar #sidebar_users div.user > table div.offline {
+	background: transparent;
+}
+
+
+/* ---- online dock ----- */
+/* ---------------------- */
+#online #dock {
+	position: fixed;
+	left: auto;
+	bottom: 5px;
+	height: 25px;
+	z-index: 107;
+}
+
+#online div.dock_open {
+	right: 337px;
+}
+
+#online div.dock_closed {
+	right: 71px;
+}
+
+#online div.dock_hidden {
+	display: none;
+}
+
+#online #dock div.box {
+	width: 160px;
+	float: right;
+	margin-right: 5px;
+	border-radius: 5px 5px 0 0;
+	border: 1px solid #626262;
+	border-bottom: none;
+	font-size: 12px;
+	background: white;
+	box-shadow: 0px -2px 10px 2px rgba(0,0,0,0.1);
+}
+
+#online #dock div.open {
+	width: 300px;
+	margin-top: -289px;
+}
+
+#online #dock div.hidden {
+	display: none;
+}
+
+	#online #dock div.box div.title {
+		background: #6b9c3a;
+		border-radius: 3px 3px 0 0;
+		padding: 5px;
+		color: #fff;
+		cursor: pointer;
+	}
+
+	#online #dock div.box div.blink {
+		background: #EE9F11;
+	}
+
+		#online #dock div.box div.title div.name {
+			display: block;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			float: left;
+			width: 114px;
+			padding-top: 1px;
+		}
+
+		#online #dock div.box div.title div.buttons {
+			float: right;
+			width: 31px;
+			height: 15px;
+		}
+
+			#online #dock div.box div.title div.buttons span {
+				float: left;
+				display: block;
+				width: 15px;
+				height: 15px;
+				background-image: url('../js/jquery-ui/css/ui-petolio/images/ui-icons_ffffff_256x240.png');
+				border-radius: 4px;
+			}
+
+			#online #dock div.box div.title div.buttons span:hover {
+				background-color: #fff;
+				background-image: url('../js/jquery-ui/css/ui-petolio/images/ui-icons_006700_256x240.png');
+			}
+
+			#online #dock div.box div.title div.buttons span.stealth {
+				background-position: -128px -129px;
+				width: 16px;
+			}
+
+			#online #dock div.box div.title div.buttons span.close {
+				background-position: -81px -129px;
+			}
+
+	#online #dock div.box div.body {
+		height: 263px;
+	}
+
+	#online #dock div.box div.input {
+		border-top: 1px solid #626262;
+		height: 24px;
+	}
+
+	#online #dock div.box div.input input {
+		font-size: 12px;
+		width: 290px;
+		border: none;
+		color: #737373;
+		padding: 5px;
+		outline: none;
+	}
+
+
+/* ----- dock users ----- */
+/* ---------------------- */
+#online #dock div.box div.body div.user {
+	padding: 5px 5px 0px 5px;
+}
+
+#online #dock div.box div.body div.user:last-child {
+	padding-bottom: 5px !important;
+}
+
+#online #dock div.box div.body div.user > table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+#online #dock div.box div.body div.user > table div.avatar {
+	margin-right: 5px;
+}
+
+#online #dock div.box div.body div.user > table div.avatar img {
+	display: block;
+	border: 1px solid white;
+	border-left: none;
+	width: 50px;
+	height: 33px;
+}
+
+#online #dock div.box div.body div.user > table span.user {
+	float: left;
+	font-weight: bold;
+	color: green;
+}
+
+#online #dock div.box div.body div.user > table span.me {
+	color: red;
+}
+
+#online #dock div.box div.body div.user > table div.top {
+	height: 5px;
+	background: transparent url('../images/dashboard/social-top.png') top left no-repeat;
+}
+
+#online #dock div.box div.body div.user > table div.message {
+	font-size: 12px;
+	color: #444;
+	padding: 5px 5px 5px 5px;
+	border: 1px solid #CCC;
+	background: whiteSmoke;
+	border-top: 0px;
+	line-height: 16px;
+}
+
+#online #dock div.box div.body div.user > table div.message > span {
+	display: block;
+	float: left;
+	width: 156px;
+	text-align: left;
+	word-wrap: break-word;
+}
+
+#online #dock div.box div.body div.user > table div.message > span a {
+	font-size: 12px;
+}
+
+#online #dock div.box div.body div.user > table div.message > dfn {
+	display: block;
+	float: right;
+	text-align: right;
+	width: 54px;
+	color: #bbb;
+	font-style: normal;
+}
+
+
+/* ------ History ------- */
+/* ---------------------- */
+#online #dock div.box div.body div.history {
+	font-size: 12px;
+	color: #444;
+	padding: 5px 5px 0px 5px;
+}
+
+#online #dock div.box div.body div.history > span {
+	display: block;
+	padding: 5px 5px 5px 27px;
+	border: 1px solid #CCC;
+	background: whiteSmoke url('../images/dashboard/comments.png') 5px 6px no-repeat;
+	line-height: 16px;
+}
+
+#online #dock div.box div.body div.history > span.loading {
+	opacity: 0.5;
+	cursor: wait;
+}
+
+#online #dock div.box div.body div.history > span.loading a {
+	cursor: wait;
+}
+
+#online #dock div.box div.body div.history > span a {
+	font-size: 12px;
+	cursor: pointer;
+}
+
+#online #dock div.box div.body div.history > span a.active {
+	font-weight: bold;
+	color: #000;
+}
+
+#online #dock div.box div.body div.user > div.delimiter {
+	border-bottom: 1px dashed #CCC;
+}
+
+
+/* ----- Scrolling ------ */
+/* ---------------------- */
+#online #dock > div.box > div.body > div.mCustomScrollBox > div.mCSB_container,
+#online #sidebar #sidebar_users > div.mCustomScrollBox > div.mCSB_container {
+	margin-right: 6px;
+}
+
+#online #dock > div.box > div.body > div.mCustomScrollBox > div.mCS_no_scrollbar,
+#online #sidebar #sidebar_users > div.mCustomScrollBox > div.mCS_no_scrollbar {
+	margin-right: 0px;
+}
+
+#online #dock > div.box > div.body > div.mCustomScrollBox > div.mCSB_scrollTools,
+#online #sidebar #sidebar_users > div.mCustomScrollBox > div.mCSB_scrollTools {
+	width: 6px;
+	opacity: 1;
+	padding: 0;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+#online #dock > div.box > div.body > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.mCSB_draggerRail,
+#online #sidebar #sidebar_users > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.mCSB_draggerRail {
+	width: 6px;
+	background: #fff;
+	-webkit-border-radius: 0px;
+	-moz-border-radius: 0px;
+	border-radius: 0px;
+	cursor: s-resize;
+}
+
+#online #dock > div.box > div.body > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.mCSB_dragger,
+#online #sidebar #sidebar_users > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.mCSB_dragger {
+	height: 50px;
+}
+
+#online #dock > div.box > div.body > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.mCSB_dragger > div.mCSB_dragger_bar,
+#online #sidebar #sidebar_users > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.mCSB_dragger > div.mCSB_dragger_bar {
+	width: 6px;
+	background: #d6d6d6 url('/images/scroll.png') center center no-repeat;
+	-webkit-border-radius: 0px;
+	-moz-border-radius: 0px;
+	border-radius: 0px;
+	cursor: pointer;
+}
+
+#online #sidebar #sidebar_users > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.mCSB_dragger > div.mCSB_dragger_bar {
+	background-color: green;
+}
+
+#online #dock > div.box > div.body > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.ui-draggable-dragging > div.mCSB_dragger_bar,
+#online #sidebar #sidebar_users > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.ui-draggable-dragging > div.mCSB_dragger_bar,
+#online #dock > div.box > div.body > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.mCSB_dragger > div.mCSB_dragger_bar:hover,
+#online #sidebar #sidebar_users > div.mCustomScrollBox > div.mCSB_scrollTools > div.mCSB_draggerContainer > div.mCSB_dragger > div.mCSB_dragger_bar:hover {
+	background-color: green;
+}
+
+
+/* ----- Emoticons ------ */
+/* ---------------------- */
+#online img {
+	border: 0px;
+}
+
+#online img.emote {
+	height: 16px;
+	vertical-align: top;
+	width: 16px;
+	background: url('../images/emoticons.png') no-repeat;
+	overflow: hidden;
+}
