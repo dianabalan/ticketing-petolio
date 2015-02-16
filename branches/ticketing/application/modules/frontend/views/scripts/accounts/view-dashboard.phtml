@@ -1,0 +1,24 @@
+<div class="rightbox">
+	<h3><?php echo $this->translate->_("Small Talk entries"); ?></h3>
+	<br />
+	<div class="disabler"></div>
+	<div class="new_entries">
+		<?php echo $this->partial('dashboard/new.phtml'); ?>
+	</div>
+	<div class="entries">
+		<?php echo $this->partial('dashboard/feed.phtml', array(
+        	'translate' => $this->translate,
+			'privacy' => $this->privacy,
+        	'results' => $this->results,
+			'more' => $this->more,
+			'identity' => $this->identity,
+			'switch' => "-1"
+    	)); ?>
+	</div>
+</div>
+<?php $imgsw_path = array(
+	'image' => "{custom}",
+	'audio' => "{custom}",
+	'video' => "http://www.youtube.com/embed/{video}"
+); include "../application/modules/frontend/views/scripts/imgsw.phtml"; ?>
+<?php $override_user = $this->user->getId(); $dashboard_location = "dashboard"; include "../application/modules/frontend/views/scripts/dashboard/init.phtml"; ?>

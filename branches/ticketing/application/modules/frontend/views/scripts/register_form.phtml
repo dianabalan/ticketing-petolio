@@ -1,0 +1,74 @@
+<?php
+
+// error reporting
+foreach($this->element->getElements() as $element) {
+	$name = htmlentities($element->getFullyQualifiedName(), ENT_QUOTES, 'UTF-8');
+	$label = $element->getLabel();
+	$messages = $element->getMessages();
+	if (!empty($messages))
+		$_SESSION['msg_errors'][$name] = array($label, $messages);
+}
+
+// values
+$name = $this->element->getElement('name')->getValue() ? $this->element->getElement('name')->getValue() : $this->element->getElement('name')->getLabel();
+$remail = $this->element->getElement('remail')->getValue() ? $this->element->getElement('remail')->getValue() : $this->element->getElement('remail')->getLabel();
+$type = $this->element->getElement('type')->getValue();
+$agree = $this->element->getElement('agree')->getValue();
+
+?>
+<form id="register_form" action="<?php echo $this->element->getAction(); ?>" method="<?php echo $this->element->getMethod(); ?>">
+	<input type="text" name="name" <?php if(isset($_SESSION['msg_errors']['name'])) echo 'class="red-error"'; ?> value="<?php if($name) echo $name; ?>" /><br />
+	<input type="text" name="remail" <?php if(isset($_SESSION['msg_errors']['remail'])) echo 'class="red-error"'; ?> value="<?php if($remail) echo $remail; ?>" /><br />
+	<input type="password" name="password" <?php if(isset($_SESSION['msg_errors']['password'])) echo 'class="red-error"'; ?> value="passw" /><br />
+	<input type="password" name="confirmpassword" <?php if(isset($_SESSION['msg_errors']['confirmpassword'])) echo 'class="red-error"'; ?> value="wssap" /><br />
+	<input type="radio" name="type" id="type_1" value="1" class="radio" <?php if($type == NULL || $type == 1) echo 'checked="checked"'; ?>><label for="type_1"><?php echo $this->translate->_('Pet Owner'); ?></label>
+	<input type="radio" name="type" id="type_2" value="2" class="radio" <?php if($type == 2) echo 'checked="checked"'; ?>><label for="type_2"><?php echo $this->translate->_('Service Provider'); ?></label><br />
+	<div class="clear fivepx"></div>
+	<input type="checkbox" name="agree" id="agree_tos" value="1" class="radio" <?php if($agree == 1) echo 'checked="checked"'; ?>/>
+	<label for="agree_tos" class="agree<?php if(isset($_SESSION['msg_errors']['agree'])) echo ' red-error'; ?>">
+		<?php printf($this->translate->_("I agree with the %s"), 
+				'<a href="'.$this->url(array('controller'=>'contact', 'action' => 'terms'), 'default', true).'">'.
+					$this->translate->_("terms and conditions.").'</a>'); ?> 
+	</label><br />
+	<div class="clear tenpx"></div>
+	<input type="submit" name="go" class="button" value="<?php echo $this->translate->_("Register Now"); ?>" />
+</form>
+<script type="text/javascript">
+	var Register = function() {
+		var store = {
+			translate: {
+				a: '<?php echo $this->element->getElement('name')->getLabel(); ?>',
+				b: '<?php echo $this->element->getElement('remail')->getLabel(); ?>',
+				c: 'passw',
+				d: 'wssap'
+			}
+
+		// constructor
+		}, __construct = function() {
+			var sys = $('#register_form'),
+				input_a = $("input[name='name']", sys),
+				input_b = $("input[name='remail']", sys),
+				input_c = $("input[name='password']", sys),
+				input_d = $("input[name='confirmpassword']", sys);
+
+			// on focus
+			input_a.focus(function() { var f = $(this, sys); if(f.val() == store.translate.a) f.val(''); });
+			input_b.focus(function() { var f = $(this, sys); if(f.val() == store.translate.b) f.val(''); });
+			input_c.focus(function() { var f = $(this, sys); if(f.val() == store.translate.c) f.val(''); });
+			input_d.focus(function() { var f = $(this, sys); if(f.val() == store.translate.d) f.val(''); });
+
+			// on blur
+			input_a.blur(function() { var f = $(this, sys); if(f.val() == '') f.val(store.translate.a); });
+			input_b.blur(function() { var f = $(this, sys); if(f.val() == '') f.val(store.translate.b); });
+			input_c.blur(function() { var f = $(this, sys); if(f.val() == '') f.val(store.translate.c); });
+			input_d.blur(function() { var f = $(this, sys); if(f.val() == '') f.val(store.translate.d); });
+		};
+
+		// public, yay
+		return {
+			init: __construct
+		}
+	}();
+
+	READY(Register.init);
+</script>

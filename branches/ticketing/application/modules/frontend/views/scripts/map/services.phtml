@@ -1,0 +1,177 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Pinpoint your services on our map"); ?></h1>
+		<br />
+		<table cellspacing="0" cellpadding="5" border="0" class="list">
+			<tr>
+				<th style="padding-top: 13px; text-align: right;"><?php echo $this->translate->_("Select Service"); ?></th>
+				<td><select style="font-size: 1.1em; width: 400px;" id="service"><?php foreach($this->services as $id => $one) echo "<option value='{$id}'>{$one}</option>"; ?></select></td>
+			</tr>
+		</table>
+		<br />
+		<div id="map_canvas"></div>
+	</div>
+</div>
+<script type="text/javascript">
+var Map = function() {
+	var url = SITE_URL + 'map/',
+		coords = {lat: <?php echo $this->coords[0]; ?>, long: <?php echo $this->coords[1]; ?>},
+		cached = {},
+		map, marker, marker2;
+
+	function detectLocation() {
+		var __s = function(position) {
+			var lat = position.coords && position.coords.latitude ? position.coords.latitude : position.latitude,
+				lng = position.coords && position.coords.longitude ? position.coords.longitude : position.longitude;
+
+			cached = {latitude: lat, longitude: lng};
+			map.setCenter(new google.maps.LatLng(lat, lng));
+			map.setZoom(10);
+
+			Petolio.hideLoading();
+		}, __e = function() {
+			Petolio.hideLoading();
+		}, __p = function() {
+			Petolio.showLoading("<?php echo $this->translate->_("Trying to find your location..."); ?>");
+		};
+
+		if(!$.isEmptyObject(cached))
+			return __s(cached);
+
+		if(navigator.geolocation) {
+			__p();
+			navigator.geolocation.getCurrentPosition(__s, __e, {
+				enableHighAccuracy: true,
+				maximumAge: Infinity,
+				timeout: 10000
+			});
+		}
+	};
+
+	function go() {
+		map = new google.maps.Map($('#map_canvas').get(0), {
+			zoom: 4,
+			center: new google.maps.LatLng(coords.lat, coords.long),
+			mapTypeId: google.maps.MapTypeId.ROADMAP
+		});
+
+		map.geocoder = new google.maps.Geocoder();
+		$('#service').change(load);
+		load();
+	};
+
+	function load() {
+		var s = $('#service');
+    	Petolio.ajax({
+			url: 'map/select',
+			type: 'post',
+			data: {id: s.val(), type: 'service'},
+			cache: false,
+			success: function (x) {
+				if(marker2)
+					marker2.setMap(null);
+
+				if(x.service[0] == null && x.service[1] == null) detectLocation();
+				else {
+					var pos = new google.maps.LatLng(x.service[0], x.service[1]);
+					marker2 = new google.maps.Marker({
+						position: pos,
+						map: map,
+						animation: google.maps.Animation.DROP,
+						icon: '/images/business.png',
+						draggable: true
+					});
+
+					map.setCenter(pos);
+					map.setZoom(10);
+					markerEvents();
+				}
+
+				bind();
+			}
+		});
+	};
+
+	function search() {
+		$('#search_go').click(function(e){
+			$('#search').submit();
+		});
+		$('#search').submit(function(e){
+			e.preventDefault();
+			if(marker)
+				marker.setMap(null);
+
+			var input = $('#search_address');
+			input.css({borderColor: '#8F8F8F'});
+
+			map.geocoder.geocode({'address': input.val()}, function(results, status) {
+				if(status == google.maps.GeocoderStatus.OK) {
+					map.setCenter(results[0].geometry.location);
+					map.setZoom(10);
+					marker = new google.maps.Marker({
+						map: map,
+						position: results[0].geometry.location,
+						animation: google.maps.Animation.DROP,
+						title: results[0].formatted_address
+					});
+				} else input.css({borderColor: 'red'});
+			});
+		});
+	};
+
+	function bind() {
+		google.maps.event.addListener(map, 'click', function(event) {
+			if(marker2)
+				marker2.setMap(null);
+
+			marker2 = new google.maps.Marker({
+				position: event.latLng,
+				map: map,
+				animation: google.maps.Animation.DROP,
+				icon: '/images/business.png',
+				draggable: true
+			});
+
+			markerEvents();
+			saveLocation(marker2.getPosition());
+		});
+	};
+
+	function markerEvents(){
+		google.maps.event.addListener(marker2, 'click', function(){
+			marker2.setMap(null);
+			saveLocation(false);
+		});
+
+		google.maps.event.addListener(marker2, 'dragend', function(){
+			saveLocation(marker2.getPosition());
+		});
+	};
+
+	function saveLocation(x) {
+		var s = $('#service');
+
+    	Petolio.ajax({
+			url: 'map/save',
+			type: 'post',
+			data: x ? {id: s.val(), type: 'service', lat: x.lat(), long: x.lng()} : {id: s.val(), type: 'service'},
+			cache: false,
+			success: function() {}
+		});
+	};
+
+	function __construct() {
+		$('body').append('<script type="text/javascript" src="'+ window.location.protocol +'//maps.googleapis.com/maps/api/js?v=3.5&sensor=false&callback=Map.go" />');
+		search();
+	};
+
+	return {
+		init: __construct,
+		go: go
+	};
+}();
+
+READY(Map.init);
+</script>

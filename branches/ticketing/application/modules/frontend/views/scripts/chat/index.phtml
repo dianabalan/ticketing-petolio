@@ -1,0 +1,79 @@
+<div id="right">
+	<div class="rightbox">
+		<!-- <div class="title-buttons"><div class="in">
+			<a href="javascript:Calendar.Chat.addEditWindow({}, null);" class=""><img src="/images/new/action/meet2chat_add.png" /></a>
+		</div></div> -->
+		<div>
+			<div class="left"><img src="/images/new/large/meet2chat.png" alt="<?php echo $this->translate->_("Meet2Chat"); ?>" /></div>
+			<h3 style="padding: 10px;"><?php echo $this->translate->_("Meet2Chat"); ?></h3>
+			<div class="right">
+				<h3 class="create-lbl"><?php echo $this->translate->_("Create New"); ?></h3>
+				<a href="javascript:Calendar.Chat.addEditWindow({}, null);" class=""><img src="/images/new/action/meet2chat_add.png" /></a>
+			</div>
+		</div>
+		<h2 class="clear">&nbsp;</h2>
+		<?php
+		foreach ($this->live_chats as $chat):
+			echo $this->partial('chat/chat-row.phtml', array(
+					'chat' => $chat,
+					'status' => 'live',
+					'translate' => $this->translate
+			));
+		endforeach;
+		foreach ($this->future_chats as $chat):
+			echo $this->partial('chat/chat-row.phtml', array(
+					'chat' => $chat,
+					'status' => 'future',
+					'translate' => $this->translate
+			));
+		endforeach;
+		?>
+	</div>
+</div>
+<?php include_once "../application/modules/frontend/views/scripts/calendar/init.phtml"; ?>
+<script type="text/javascript">
+	var ChatData = <?php echo json_encode(array_merge($this->live_chats, ($this->future_chats ? $this->future_chats : array()))); ?>;
+	var Chat = function() {
+		function find(id) {
+			var f = null;
+			$.each(ChatData, function(s, i){
+				if(i.pid == id) {
+					f = i;
+					return false;
+				}
+			});
+
+			return f;
+		};
+
+		function randomXToY(minVal, maxVal, floatVal) {
+			var randVal = minVal + (Math.random() * (maxVal - minVal));
+			return typeof floatVal == 'undefined' ? Math.round(randVal) : randVal.toFixed(floatVal);
+		};
+
+		function glow(e) {
+			$(e).fadeOut(randomXToY(800, 1200), function() {
+				$(e).fadeIn(randomXToY(500, 1000), function() {
+					glow(e);
+				});
+			});
+		};
+
+		function listen() {
+			$('.chat_name').click(function(e) {
+				e.preventDefault();
+				Calendar.eventClick(find($(this).parent().parent().attr('id').substr(5)));
+	    	});
+			$('a.attendees-count').click(function(e) {
+				e.preventDefault();
+				Calendar.Chat.viewAttendees(find($(this).parent().parent().attr('id').substr(5)));
+	    	});
+		};
+
+		return {
+			listen: listen
+		};
+	}();
+
+	READY(Chat.listen);
+</script>

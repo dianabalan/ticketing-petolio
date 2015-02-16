@@ -1,0 +1,165 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<?php if ($this->hasIdentity && $this->admin): ?>
+			<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<?php endif; ?>
+		<?php if($this->flagged): ?>
+			<h1><?php echo $this->translate->_("View Promotion"); ?></h1>
+			<br />
+			<div class="c_error">
+				<div><b><?php echo $this->translate->_("Cannot display this promotion because it was flagged by the community."); ?></b></div>
+				<ul>
+					<?php foreach(array_unique($this->flagged) as $item): ?>
+						<li><?php echo $item; ?></li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+		<?php else: ?>
+			<?php if ($this->hasIdentity && !$this->admin): ?>
+				<div class="context"><div class="in">
+					<a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a>
+					<a href="javascript:void(0);" class="icon_link caution openflag"><span><?php echo $this->translate->_("Flag as inappropriate"); ?></span></a>
+					<div class="dialog-flag" title="<?php echo $this->translate->_("Flag as inappropriate"); ?>">
+						<div id="in-flag" style="margin: 8px 0px 2px 0px; line-height: 18px;" rel="<?php echo $this->promotion->getId(); ?>_<?php echo $this->promotion->getUserId(); ?>">
+							<span id="flag-text"><?php echo $this->translate->_("Please select the category that most closely reflects your concern about the content presented before you."); ?><br /><br /></span>
+							<?php echo $this->flag; ?><br />
+							<span class="grey"><small>
+								<?php echo $this->translate->_("You may only flag as inappropriate once per content."); ?><br /><br />
+								<?php echo $this->translate->_("Anything more than that would be against our Terms and Conditions and it may lead to the suspension or your account or a permanent ban."); ?><br /><br />
+								<?php echo $this->translate->_("Abusing this feature is also a violation of our Terms and Conditions, so please don't do it."); ?>
+							</small></span>
+						</div>
+					</div>
+				</div></div>
+				<?php $flag_opt = 'PoPromotions'; include "../application/modules/frontend/views/scripts/flag.phtml"; ?>
+			<?php endif; ?>
+			<h1><?php echo $this->translate->_("View Promotion"); ?></h1>
+			<?php if($this->promotion->getActive() == 0): ?>
+				<div class="c_error">
+					<ul>
+						<li><?php echo $this->translate->_("Your promotion is currently deactivated."); ?></li>
+					</ul>
+				</div>
+				<br />
+			<?php endif; ?>
+			<?php
+				// build owner
+				$output = str_replace('{owner}',
+					"<h2>".$this->translate->_("Owner Info")."</h2>".
+					"<table cellspacing='0' cellpadding='5' border='0' class='list'>".
+						"<tr>".
+							"<th>".$this->translate->_("Name")."</th>".
+							"<td><a href='".$this->url(array('controller'=>'accounts', 'action'=>'view', 'user'=>$this->event['user_id']), 'default', true)."'>{$this->owner['name']}</a></td>".
+						"</tr>".
+						"<tr>".
+							"<th>".$this->translate->_("Service Category")."</th>".
+							"<td>{$this->owner['category_id']}</td>".
+						"</tr>".
+						"<tr>".
+							"<th>".$this->translate->_("Country")."</th>".
+							"<td>{$this->owner['country_id']}</td>".
+						"</tr>".
+						"<tr>".
+							"<th>".$this->translate->_("Email")."</th>".
+							"<td>{$this->owner['email']}</td>".
+						"</tr>".
+						"<tr>".
+							"<th>".$this->translate->_("Phone")."</th>".
+							"<td>{$this->owner['business_phone']}</td>".
+						"</tr>".
+					"</table>"
+				, $this->body);
+
+				// build social
+				$output = str_replace('{social}',
+					"<h2 style=\"margin-bottom: 7px;\">".$this->translate->_("Recommend")."</h2>" .
+					$this->translate->_("Recommend this event to your friends! All you have to do is to write their emails in the box below:") .
+					"<div id='recommend-social'>".
+						"<div class='social' style='text-align: left; width: 280px; margin: 0 auto; position: relative;'>".
+							"<div class='recommend'><div style='height: 7px;'></div><div style='text-align: center; padding: 2px 5px; border: 1px solid #A5CC7D; background: #CEECB0;'>".$this->translate->_('Loading Social Plugins...')."</div></div>".
+						"</div>".
+					"</div>"
+				, $output);
+
+				// build the address (location) string beautifully
+				$addr = $this->event['street'] ? ', ' . $this->event['street'] : '';
+				$addr .= $this->event['address'] ? ', ' . $this->event['address'] : '';
+				$addr .= $this->event['zip'] ? ', ' . $this->event['zip'] : '';
+				$addr .= $this->event['location'] ? ', ' . $this->event['location'] : '';
+				$addr .= $this->event['countryName'] ? ', ' . $this->event['countryName'] : '';
+				$addr = substr($addr, 2);
+
+				// build gps
+				$gps = isset($this->event['long']) && isset($this->event['lat']) ? $this->event['lat'] . ',' . $this->event['long'] : '';
+				if(strlen($gps) > 0)
+					$gps_img = '<img src="http://maps.googleapis.com/maps/api/staticmap?center=' . $gps . '&markers=size:mid%7C' . $gps . '&zoom=15&size=320x180&sensor=false" />';
+
+				// reminder and repeat
+				$rem = isset($this->event['reminder']) ? $this->event['reminder_time'] . ' ' . $this->translate->_("Minutes Before") : '';
+				if(isset($this->event['repeat_syntax'])) {
+					if($this->event['repeat_syntax'] == '1') $syntax = $this->translate->_("Every Day");
+					if($this->event['repeat_syntax'] == '2') $syntax = $this->translate->_("Every Workday");
+					if($this->event['repeat_syntax'] == '3') $syntax = $this->translate->_("Every Week");
+					if($this->event['repeat_syntax'] == '4') $syntax = $this->translate->_("Every Month");
+					if($this->event['repeat_syntax'] == '5') $syntax = $this->translate->_("Every Year");
+				}
+				$rep = isset($this->event['repeat']) ? $syntax : '';
+
+				// availability
+				if($this->event['availability'] == 0) $ava = $this->translate->_("Everyone");
+				if($this->event['availability'] == 1) $ava = $this->translate->_("Only Friends");
+				if($this->event['availability'] == 2) $ava = $this->translate->_("Only Partners");
+				if($this->event['availability'] == 3) $ava = $this->translate->_("Friends and Partners");
+				if($this->event['availability'] == 4) $ava = $this->translate->_("Invitation Only");
+
+				$showtime = !$this->event["allDay"];
+				
+				// build event
+				$output = str_replace('{event}',
+					"<h2 style=\"margin-bottom: 7px;\">".$this->translate->_("Event Details")."</h2>".
+					'<table class="jquery-ui-table" cellpadding="2" cellspacing="1" style="font-size: 13px;">'.
+					'<col width="100" />'.
+						'<tr><th>' . $this->translate->_("Title") . ':</th><td>' . $this->event['title'] . '</td></tr>' .
+						($this->event['status'] ? '<tr><th>' . $this->translate->_("Event Status") . ':</th><td>' . $this->event['status'] . '</td></tr>' : '').
+						'<tr><td height="10"></td></tr>' .
+						($this->event['fee'] ? '<tr><th>' . $this->translate->_("Entrance Fee") . ':</th><td>' . $this->event['fee'] . '</td></tr>' : '').
+						($this->event['cap'] ? '<tr><th>' . $this->translate->_("Capacity") . ':</th><td>' . $this->event['cap'] . '</td></tr>' : '').
+						($this->event['fee'] || $this->event['cap'] ? '<tr><td height="10"></td></tr>' : '') . '<tr><th>' . $this->translate->_("Start") . ':</th><td>' . Petolio_Service_Util::formatDate($this->event["start"], Petolio_Service_Util::MEDIUMDATE, true) . '</td></tr>'.
+						($this->event['end'] ? '<tr><th>' . $this->translate->_("End") . ':</th><td> ' . Petolio_Service_Util::formatDate($this->event["end"], Petolio_Service_Util::MEDIUMDATE, true) . '</td></tr>' : '').
+						($this->event['description'] ? '<tr><td height="10"></td></tr>' . '<tr><th>' . $this->translate->_("Description") . ':</th><td><div style="width: 319px; word-wrap: break-word;">' . nl2br($this->event['description']) . '</div></td></tr>' : '').
+						(strlen($addr) > 0 ? '<tr><td height="10"></td></tr>' . '<tr><th>' . $this->translate->_("Location") . ':</th><td>' . $addr . '</td></tr>' : '').
+						(strlen($gps) > 0 ? (strlen($addr) > 0 ? '' : '<tr><td height="10"></td></tr>') . '<tr><th>' . $this->translate->_("Map") . ':</th><td><a href="http://maps.google.com/maps?q=' . $gps . '" title="' . $this->translate->_("Go to Map") . '" id="google_map">'. $gps_img .'</a></td></tr>' : '').
+						(strlen($rem) > 0 ? '<tr><td height="10"></td></tr>' . '<tr><th>' . $this->translate->_("Reminder") . ':</th><td>' . $rem . '</td></tr>' : '').
+						(strlen($rep) > 0 ? (strlen($rem) > 0 ? '' : '<tr><td height="10"></td></tr>') . '<tr><th>' . $this->translate->_("Repeat") . ':</th><td>' . $rep . '</td></tr>' : '').
+						(isset($this->event['repeat_until']) ? '<tr><th>' . $this->translate->_("Repeat Until") . ':</th><td>' . Petolio_Service_Util::formatDate($this->event["repeat_until"], Petolio_Service_Util::MEDIUMDATE, true) . '</td></tr>' : '').
+						($this->event['availability'] > 0 ? '<tr><td height="10"></td></tr>' . '<tr><th>' . $this->translate->_("Availability") . ':</th><td>' . $ava . '</td></tr>' : '').
+					'</table>'
+				, $output);
+
+				// output all
+				echo $output;
+			?>
+		<?php endif; ?>
+	</div>
+</div>
+<script type="text/javascript">
+	var Recommend = function() {
+		var _load = function() {
+			Petolio.loadJs('social/base.js');
+			var params = {
+				scope: 'po_promotions',
+				id: <?php echo $this->event['id']; ?>,
+			};
+			Social.load('recommend', $("#recommend-social"), params);
+		}, __construct = function() {
+			_load();
+		};
+
+		return {
+			init: __construct
+		}
+	}();
+
+	READY(Recommend.init);
+</script>

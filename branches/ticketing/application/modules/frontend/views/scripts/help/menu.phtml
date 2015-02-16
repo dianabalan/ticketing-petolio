@@ -1,0 +1,182 @@
+<?php
+
+// question links
+$accounts = array(
+	array(
+		'link' => $this->url(array('controller'=>'help', 'action'=>'index'), 'default', true),
+		'name' => $this->translate->_("All Questions"),
+		'class' => 'lm-help_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'help', 'action'=>'myquestions'), 'default', true),
+		'name' => $this->translate->_("My Open Questions"),
+		'class' => 'lm-help_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'help', 'action'=>'add'), 'default', true),
+		'name' => $this->translate->_("Ask Question"),
+		'class' => 'lm-help_sm'
+	),
+	array(
+		'link' => $this->url(array('controller'=>'help', 'action'=>'archives'), 'default', true),
+		'name' => $this->translate->_("My Resolved Questions"),
+		'class' => 'lm-help_sm'
+	)
+);
+
+$links = null;
+foreach($accounts as $link) {
+	if (isset($link['class']) && strlen($link['class']) > 0)
+		$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+	else
+		$links .= "<li><a href='{$link['link']}'>{$link['name']}</a></li>";
+}
+
+if ($this->auth->hasIdentity()) {
+	// $hide = $this->request->getParam('action') == "index" ? "data-hide='true'" : null;
+	$hide = null;
+
+	$this->placeholder('sidebar')
+	     ->append("<h3 {$hide}>".$this->translate->_("Questions")."</h3>
+	     	<ul class=\"leftsubmenu\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
+}
+
+// teh search box
+if($this->search) {
+	// vars
+	$keyword = $this->request->getParam('keyword');
+	$fromdate = base64_decode($this->request->getParam('fromdate'));
+	$todate = base64_decode($this->request->getParam('todate'));
+	$owner = $this->request->getParam('owner');
+	$species = $this->request->getParam('species');
+	$status = $this->request->getParam('status');
+	$answered = $this->request->getParam('answered');
+	$targeted = $this->request->getParam('targeted');
+
+	// search by question name
+	$searchbox_html = "<h3>".$this->translate->_("Search Questions")."</h3>
+		<form id='questions_search_form'>
+			<table width='100%' cellspacing='3' cellpadding='3' border='0'>
+				<tr>
+					<td><label>".$this->translate->_("Keywords")."</label></td>
+					<td style='padding-left: 5px;'><input type='text' name='keyword' value='{$keyword}' /></td>
+				</tr>
+				<tr>
+					<td><label>".$this->translate->_("Date from")."</label></td>
+					<td style='padding-left: 5px;'><input type='text' name='fromdate' value='{$fromdate}' /></td>
+				</tr>
+				<tr>
+					<td><label>".$this->translate->_("Date to")."</label></td>
+					<td style='padding-left: 5px;'><input type='text' name='todate' value='{$todate}' /></td>
+				</tr>";
+
+	if(is_null($this->mine)) {
+		// continue
+		$searchbox_html .= "
+				<tr>
+					<td><label>".$this->translate->_("Owner")."</label></td>
+					<td style='padding-left: 5px;'><input type='text' name='owner' value='{$owner}' /></td>
+				</tr>";
+	}
+
+	// filter by question type
+	$types = null;
+	foreach ($this->types as $id => $name) {
+		$hover = $id == $species ? ' selected="selected"' : null;
+		$types .= "<option value='{$id}'{$hover}>{$name}</option>";
+	}
+
+	// filter by status
+	$stats = null;
+	foreach ($this->status as $id => $name) {
+		$hover = $id == $status ? ' selected="selected"' : null;
+		$stats .= "<option value='{$id}'{$hover}>{$name}</option>";
+	}
+
+	$searchbox_html .= 	"
+				<tr>
+					<td><label>".$this->translate->_("Type")."</label></td>
+					<td style='padding-left: 5px;'><select name='species'><option value=''>".$this->translate->_("Select Species")."</option>{$types}</select></td>
+				</tr>
+				<tr>
+					<td><label>".$this->translate->_("Status")."</label></td>
+					<td style='padding-left: 5px;'><select name='status'>{$stats}</select></td>
+				</tr>";
+
+	if(is_null($this->mine) && $this->auth->hasIdentity()) {
+		$ans = $answered == 'on' ? " checked='checked'" : '';
+		$tar = $targeted == 'on' ? " checked='checked'" : '';
+
+		// continue
+		$searchbox_html .= "
+				<tr>
+					<td></td>
+					<td style='padding-left: 13px;'>
+						<input id='ans' type='checkbox' class='check' name='answered' {$ans}/>
+						<label for='ans' class='check'>".$this->translate->_("Questions that I have answered")."</label>
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td style='padding-left: 13px;'>
+						<input id='tar' type='checkbox' class='check' name='targeted' {$tar}/>
+						<label for='tar' class='check'>".$this->translate->_("Questions targeted for me")."</label>
+					</td>
+				</tr>";
+	}
+
+	$searchbox_html .= 	"
+				<tr>
+					<td colspan='2'><input class='srcbtn' type='submit' value='".$this->translate->_("Go")."' /><input class='srcbtn' type='button' id='search_reset' value='".$this->translate->_("Reset")."' /></td>
+				</tr>
+			</table>
+		</form>";
+
+	$this->placeholder('sidebar')
+		 ->append($searchbox_html);
+}
+
+?>
+<script type="text/javascript">
+function utf8_encode(argString){if(argString===null||typeof argString==="undefined"){return"";}var string=(argString+'');var utftext="",start,end,stringl=0;start=end=0;stringl=string.length;for(var n=0;n<stringl;n++){var c1=string.charCodeAt(n);var enc=null;if(c1<128){end++;}else if(c1>127&&c1<2048){enc=String.fromCharCode((c1>>6)|192)+String.fromCharCode((c1&63)|128);}else{enc=String.fromCharCode((c1>>12)|224)+String.fromCharCode(((c1>>6)&63)|128)+String.fromCharCode((c1&63)|128);}if(enc!==null){if(end>start){utftext+=string.slice(start,end);}utftext+=enc;start=end=n+1;}}if(end>start){utftext+=string.slice(start,stringl);}return utftext;}
+function base64_encode(data){var b64="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";var o1,o2,o3,h1,h2,h3,h4,bits,i=0,ac=0,enc="",tmp_arr=[];if(!data){return data;}data=this.utf8_encode(data+'');do{o1=data.charCodeAt(i++);o2=data.charCodeAt(i++);o3=data.charCodeAt(i++);bits=o1<<16|o2<<8|o3;h1=bits>>18&0x3f;h2=bits>>12&0x3f;h3=bits>>6&0x3f;h4=bits&0x3f;tmp_arr[ac++]=b64.charAt(h1)+b64.charAt(h2)+b64.charAt(h3)+b64.charAt(h4);}while(i<data.length);enc=tmp_arr.join('');var r=data.length%3;return(r?enc.slice(0,r-3):enc)+'==='.slice(r||3);}
+(function($){
+	$.fn.serializeURL = function() {
+		var url = '';
+
+		jQuery.map($(this).serializeArray(), function(n, i){
+			if(n['name'] == 'fromdate' || n['name'] == 'todate')
+				n['value'] = base64_encode(n['value']);
+
+			if(n['value'])
+				url += n['name'] + '/' + n['value'] + '/';
+		});
+
+		return url;
+	};
+})(jQuery);
+
+READY(function(){
+	$('input[name="fromdate"]').datepicker();
+	$('input[name="todate"]').datepicker();
+
+	$('#questions_search_form').submit(function(e){
+		e.preventDefault();
+		url = SITE_URL + 'help/<?php echo isset($this->search) ? $this->request->getParam('action') : 'index'; ?>/' + $(this).serializeURL();
+		Petolio.go(url);
+	});
+
+	$("#search_reset").click(function(e) {
+		e.preventDefault();
+		$("#questions_search_form").find('input, select').each(function(index) {
+			if($(this).attr('class') != 'srcbtn')
+				$(this).val('');
+
+			if($(this).attr('class') == 'check')
+				$(this).removeAttr('checked');
+		});
+
+		$("#questions_search_form").submit();
+	});
+});
+</script>

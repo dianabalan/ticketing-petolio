@@ -1,0 +1,18 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Edit Medical Record"); ?></h1>
+		<br />
+		<?php echo $this->form; ?>
+	</div>
+	<div class="rightbox" style="padding: 0px; border: 0px;">
+		<?php if(isset($_SERVER['HTTP_REFERER'])): ?>
+			<div class="left"><input onclick="Petolio.go('<?php echo $_SERVER['HTTP_REFERER']; ?>');" type="button" value="<?php echo $this->translate->_("< Back to List"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+			<div class="clear"></div>
+		<?php else: ?>
+			<div class="left"><input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'medical', 'action'=>'view', 'id'=> $this->record->getId()), 'default', true) ?>');" type="button" value="<?php echo $this->translate->_("< Back to List"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+			<div class="clear"></div>
+		<?php endif; ?>
+	</div>
+</div>

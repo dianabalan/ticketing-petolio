@@ -1,0 +1,92 @@
+<?php
+
+$accounts = array(
+	'compose' => array(
+		'link' => $this->url(array('controller'=>'messages', 'action'=>'compose'), 'default', true),
+		'name' => $this->translate->_("Compose a New Message"),
+		'class' => 'lm-messages_sm'
+	),
+	'inbox' => array(
+		'link' => $this->url(array('controller'=>'messages', 'action'=>'inbox'), 'default', true),
+		'name' => $this->translate->_("Go to Inbox"),
+		'class' => 'lm-messages_sm'
+	),
+	'outbox' => array(
+		'link' => $this->url(array('controller'=>'messages', 'action'=>'outbox'), 'default', true),
+		'name' => $this->translate->_("Go to Outbox"),
+		'class' => 'lm-messages_sm'
+	),
+	'draft' => array(
+		'link' => $this->url(array('controller'=>'messages', 'action'=>'draft'), 'default', true),
+		'name' => $this->translate->_("Go to Drafts"),
+		'class' => 'lm-messages_sm'
+	),
+	'index' => array(
+			'link' => $this->url(array('controller'=>'messages', 'action'=>'index'), 'default', true),
+			'name' => $this->translate->_("Overview"),
+			'class' => 'lm-messages_sm'
+	)
+);
+
+$links = null;
+foreach($accounts as $link) {
+	if (isset($link['class']) && strlen($link['class']) > 0)
+		$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+	else
+		$links .= "<li><a href='{$link['link']}'>{$link['name']}</a></li>";
+}
+
+$this->placeholder('sidebar')
+     ->append("<h3>".$this->translate->_("Messages")."</h3>
+     	<ul class=\"leftsubmenu fullwidth\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
+
+echo "<h3>".$this->translate->_("Search Messages")."</h3>
+			<form id='messages_search_form'>
+				<table width='100%' cellspacing='3' cellpadding='3' border='0'>
+					<tr>
+						<td><label>".$this->translate->_("Keywords")."</label></td>
+						<td style='padding-left: 5px;'><input type='text' name='name' size='23' value='{$this->search_name}' /></td>
+					</tr>
+					<tr>
+						<td colspan='2'><input class='srcbtn' type='submit' value='".$this->translate->_("Go")."' /><input class='srcbtn' type='button' id='search_reset' value='".$this->translate->_("Reset")."' /></td>
+					</tr>
+				</table>
+			</form>";
+
+// figure out what action we're in
+$action = $this->action;
+if($action != 'inbox' && $action != 'outbox' && $action != 'draft')
+	$action = 'inbox';
+
+?>
+<script type="text/javascript">
+(function($){
+	$.fn.serializeURL = function() {
+		var url = '';
+
+		jQuery.map($(this).serializeArray(), function(n, i){
+			if(n['value'])
+				url += n['name'] + '/' + n['value'] + '/';
+		});
+
+		return url;
+	};
+})(jQuery);
+
+READY(function(){
+	$('#messages_search_form').submit(function(e){
+		e.preventDefault();
+		Petolio.go(SITE_URL + 'messages/<?php echo $action; ?>/' + $(this).serializeURL());
+	});
+
+	$("#search_reset").click(function(e) {
+		e.preventDefault();
+		$("#messages_search_form input").each(function(index) {
+			if ( $(this).attr('type') == 'text' ) {
+				$(this).attr('value', '');
+			}
+		});
+		$("#messages_search_form").submit();
+	});
+});
+</script>

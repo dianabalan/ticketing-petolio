@@ -1,0 +1,95 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"></div></div>
+		<h1><?php echo $this->translate->_("Member of"); ?></h1>
+		<?php if (isset($this->user_members_services) && count($this->user_members_services) > 0): ?>
+			<br />
+			<table cellspacing="0" cellpadding="5" class="grid" border="0">
+				<col width="30%" /><col width="20%" /><col width="19%" /><col width="18%" /><col width="13%" />
+				<tr>
+					<th><a href="<?php echo $this->url(array('service_order' => 'service_name', 'service_dir' => $this->service_rdir)); ?>"><?php echo $this->translate->_("Name"); ?><?php if($this->service_order == 'service_name'): ?>&nbsp;<img src="/images/order/<?php echo $this->service_dir; ?>.png" /><?php endif; ?></a></th>
+					<th><a href="<?php echo $this->url(array('service_order' => 'service_owner', 'service_dir' => $this->service_rdir)); ?>"><?php echo $this->translate->_("Owner"); ?><?php if($this->service_order == 'service_owner'): ?>&nbsp;<img src="/images/order/<?php echo $this->service_dir; ?>.png" /><?php endif; ?></a></th>
+					<th><a href="<?php echo $this->url(array('service_order' => 'service_type', 'service_dir' => $this->service_rdir)); ?>"><?php echo $this->translate->_("Type"); ?><?php if($this->service_order == 'service_type'): ?>&nbsp;<img src="/images/order/<?php echo $this->service_dir; ?>.png" /><?php endif; ?></a></th>
+					<th><a href="<?php echo $this->url(array('service_order' => 'service_address', 'service_dir' => $this->service_rdir)); ?>"><?php echo $this->translate->_("Address"); ?><?php if($this->service_order == 'service_address'): ?>&nbsp;<img src="/images/order/<?php echo $this->service_dir; ?>.png" /><?php endif; ?></a></th>
+					<th><a href="<?php echo $this->url(array('service_order' => 'service_status', 'service_dir' => $this->service_rdir)); ?>"><?php echo $this->translate->_("Status"); ?><?php if($this->service_order == 'service_status'): ?>&nbsp;<img src="/images/order/<?php echo $this->service_dir; ?>.png" /><?php endif; ?></a></th>
+				</tr>
+				<?php foreach($this->user_members_services as $members_service): ?>
+					<tr>
+						<td><a href="<?php echo $this->url(array('controller'=>'services', 'action'=>'view', 'service' => $members_service->getServiceId()), 'default', true); ?>"><?php echo $members_service->getMemberService()->getName(); ?></a></td>
+						<td><a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $members_service->getMemberService()->getUserId()), 'default', true); ?>"><?php echo $members_service->getMemberService()->getOwner()->getName(); ?></a></td>
+						<td><a href="<?php echo $this->url(array('controller'=>'marketplace', 'action'=>'index', 'type' => $members_service->getMemberService()->getAttributeSetId()), 'default', true); ?>"><?php echo $this->Tr($members_service->getMemberService()->getAttributeSetName()); ?></a></td>
+						<td><?php
+							if ( $this->translate->getLocale() == 'en' ) {
+								echo $members_service->getMemberService()->getAddress().' '.$members_service->getMemberService()->getLocation().' '.$members_service->getMemberService()->getZipcode();
+								if ( strlen($members_service->getMemberService()->getAddress()) > 0 || strlen($members_service->getMemberService()->getLocation()) > 0 ) {
+									if ( strlen($members_service->getMemberService()->getCountry()) > 0 )
+										echo ', ';
+								}
+								echo $members_service->getMemberService()->getCountry();
+							} else {
+								echo $members_service->getMemberService()->getZipcode().' '.$members_service->getMemberService()->getAddress();
+								if ( strlen($members_service->getMemberService()->getZipcode()) > 0 || strlen($members_service->getMemberService()->getAddress()) > 0 ) {
+									if ( strlen($members_service->getMemberService()->getCountry()) > 0 )
+										echo ', ';
+								}
+								echo $members_service->getMemberService()->getLocation();
+								if ( strlen($members_service->getMemberService()->getLocation()) > 0 || strlen($members_service->getMemberService()->getZipcode()) > 0 || strlen($members_service->getMemberService()->getAddress()) > 0 ) {
+									if ( strlen($members_service->getMemberService()->getCountry()) > 0 )
+										echo ', ';
+								}
+								echo $members_service->getMemberService()->getCountry();
+							}
+						?></td>
+						<td align="center"><?php
+							switch ($members_service->getStatus()) {
+								case "0":
+									echo '<img src="/images/icons/question.png" title="'.$this->translate->_("The membership request is waiting for approval.").'" />';
+									break;
+								case "1":
+									echo '<img src="/images/icons/accept.png" title="'.$this->translate->_("The membership request has been accepted by the service owner.").'" />';
+									break;
+								case "2":
+									echo '<img src="/images/icons/deny.png" title="'.$this->translate->_("The membership request has been declined by the service owner.").'" />';
+									break;
+								case "3":
+									echo "<a href	='{$this->url(array('controller'=>'services', 'action'=>'accept-invite-members', 'link' => $members_service->getId()), 'default', true)}' class='reqconf' title='".$this->translate->_('Accept membership invitation?')."'><img src='/images/icons/accept.png' title='".$this->translate->_("Accept")."' /></a>";
+									echo "<a href='{$this->url(array('controller'=>'services', 'action'=>'decline-invite-members', 'link' => $members_service->getId()), 'default', true)}' class='reqconf' title='".$this->translate->_('Decline membership invitation?')."'><img src='/images/icons/deny.png' title='".$this->translate->_("Decline")."' /></a>";
+									break;
+							}
+							?>
+							<?php if ( $members_service->getStatus() != 3 ): ?>
+							<a class="reqconf" href="<?php echo $this->url(array('controller'=>'services', 'action'=>'remove-membership', 'link' => $members_service->getId()), 'default', true); ?>" title="<?php echo $this->translate->_("Cancel membership"); ?>?"><img src="/images/icons/delete.png" title="<?php echo $this->translate->_("Cancel membership"); ?>" /></a>
+							<?php endif; ?>
+							<a href="<?php echo $this->url(array('controller'=>'services', 'action'=>'send-message', 'user' => $members_service->getMemberService()->getUserId(), 'service' => $members_service->getServiceId()), 'default', true); ?>" title="<?php echo $this->translate->_("Send message"); ?>"><img src="/images/icons/send.png" title="<?php echo $this->translate->_("Send message"); ?>" /></a>
+							<a href="javascript:void(0);" rel="<?php echo "member_service,".$members_service->getMemberService()->getUserId()."|".addcslashes($members_service->getMemberService()->getOwner()->getName(), "\000\n\r\\'\"\032").",".$members_service->getServiceId()."|".addcslashes($members_service->getMemberService()->getName(), "\000\n\r\\'\"\032"); ?>" id="service_link_<?php echo $members_service->getId(); ?>" title="<?php echo $this->translate->_('ask for appointment'); ?>"><img src="/images/icons/appointment.png" title="<?php echo $this->translate->_("ask for appointment"); ?>" /></a>
+						</td>
+					</tr>
+				<?php endforeach; ?>
+			</table>
+		<?php else: ?>
+			<br />
+			<b class="red bigger"><?php echo $this->translate->_("No services found."); ?></b>
+		<?php endif; ?>
+	</div>
+</div>
+<?php include_once "../application/modules/frontend/views/scripts/calendar/init.phtml"; ?>
+<script type="text/javascript">
+var Event = function() {
+	function listen() {
+		$('a[id^="service_link_"]').click(function(e) {
+			e.preventDefault();
+			Calendar.addEditWindow({
+				link_id: $(e.target.parentNode).attr('id').substr(13),
+				users_id: $(e.target.parentNode).attr('rel')
+			});
+		});
+	};
+
+	return {
+		listen: listen
+	};
+}();
+
+READY(Event.listen);
+</script>

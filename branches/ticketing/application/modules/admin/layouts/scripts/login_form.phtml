@@ -1,0 +1,39 @@
+<?php
+
+$s1 = $this->element->getElement('email')->getMessages();
+$s2 = $this->element->getElement('password')->getMessages();
+
+?>
+<h1><?php echo $this->translate->_('Login'); ?></h1>
+<form action="/admin<?php echo $this->element->getAction(); ?>" method="<?php echo $this->element->getMethod(); ?>">
+	<div>
+		<label for="email"><?php echo $this->translate->_("E-mail"); ?></label>
+		<input type="text" name="email" id="email" value="" tabindex="1" />
+		<?php if(!empty($s1)): ?>
+			<div class="red-dot" style="width: 5px;">*</div>
+			<ul class="errors" id="name-text">
+				<?php foreach($s1 as $err): ?>
+					<li><?php echo $err; ?></li>
+				<?php endforeach; ?>
+			</ul>
+		<?php endif; ?>
+		<div class="cls"></div>
+	</div>
+	<div>
+		<label for="password"><?php echo $this->translate->_("Password"); ?></label>
+		<input type="password" name="password" id="password" value="" tabindex="2" />
+		<?php if(!empty($s2)): ?>
+			<div class="red-dot" style="width: 5px;">*</div>
+			<ul class="errors" id="name-text">
+			<?php foreach($s2 as $err): ?>
+				<li><?php echo $err; ?></li>
+			<?php endforeach; ?>
+		<?php endif; ?>
+		<div class="cls"></div>
+	</div>
+	<div>
+		<label>&nbsp;</label>
+		<input class="submit" type="submit" value="<?php echo $this->translate->_("Login"); ?>" tabindex="3" name="login" />
+		<div class="cls"></div>
+	</div>
+</form>

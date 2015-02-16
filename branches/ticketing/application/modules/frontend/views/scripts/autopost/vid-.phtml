@@ -1,0 +1,23 @@
+<div class="data">
+	<div class="desc">
+		<!--{us}--><?php echo $this->user; ?><!--{ue}-->
+	</div>
+	<table>
+	<col width="1%" /><col />
+		<tr>
+			<td valign="top" style="vertical-align: top;">
+				<div class="pictures solo">
+					<div class="pic">
+						<span class="vid" rel="external" data-url="<?php echo $this->original; ?>" style="background: #000 url('/images/userfiles/dashboard/<?php echo $this->thumb; ?>') center center no-repeat;"></span>
+						<span class="duration"><?php echo $this->duration; ?></span>
+					</div>
+					<div class="clear"></div>
+				</div>
+			</td>
+			<td valign="top" style="padding-top: 6px; vertical-align: top;">
+				<div class="break truncate"><?php echo $this->data; ?></div>
+			</td>
+		</tr>
+	</table>
+    <div class="clear"></div>
+</div>

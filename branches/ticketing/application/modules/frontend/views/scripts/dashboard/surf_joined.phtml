@@ -1,0 +1,36 @@
+<div class="entry">
+	<table>
+		<col width="1%" /><col />
+		<tr>
+			<td valign="top" style="vertical-align: top; min-width: 70px; display: block;"></td>
+			<td>
+				<div class="entry-content-container" style="min-height: 48px;">
+					<div class="arrow-left"></div>
+					<div class="bubble"></div>
+					<div class="entry-content">
+						<div class="data">
+							<div class="desc">
+							<?php 
+								printf($this->translate->_("%s has joined Petolio"), 
+									"<a style='font-weight: bold;' href='{$this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $this->user["id"]), 'default', true)}'>{$this->user["name"]}</a>");
+							?>
+							</div>
+						</div>
+						<div class="data links small">
+							<div class="left">
+								<span title="<?php echo Petolio_Service_Util::formatDate($this->user["date_created"], Petolio_Service_Util::MEDIUMDATE, true, true); ?>">
+									<?php echo Petolio_Service_Util::formatTime(strtotime($this->user["date_created"])); ?>
+								</span>
+								&nbsp;&bull;&nbsp;
+							</div>
+							<div class="left">
+								<div class="privacy p_public"></div>
+							</div>
+							<div class="clear"></div>
+						</div>
+					</div>
+				</div>
+			</td>
+		</tr>
+	</table>
+</div>

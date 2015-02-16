@@ -1,0 +1,55 @@
+<?php
+// picture control
+$image = "/images/no-pet.jpg";
+if ($this->gallery["picture"] && strlen($this->gallery["picture"]) > 0) {
+	$image = "/images/userfiles/galleries/{$this->gallery["id"]}/thumb_{$this->gallery["picture"]}";
+}
+
+// pet url
+$url = $this->url(array('controller'=>'galleries', 'action'=>'view', 'gallery' => $this->gallery["id"]), 'default', true);
+
+?>
+<div class="gallery-item" rel="<?php echo $this->gallery["id"]; ?>">
+	<a class="cluetip" href="<?php echo $url; ?>" rel="<?php echo '#gallery_' . $this->gallery["id"]; ?>">
+		<img src="<?php echo $image; ?>" alt="<?php echo $this->gallery["title"]; ?>" />
+	</a>
+	<table class="tooltipinfo" style="display: none;" cellpadding="0" cellspacing="0" id="<?php echo 'gallery_' . $this->gallery["id"]; ?>">
+		<tr>
+			<th valign="top"><?php echo $this->translate->_('Title'); ?></th>
+			<td><?php echo $this->gallery["title"]; ?></td>
+		</tr>
+		<tr>
+			<th valign="top"><?php echo $this->translate->_('Author'); ?></th>
+			<td><a href='<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $this->gallery["owner_id"]), 'default', true); ?>' title='<?php echo $this->translate->_("View owner's profile"); ?>'><?php echo $this->gallery["owner_name"]; ?></a></td>
+		</tr>
+		<tr>
+			<th valign="top"><?php echo $this->translate->_('Created on'); ?></th>
+			<td><?php echo Petolio_Service_Util::formatDate($this->gallery['date_created'], null, true, true); ?></td>
+		</tr>
+	</table>
+	<div class="gallery-details">
+		<span>
+		<?php
+			printf($this->translate->_('%1$s by %2$s'), 
+				'<h5>'.$this->gallery["title"].'</h5>', 
+				'<a href="'.$this->url(array('controller'=>'account', 'action'=>'view', 
+				'user' => $this->gallery["owner_id"]), 'default', true).'" title="'.$this->gallery["owner_name"].'">'.$this->gallery["owner_name"].'</a>');
+
+			if($this->gallery["pictures_count"]) {
+				echo '<br/><a href="'.$url.'">'.sprintf(ngettext("%s image", "%s images", $this->gallery['pictures_count']), $this->gallery['pictures_count']).'</a>';
+			}
+			if($this->gallery["date_created"]) {
+				echo '<br/>'.Petolio_Service_Util::formatDate($this->gallery['date_created'], Petolio_Service_Util::SHORTDATE, true, true);
+			}
+		?>
+		</span>
+		<?php if(isset($this->links) && count($this->links) > 0): ?>
+		<span class="links">
+			<?php foreach($this->links as $link): ?>
+				<a href='<?php echo $link['url']; ?>' class='icn <?php echo $link['class']; ?>' title='<?php echo $link['title']; ?>'>&nbsp;</a>
+			<?php endforeach; ?>
+		</span>
+		<?php endif; ?>
+		<div class="clear"></div>
+	</div>
+</div>

@@ -1,0 +1,22 @@
+<!-- decorator through view script, placed in 'views/scripts/file.phtml' -->
+<div>
+    <label for="<?php echo $this->element->getName(); ?>"><?php echo $this->element->getLabel(); ?></label>
+    <?php echo $this->content; ?>
+    <?php if($this->element->getAttrib('description')): ?>
+    	<div class="description"><?php echo $this->element->getAttrib('description'); ?></div>
+    <?php endif; ?>
+    <?php if($this->element->getDescription()): ?>
+    	<div class="description"><?php echo $this->element->getDescription(); ?></div>
+    <?php endif; ?>
+    <?php
+	    if($this->element->hasErrors()) {
+	    	echo '<div class="red-dot" style="width: 5px;">*</div>';
+	    	echo '<ul class="errors">';
+	    	foreach ($this->element->getMessages() as $message) {
+	    		echo '<li>'.$message.'</li>';
+	    	}
+	    	echo '</ul>';
+	    }
+    ?>
+	<div class="cls"></div>
+</div>

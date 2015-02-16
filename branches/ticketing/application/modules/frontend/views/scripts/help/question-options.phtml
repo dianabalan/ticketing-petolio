@@ -1,0 +1,113 @@
+<?php
+
+$this->placeholder('sidebar')->captureStart();
+$question_name = Petolio_Service_Parse::do_limit(ucfirst($this->question_attr['title']->getAttributeEntity()->getValue()), 20, false, true);
+
+// owner
+if($this->auth->hasIdentity() && $this->question->getUserId() == $this->auth->getIdentity()->id) {
+	$options = array(
+		array(
+			'link' => $this->url(array('controller'=>'help', 'action'=>'view', 'question'=>$this->question->getId()), 'default', true),
+			'name' => $this->translate->_("View") . ' ' . $question_name,
+			'class' => 'lm-help_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'help', 'action'=>'edit', 'question'=>$this->question->getId()), 'default', true),
+			'name' => $this->translate->_("Edit Details"),
+			'class' => 'lm-help_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'help', 'action'=>'files', 'question'=>$this->question->getId()), 'default', true),
+			'name' => $this->translate->_("Files"),
+			'class' => 'lm-help_sm'
+		)
+	);
+
+	if($this->question->getArchived() == 1)
+		$options[] = array(
+			'link'	=> $this->url(array('controller'=>'help', 'action'=>'restore', 'question'=>$this->question->getId()), 'default', true),
+			'name'  => sprintf($this->translate->_("Open %s"), $question_name),
+			'title'	=> sprintf($this->translate->_("Are you sure you want to Mark as Open %s?"), $question_name),
+			'class'	=> 'lm-help_sm reqconf',
+		);
+	else
+		$options[] = array(
+			'link'	=> $this->url(array('controller'=>'help', 'action'=>'archive', 'question'=>$this->question->getId()), 'default', true),
+			'name'  => sprintf($this->translate->_("Resolve %s"), $question_name),
+			'title'	=> sprintf($this->translate->_("Are you sure you want to Mark as Resolved %s?"), $question_name),
+			'class'	=> 'lm-help_sm reqconf',
+		);
+
+// not owner
+} else {
+	// registered
+	if($this->auth->hasIdentity()) {
+		$options = array(
+			array(
+				'link' => $this->url(array('controller'=>'help', 'action'=>'view', 'question'=>$this->question->getId()), 'default', true),
+				'name' => $this->translate->_("View Question"),
+				'class' => 'lm-help_sm'
+			),
+			array(
+				'link' => $this->url(array('controller'=>'accounts', 'action'=>'view', 'user'=>$this->question->getUserId()), 'default', true),
+				'name' => $this->translate->_("View Owner's Profile"),
+				'class' => 'lm-help_sm'
+			)
+		);
+
+	// guest
+	} else {
+		$options = array(
+			array(
+				'link' => $this->url(array('controller'=>'help', 'action'=>'view', 'question'=>$this->question->getId()), 'default', true),
+				'name' => $this->translate->_("View Question"),
+				'class' => 'lm-help_sm'
+			),
+			array(
+				'link' => $this->url(array('controller'=>'accounts', 'action'=>'view', 'user'=>$this->question->getUserId()), 'default', true),
+				'name' => $this->translate->_("View Owner's Profile"),
+				'class' => 'lm-help_sm'
+			)
+		);
+	}
+}
+
+// can answer
+if($this->can) {
+	$options[] = array(
+		'link' => $this->url(array('controller'=>'help', 'action'=>'answer', 'question'=>$this->question->getId()), 'default', true),
+		'name' => $this->translate->_("Answer Question"),
+		'class' => 'lm-help_sm'
+	);
+}
+
+// link mastery
+$links = null;
+foreach($options as $link) {
+	$id = $class = $rel = null;
+	$name = $link['name'];
+
+	if(isset($link['id']))
+		$id = " id='{$link['id']}'";
+
+	if(isset($link['class'])) {
+		if (isset($link['title']) && strlen($link['title']) > 0)
+			$ttl = "title='{$link['title']}'";
+		else
+			$ttl = "title='{$link['name']}'";
+
+		$class = " class='{$link['class']}' {$ttl}";
+		$name = "{$link['name']}";
+	}
+
+	if(isset($link['rel']))
+		$rel = " rel='{$link['rel']}'";
+
+	$links .= "<li><a href='{$link['link']}'{$id}{$class}{$rel}>{$name}</a></li>";
+}
+
+?>
+<h3><?php echo $this->translate->_("Options"); ?></h3>
+<ul class="leftsubmenu" data-context="true"><?php echo $links; ?></ul>
+<div class="clear">&nbsp;</div>
+<?php $this->placeholder('sidebar')->captureEnd(); ?>

@@ -1,0 +1,13 @@
+<?php echo $this->translate->_("Dear Admin"); ?>
+
+<?php printf($this->translate->_("You have a new contact message from %s (%s)"), $this->name, $this->logged_in ? $this->translate->_("logged in") : $this->translate->_("not logged in")); ?>
+<?php printf($this->translate->_("Email: %s"), $this->email); ?>
+<?php printf($this->translate->_("Subject: %s"), $this->subject); ?>
+
+<?php echo $this->translate->_("Message:"); ?>
+
+<?php echo $this->message; ?>
+
+
+--
+<?php echo $this->translate->_("Petolio team"); ?>

@@ -1,0 +1,20 @@
+<div class="data">
+	{{vid+}}
+    <div class="pictures">
+		<?php foreach($this->results as $vid): ?>
+			<?php
+				// get video thumbnail
+				$thumb = $vid->getMapper()->getVideoThumbnails();
+
+				// get video duration
+				$duration = date("i:s", $vid->getMapper()->getVideoDuration());
+			?>
+			<div class="pic">
+				<span class="vid" rel="<?php echo $vid->getId(); ?>" data-url="<?php echo $this->args[4]; ?>" style="background: #000 url('<?php echo $thumb[1]['url']; ?>') center center no-repeat;"></span>
+				<span class="duration"><?php echo $duration; ?></span>
+			</div>
+		<?php endforeach; ?>
+		<div class="clear"></div>
+	</div>
+    <div class="clear"></div>
+</div>

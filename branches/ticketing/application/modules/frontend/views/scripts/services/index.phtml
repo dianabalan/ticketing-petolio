@@ -1,0 +1,47 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->title; ?></h1>
+		<br />
+		<?php if(isset($this->yours) && count($this->yours) > 0): ?>
+			<?php echo $this->paginationControl($this->yours, 'Elastic', 'pagination-controls.phtml', array('pos' => 'top')); ?>
+			<table cellspacing="0" cellpadding="5" class="grid">
+				<col /><col width="200" /><col width="170" /><col width="150" />
+				<tr>
+					<th><a href="<?php echo $this->url(array('order' => 'name', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Name"); ?><?php if($this->order == 'name'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+					<th><a href="<?php echo $this->url(array('order' => 'type', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Type"); ?><?php if($this->order == 'type'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+					<th><a href="<?php echo $this->url(array('order' => 'date', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Date"); ?><?php if($this->order == 'date'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+					<th></th>
+				</tr>
+				<?php foreach($this->yours as $service): ?>
+					<tr>
+						<td><a href="<?php echo $this->url(array('controller'=>'services', 'action'=>'view', 'service' => $service["id"]), 'default', true); ?>"><?php echo $service["name"]; ?></a></td>
+						<td><?php echo $service["type"]; ?></td>
+						<td><?php echo Petolio_Service_Util::formatDate($service["date_created"], null, true, true); ?></td>
+						<td align="right" nowrap="nowrap">
+							<?php if($service['scope'] == 1): ?>
+								<a href='<?php echo $this->url(array('controller'=>'services', 'action'=>'view', 'service' => $service["id"]), 'default', true); ?>#invite_members' class='icon_link plus'>
+									<span><?php echo $this->translate->_('Invite'); ?></span>
+								</a>
+							<?php else: ?>
+								<a href='<?php echo $this->url(array('controller'=>'services', 'action'=>'view', 'service' => $service["id"]), 'default', true); ?>#invite_partners' class='icon_link plus'>
+									<span><?php echo $this->translate->_('Invite'); ?></span>
+								</a>
+							<?php endif; ?>
+							<a href='<?php echo $this->url(array('controller'=>'services', 'action'=>'edit', 'service'=> $service["id"]), 'default', true); ?>' class='icon_link edit'>
+								<span><?php echo $this->translate->_('Edit'); ?></span>
+							</a>
+							<a href='<?php echo $this->url(array('controller'=>'services', 'action'=>'archive', 'service'=> $service["id"]), 'default', true); ?>' class='icon_link delete reqconf' title="<?php echo sprintf($this->translate->_('Are you sure you want to archive the %s service?'), $service['name']); ?>">
+								<span><?php echo $this->translate->_('Archive'); ?></span>
+							</a>
+						</td>
+					</tr>
+				<?php endforeach; ?>
+			</table>
+			<?php echo $this->paginationControl($this->yours, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot')); ?>
+		<?php else: ?>
+			<b class="red bigger"><?php echo $this->translate->_('No services found.'); ?></b>
+		<?php endif; ?>
+	</div>
+</div>

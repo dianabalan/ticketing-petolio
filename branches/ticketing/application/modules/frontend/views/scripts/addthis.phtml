@@ -1,0 +1,14 @@
+<?php
+	$title = $this->headTitle();
+	if (count($title) > 1) {
+		$part = $title[1];
+	} else {
+		$part = $title[0];
+	}
+?>
+<div class="social-buttons">
+	<div class="fb-like" og:title="<?php echo $this->title; ?>" 
+			data-layout="box_count" data-action="like" data-show-faces="false" data-share="true"></div>
+	<a href="https://twitter.com/share?count=vertical&text=<?php echo urlencode($part); ?>" class="twitter-share-button"><?php echo $this->translate->_("Tweet"); ?></a>
+	<g:plusone size="tall"></g:plusone>
+</div>

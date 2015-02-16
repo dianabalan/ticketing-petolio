@@ -1,0 +1,64 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Map"); ?></h1>
+		<br />
+		<div id="map_canvas"></div>
+	</div>
+</div>
+<script type="text/javascript">
+var Map = function() {
+	var coords = {lat: <?php echo $this->coords[0]; ?>, long: <?php echo $this->coords[1]; ?>},
+		map, marker;
+
+	function go() {
+		map = new google.maps.Map($('#map_canvas').get(0), {
+			zoom: 4,
+			center: new google.maps.LatLng(coords.lat, coords.long),
+			mapTypeId: google.maps.MapTypeId.ROADMAP
+		});
+
+		map.geocoder = new google.maps.Geocoder();
+	};
+
+	function search() {
+		$('#search_go').click(function(e){
+			$('#search').submit();
+		});
+		$('#search').submit(function(e){
+			e.preventDefault();
+			if(marker)
+				marker.setMap(null);
+
+			var input = $('#search_address');
+			input.css({borderColor: '#8F8F8F'});
+
+			map.geocoder.geocode({'address': input.val()}, function(results, status) {
+				if(status == google.maps.GeocoderStatus.OK) {
+					map.setCenter(results[0].geometry.location);
+					map.setZoom(10);
+					marker = new google.maps.Marker({
+						map: map,
+						position: results[0].geometry.location,
+						animation: google.maps.Animation.DROP,
+						title: results[0].formatted_address
+					});
+				} else input.css({borderColor: 'red'});
+			});
+		});
+	};
+
+	function __construct() {
+		$('body').append('<script type="text/javascript" src="'+ window.location.protocol +'//maps.googleapis.com/maps/api/js?v=3.5&sensor=false&callback=Map.go" />');
+		search();
+	};
+
+	return {
+		init: __construct,
+		go: go
+	};
+}();
+
+READY(Map.init);
+</script>

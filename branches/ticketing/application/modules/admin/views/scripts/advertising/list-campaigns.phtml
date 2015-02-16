@@ -1,0 +1,115 @@
+<h1><a href="<?php echo $this->url(array("controller" => "advertising", "action" => "index"), "admin", true); ?>"><?php echo $this->translate->_("Advertising"); ?></a> &raquo; <?php echo $this->translate->_("List Classical Advertising Campaigns"); ?></h1>
+<div class="rbcontent" id="search_fields">
+	<form name="search" action="<?php echo $this->url; ?>" method="get">
+	<input type="hidden" name="type" id="type" value="<?php echo $this->type; ?>" />
+	<input type="hidden" name="order" id="order" value="<?php echo $this->order; ?>" />
+	<input type="hidden" name="dir" id="dir" value="<?php echo $this->dir; ?>" />
+	<table>
+	<col width="50%" /><col width="50%" />
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Name"); ?>:</label>
+					<input type="text" name="name" value="<?php echo $this->name; ?>" />
+				</div>
+			</td>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Customer"); ?>:</label>
+					<select name="customer">
+						<option></option>
+						<?php
+							foreach ($this->customers as $customer) {
+								$hover = $customer->getId() == $this->customer ? ' selected="selected"' : null;
+								echo "<option value='{$customer->getId()}' {$hover}>{$customer->getName()}</option>";
+
+							}
+						?>
+					</select>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Min Target View"); ?>:</label>
+					<input type="text" name="target_views_min" value="<?php echo $this->target_views_min; ?>" />
+				</div>
+			</td>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Max Target View"); ?>:</label>
+					<input type="text" name="target_views_max" value="<?php echo $this->target_views_max; ?>" />
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Active"); ?>:</label>
+					<select name="active">
+						<option></option>
+						<option value="0" <?php echo (0 == intval($this->active) && strlen($this->active) > 0 ? 'selected="selected"' : ''); ?>><?php echo $this->translate->_("Inactive"); ?></option>
+						<option value="1" <?php echo 1 == intval($this->active) ? 'selected="selected"' : ''; ?>><?php echo $this->translate->_("Active"); ?></option>
+					</select>
+				</div>
+			</td>
+			<td>
+				<div class="filter_item">
+					<label></label>
+					<input type="button" value="<?php echo $this->translate->_("Search"); ?>" data-type="submit" />
+					<input type="button" value="<?php echo $this->translate->_("Reset"); ?>" data-type="reset" />
+				</div>
+			</td>
+		</tr>
+	</table>
+	</form>
+</div>
+<?php if(count($this->campaigns) > 0): ?>
+	<?php echo $this->paginationControl($this->campaigns, 'Elastic', 'controls.phtml', array('translate' => $this->translate)); ?>
+	<table class="main">
+		<thead>
+			<tr>
+				<th class="<?php $col = "c.name"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Name"); ?></th>
+				<th class="<?php $col = "customer_name"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Customer Name"); ?></th>
+				<th class="<?php $col = "c.target_views"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Target Views"); ?></th>
+				<th class="<?php $col = "c.active"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Status"); ?></th>
+				<th class="<?php $col = "c.date_created"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Date created"); ?></th>
+				<th class="<?php $col = "banners"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Banners"); ?></th>
+				<th class="<?php $col = "total_views"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Views"); ?></th>
+				<th class="<?php $col = "total_clicks"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Clicks"); ?></th>
+				<th width="1%"></th>
+				<th width="1%"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach($this->campaigns as $campaign): ?>
+				<tr>
+					<td><a href="<?php echo $this->url(array('controller'=>'advertising', 'action'=>'edit-campaign', 'id'=> $campaign["id"]), 'admin', true); ?>"><?php echo $campaign["name"]; ?></a></td>
+					<td><a href="<?php echo $this->url(array('controller'=>'advertising', 'action'=>'edit-customer', 'id'=> $campaign["customer_id"], 'type' => '2'), 'admin', true); ?>"><?php echo $campaign["customer_name"]; ?></a></td>
+					<td><?php echo $campaign["target_views"]; ?></td>
+					<td><?php echo ($campaign["active"] == 0 ? $this->translate->_("Inactive") : $this->translate->_("Active")); ?></td>
+					<td><?php echo Petolio_Service_Util::formatDate($campaign["date_created"], null, true, true); ?></td>
+					<td><a href="<?php echo $this->url(array('controller'=>'advertising', 'action'=>'list-banners', 'customer-type' => '2', 'campaign' => $campaign["id"]), 'admin', true); ?>"><?php echo $campaign["banners"]; ?></a></td>
+					<td><?php echo ($campaign["total_views"] ? $campaign["total_views"] : 0); ?></td>
+					<td><?php echo ($campaign["total_clicks"] ? $campaign["total_clicks"] : 0); ?></td>
+					<td nowrap="nowrap" align="center"><a href="<?php echo $this->url(array('controller'=>'advertising', 'action'=>'edit-campaign', 'id'=> $campaign["id"]), 'admin', true); ?>"><?php echo $this->translate->_("Edit"); ?></a></td>
+					<td nowrap="nowrap" align="center"><a href="<?php echo $this->url(array('controller'=>'advertising', 'action'=>'delete-campaign', 'id'=> $campaign["id"]), 'admin', true); ?>" class="reqconf" title="<?php echo $this->translate->_("Are you sure you want to delete this campaign?"); ?>&#013;<?php echo $this->translate->_("This will delete all the existing banners of this campaign too!"); ?>"><?php echo $this->translate->_("Delete"); ?></a></td>
+				</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+	<?php echo $this->paginationControl($this->campaigns, 'Elastic', 'controls.phtml', array('translate' => $this->translate)); ?>
+<?php else: ?>
+	<div class="error"><?php echo $this->translate->_("No records found."); ?></div>
+<?php endif; ?>
+<form style="background: #fff;">
+	<input type="button" onclick="document.location='<?php echo $this->url(array('action' => 'add-campaign')); ?>';" class="submit" value="<?php echo $this->translate->_("Add campaign"); ?>" />
+	<div class="clear"></div>
+</form>
+<script type="text/javascript">
+	READY(function() {
+		Admin.loadJs('filters/base.js');
+		Filters.load('/advertising/list-campaigns');
+	});
+</script>

@@ -1,0 +1,15 @@
+<h1><?php echo $this->translate->_("Ups, the site you have asked for does not exist."); ?></h1>
+<span style="line-height: 18px;"><?php echo $this->message ?>.
+<br />
+<a href="/editor"><?php echo $this->translate->_("Click here to go to Editor's Homepage"); ?>.</a></span>
+<?php if(isset($this->exception)): ?>
+	<br /><br />
+	<h3>Exception information:</h3>
+	<p class="petolio">
+		<b>Message:</b> <?php echo $this->exception->getMessage() ?>
+	</p>
+	<h3>Stack trace:</h3>
+	<pre style="overflow: hidden;"><?php echo $this->exception->getTraceAsString() ?></pre>
+	<h3>Request Parameters:</h3>
+	<pre><?php echo $this->escape(var_export($this->request->getParams(), true)) ?></pre>
+<?php endif ?>

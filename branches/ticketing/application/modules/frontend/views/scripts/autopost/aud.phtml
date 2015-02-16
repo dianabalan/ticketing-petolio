@@ -1,0 +1,22 @@
+<?php
+
+// paths
+if($this->args[2] == 'pet')
+	$path = "/images/userfiles/pets/{$this->args[3]}/audios";
+if($this->args[2] == 'service')
+	$path = "/images/userfiles/services/{$this->args[3]}";
+if($this->args[2] == 'microsite')
+	$path = "/images/userfiles/microsites/{$this->args[3]}";
+
+?>
+<div class="data">
+	{{aud}}
+    <div class="pictures">
+		<div class="pic">
+			<span class="aud" rel="<?php echo $this->results->getId(); ?>" data-url="<?php echo $this->args[4]; ?>" data-path="<?php echo $path; ?>/{audio}"></span>
+			<span title="<?php echo $this->results->getDescription(); ?>" class="name ellipsis"><?php echo $this->results->getDescription(); ?></span>
+		</div>
+		<div class="clear"></div>
+	</div>
+    <div class="clear"></div>
+</div>

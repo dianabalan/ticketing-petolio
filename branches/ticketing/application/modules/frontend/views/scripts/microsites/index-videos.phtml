@@ -1,0 +1,37 @@
+<?php if(count($this->listing) > 0): ?>
+    <div class="pictures">
+		<?php foreach($this->listing as $video): ?>
+			<?php
+				// get video entity
+				$entity = $video->getMapper();
+
+				// get video thumbnail
+				$thumbs = $entity->getVideoThumbnails();
+				$thumbnail = $thumbs[1]['url'];
+
+				// get video duration
+				$duration = date("i:s", $entity->getVideoDuration());
+			?>
+			<div class="pic">
+				<span class="vid" rel="<?php echo $video->getId(); ?>" style="background: #000 url('<?php echo $thumbnail; ?>') center center no-repeat;"></span>
+				<span class="duration"><?php echo $duration; ?></span>
+			</div>
+		<?php endforeach; ?>
+		<div class="clear"></div>
+	</div>
+<?php else: ?>
+	<b class="red bigger"><?php echo $this->translate->_("Sorry, nothing here pal :("); ?></b>
+<?php endif; ?>
+<div class="clear"></div>
+<?php if($this->admin): ?>
+	<div class="tenpx"></div>
+	<div class="buttons">
+		<a href="<?php echo $this->url(array('controller'=>'microsites', 'action'=>'videos'), 'default', true); ?>" target="_parent" class='icon_link edit'><span><?php echo $this->translate->_("Edit Videos"); ?></span></a>
+	</div>
+	<div class="clear"></div>
+<?php endif; ?>
+<?php $imgsw_path = array(
+	'image' => "/images/userfiles/microsites/{$this->microsite->getId()}/{image}",
+	'audio' => "/images/userfiles/microsites/{$this->microsite->getId()}/{audio}",
+	'video' => "http://www.youtube.com/embed/{video}"
+); include "../application/modules/frontend/views/scripts/imgsw.phtml"; ?>

@@ -1,0 +1,75 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<!-- <div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div> -->
+		<div>
+			<div class="left"><img src="/images/new/large/help.png" alt="<?php echo $this->title; ?>" /></div>
+			<ul class="title-menu">
+				<li><h3><?php echo $this->title; ?></h3></li>
+				<?php if($this->auth->hasIdentity()): ?>
+				<li>
+					<a href="<?php echo $this->url(array('controller'=>'help'), 'default', true); ?>" 
+						title="<?php echo $this->translate->_("All Questions"); ?>">
+						<?php echo $this->translate->_("All Questions"); ?>
+					</a>
+				</li>
+				<li>
+					<a href="<?php echo $this->url(array('controller'=>'help', 'action'=>'archives'), 'default', true); ?>" 
+						title="<?php echo $this->translate->_("My Resolved Questions"); ?>">
+						<?php echo $this->translate->_("My Resolved Questions"); ?>
+					</a>
+				</li>
+				<?php endif; ?>
+				<li>
+					<?php
+						echo $this->partial("help/search.phtml", array(
+							"request" => $this->request,
+							"translate" => $this->translate,
+							"types" => $this->types,
+							"status" => $this->status,
+							"mine" => $this->mine,
+							"auth" => $this->auth,
+							"action" => $this->url(array('controller'=>'help'), 'default', true)."/myquestions"
+						));
+					?>
+				</li>
+			</ul>
+			<?php if($this->auth->hasIdentity()): ?>
+			<div class="right">
+				<a href="<?php echo $this->url(array('controller'=>'help', 'action'=>'add'), 'default', true); ?>" 
+					title="<?php echo $this->translate->_("Ask Question"); ?>">
+					<img src="/images/new/action/help_add.png" alt="<?php echo $this->translate->_("Ask Question"); ?>" />
+				</a>
+			</div>
+			<?php endif; ?>
+		</div>
+		<div class="clear tenpx"></div>
+		<?php if(isset($this->questions) && count($this->questions) > 0): ?>
+			<?php echo $this->paginationControl($this->questions, 'Elastic', 'pagination-controls.phtml', array('pos' => 'top')); ?>
+			<table cellspacing="0" cellpadding="5" class="help">
+				<col width="70" /><col width="70" /><col /><col width="51" />
+				<?php foreach($this->questions as $key => $question): ?>
+					<?php echo $this->partial('question-template.phtml', array(
+			        	'translate' => $this->translate,
+						'key' => $key,
+			        	'question' => $question,
+			        	'links' => array(
+							array(
+								'class' => 'restore reqconf',
+								'title' => sprintf($this->translate->_("Mark this question as resolved?"), $question['title']),
+								'url' => $this->url(array('controller'=>'help', 'action'=>'archive', 'question' => $question["id"]), 'default', true)
+							), array(
+								'class' => 'edit',
+								'title' => $this->translate->_("Edit Question"),
+								'url' => $this->url(array('controller'=>'help', 'action'=>'edit', 'question' => $question["id"]), 'default', true)
+							)
+						)
+			    	)); ?>
+			    <?php endforeach; ?>
+			</table>
+			<?php echo $this->paginationControl($this->questions, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot')); ?>
+		<?php else: ?>
+			<b class="red bigger"><?php echo $this->translate->_("No questions found."); ?></b>
+		<?php endif; ?>
+	</div>
+</div>

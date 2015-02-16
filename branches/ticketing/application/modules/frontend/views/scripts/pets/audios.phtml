@@ -1,0 +1,57 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Pet Audios"); ?></h1>
+		<br />
+		<?php if(isset($this->up['errors']) && count($this->up['errors']) > 0):?>
+			<div class="c_error">
+				<?php foreach($this->up['errors'] as $idx => $error): ?>
+					<div><b><?php echo $idx; ?></b></div>
+					<ul>
+						<?php foreach($error as $item): ?>
+							<li><?php echo $item; ?></li>
+						<?php endforeach; ?>
+					</ul>
+				<?php endforeach; ?>
+			</div>
+			<br />
+		<?php endif; ?>
+		<?php if(isset($this->up['success']) && count($this->up['success']) > 0):?>
+			<div class="c_success">
+				<ul>
+					<?php foreach($this->up['success'] as $idx => $success): ?>
+						<li><?php echo $idx; ?> <?php echo $this->translate->_("was successfully uploaded"); ?>.</li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+			<br />
+		<?php endif; ?>
+		<?php echo $this->form; ?>
+		<?php if(count($this->sounds) > 0) :?>
+			<hr />
+			<div class="gallery">
+				<?php foreach($this->sounds as $idx => $audio): ?>
+					<?php $url = $this->url(array('controller'=>'pets', 'action'=>'files', 'download' => $audio->getId()), 'default', true); ?>
+					<div class="picture" rel="<?php echo $audio->getId(); ?>">
+						<a href="<?php echo $url; ?>" target="_parent">
+							<span class="aud"></span>
+						</a>
+						<span class="name ellipsis">
+							<a href="<?php echo $url; ?>" target="_parent"><?php echo pathinfo($audio->getDescription(), PATHINFO_FILENAME); ?></a>
+						</span>
+						<span class="links">
+							<a href='<?php echo $this->url(array('controller'=>'pets', 'action'=>'audios', 'pet'=>$this->pet->getId(), 'remove'=>$audio->getId()), 'default', true); ?>' class='icn delete reqconf' title='<?php echo $this->translate->_("Delete Audio"); ?>?'>&nbsp;</a>
+						</span>
+					</div>
+				<?php endforeach; ?>
+				<div class="clear"></div>
+			</div>
+			<div class="clear"></div>
+		<?php endif; ?>
+		<hr />
+		<div class="left"><input onclick="Petolio.go(window.location.href.replace('audios', 'pictures'));" type="button" value="<?php echo $this->translate->_("< Go Back to Pictures"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+		<div class="right"><input onclick="Petolio.go(window.location.href.replace('audios', 'videos'));" type="button" value="<?php echo $this->translate->_("Go to Videos >"); ?>" id="submit" name="next"><div class="clear"></div></div>
+		<div class="clear"></div>
+	</div>
+</div>

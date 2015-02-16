@@ -1,0 +1,173 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_('Your Content Distributions'); ?></h1>
+		<?php if(isset($this->yours) && count($this->yours) > 0): ?>
+			<br/>
+			<?php echo $this->paginationControl($this->yours, 'Elastic', 'pagination-controls.phtml', array('pos' => 'top')); ?>
+			<table cellspacing="0" cellpadding="5" class="grid">
+				<col /><col width="175" /><col width="175" /><col width="175" />
+				<tr>
+					<th><a href="<?php echo $this->url(array('order' => 'name', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Name"); ?><?php if($this->order == 'name'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+					<th><a href="<?php echo $this->url(array('order' => 'targetplace', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Target place"); ?><?php if($this->order == 'targetplace'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+					<th><a href="<?php echo $this->url(array('order' => 'date', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Date"); ?><?php if($this->order == 'date'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+					<th></th>
+				</tr>
+				<?php
+				$data = array();
+				foreach($this->yours as $content_distribution):
+					array_push($data, $content_distribution);
+				?>
+					<tr>
+						<td><a href="javascript:void(0);" rel="<?php echo $content_distribution["url"]; ?>" class="distribution"><?php echo $content_distribution["name"]; ?></a></td>
+						<td><?php echo $content_distribution["targetplace"]; ?></td>
+						<td><?php echo Petolio_Service_Util::formatDate($content_distribution["date_created"], null, true, true); ?></td>
+						<td align="right" nowrap="nowrap">
+							<a href='<?php echo $this->url(array('controller'=>'contentdistributions', 'action'=>'edit', 'distribution'=> $content_distribution["id"]), 'default', true); ?>' class='icon_link edit'>
+								<span><?php echo $this->translate->_('Edit'); ?></span>
+							</a>
+							<a href='<?php echo $this->url(array('controller'=>'contentdistributions', 'action'=>'archive', 'distribution'=> $content_distribution["id"]), 'default', true); ?>' class='icon_link delete reqconf' title="<?php echo sprintf($this->translate->_('Are you sure you want to archive the %s distribution?'), $content_distribution['name']); ?>">
+								<span><?php echo $this->translate->_('Archive'); ?></span>
+							</a>
+							<a href="javascript:void(0);" class="icon_link preview distribution" rel="<?php echo $content_distribution["url"]; ?>">
+								<span><?php echo $this->translate->_('Preview'); ?></span>
+							</a>
+							<a href="javascript:void(0);" class="icon_link share" rel="<?php echo $content_distribution["url"]; ?>">
+								<span><?php echo $this->translate->_('Share'); ?></span>
+							</a>
+						</td>
+					</tr>
+				<?php endforeach; ?>
+			</table>
+			<?php echo $this->paginationControl($this->yours, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot')); ?>
+		<?php else: ?>
+			<br />
+			<b class="red bigger"><?php echo $this->translate->_("You don't have any content distribution created."); ?></b>
+		<?php endif; ?>
+	</div>
+</div>
+<script type="text/javascript">
+	var ContentDistributions = function() {
+		function open(url) {
+			var identity = 'dialog-distribution';
+
+			$("#"+ identity).remove();
+			$('<div id="'+ identity +'" title="<?php echo $this->translate->_("Preview Content Distribution"); ?>" class="ui-state-highlight">'+
+				'<div style="position: relative; margin: 8px 0px 2px 0px;">'+
+					'<div id="frame_overlay" style="opacity: 0.9; background: white url(/images/ajax-loader.gif) center center no-repeat; position: absolute; top: 1px; left: 1px; width: 760px; height: 600px;"></div>'+
+					'<iframe id="frame" name="microsite" src="'+ SITE_URL + 'distribution/' + url + '" width="760" height="600" style="display: block; border: 0px;"></iframe>'+
+				'</div>'+
+			'</div>').dialog({
+				resizable: false,
+				modal: true,
+				width: 780,
+				minHeight: 50,
+				buttons: [{
+					text: '<?php echo $this->translate->_("Share"); ?>',
+					click: function() {
+						shareClick(url);
+					}
+				},{
+					text: '<?php echo $this->translate->_("Close"); ?>',
+					click: function() {
+						$(this).dialog("close");
+					}
+				}],
+				close: function() {
+					$("#"+ identity).remove();
+				},
+				open: function() {
+					$('#frame').load(function() {
+						$('#frame_overlay').fadeOut('fast');
+						$("#frame").contents().find('a').click(function() {
+							if( !$(this).hasClass('showloading') )
+								return true;
+
+							$('#frame_overlay').fadeIn('fast');
+						});
+					});
+				}
+			});
+		};
+
+		function share(html, distributionID) {
+			var shareIdentity = 'dialog-share';
+
+			$("#"+ shareIdentity).remove();
+			$('<div id="'+ shareIdentity +'" title="<?php echo $this->translate->_("Share Content Distribution"); ?>" class="ui-state-highlight">'+
+				'<div style="position: relative; margin: 8px 0px 2px 0px;">'+
+					html +
+				'</div>'+
+			'</div>').dialog({
+				resizable: false,
+				modal: true,
+				width: 500,
+				minHeight: 50,
+				buttons: [{
+					text: '<?php echo $this->translate->_("Close"); ?>',
+					click: function() {
+						$(this).dialog("close");
+					}
+				}],
+				close: function() {
+					$("#"+ shareIdentity).remove();
+				}
+			});
+
+			$(".share").live('focus mouseup', function(e) {
+				if (e.type == 'focusin') {
+					try { this.select(); } catch(e) {}
+				}
+
+				if (e.type == 'mouseup') {
+					return false;
+				}
+			});
+			$(".share").focus();
+
+			$("#fb_page_add").click(function() {
+				// calling the API ...
+		        var obj = {
+		          method: 'pagetab',
+		          redirect_uri: SITE_URL + 'contentdistributions/fbreturn/distribution/' + distributionID,
+		        };
+
+		        FB.ui(obj);
+			});
+
+		}
+
+		function shareClick(url) {
+	    	Petolio.ajax({
+				url: 'contentdistributions/share',
+				type: 'post',
+				data: {url: url},
+				cache: false,
+				success: function (d) {
+					if ( d.success ) {
+						share(d.html, d.distribution);
+					} else {
+						Petolio.go(SITE_URL);
+					}
+				}
+			});
+		};
+
+		function __construct() {
+			$('a.distribution').click(function() {
+				open($(this).attr('rel'));
+			});
+			$('a.share').click(function() {
+				shareClick($(this).attr('rel'));
+			});
+		};
+
+		return {
+			init: __construct,
+			shareClick: shareClick
+		};
+	}();
+
+	READY(ContentDistributions.init);
+</script>

@@ -1,0 +1,171 @@
+<h1><a href="<?php echo $this->url(array("controller" => "products", "action" => "list-products"), "admin", true); ?>"><?php echo $this->translate->_("Products"); ?></a> &raquo; <?php echo $this->translate->_("List Products"); ?></h1>
+<div class="rbcontent" id="search_fields">
+	<form name="search" action="<?php echo $this->url; ?>" method="get">
+	<input type="hidden" name="order" id="order" value="<?php echo $this->order; ?>" />
+	<input type="hidden" name="dir" id="dir" value="<?php echo $this->dir; ?>" />
+	<table>
+	<col width="430" />
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Keywords"); ?>:</label>
+					<input type="text" name="keyword" value="<?php echo $this->keyword; ?>" />
+				</div>
+			</td>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Species"); ?>:</label>
+					<select name="species">
+						<option></option>
+						<?php
+							foreach ($this->species_list as $value) {
+								$hover = $value['value'] == $this->species ? ' selected="selected"' : null;
+								echo "<option value='{$value['value']}' {$hover}>{$value['name']}</option>";
+							}
+						?>
+					</select>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Owner"); ?>:</label>
+					<input type="text" name="owner" value="<?php echo $this->owner; ?>" />
+				</div>
+			</td>
+			<td rowspan="4">
+				<table id="advanced">
+					<tr id="add">
+						<td>
+							<div class="filter_item" style="padding: 0px 0px 9px 0px;">
+								<label></label>
+								<a href="javascript:void(0);"><?php echo $this->translate->_("Add another filter"); ?></a>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="filter_item">
+								<label></label>
+								<input type="button" value="<?php echo $this->translate->_("Search"); ?>" data-type="submit" />
+								<input type="button" value="<?php echo $this->translate->_("Reset"); ?>" data-type="reset" />
+							</div>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Archived"); ?>:</label>
+					<select name="archived">
+						<option></option>
+						<option value="1" <?php echo $this->archived == '1' ? 'selected="selected"' : ''; ?>><?php echo $this->translate->_("Yes"); ?></option>
+						<option value="0" <?php echo $this->archived == '0' ? 'selected="selected"' : ''; ?>><?php echo $this->translate->_("No"); ?></option>
+					</select>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="filter_item">
+					<label><?php echo $this->translate->_("Match"); ?>:</label>
+					<table style="margin-top: 2px;">
+						<tr>
+							<td><input type="radio" id="all" value="" name="match" <?php echo $this->match != 'one' ? 'checked="checked"' : ''; ?> /></td>
+							<td style="padding-left: 5px;"><label for="all" class="default"><?php echo $this->translate->_("All Filters"); ?></label></td>
+							<td style="padding-left: 10px;"><input type="radio" id="one" value="one" name="match" <?php echo $this->match == 'one' ? 'checked="checked"' : ''; ?> /></td>
+							<td style="padding-left: 5px;"><label for="one" class="default"><?php echo $this->translate->_("At least one"); ?></label></td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
+	</table>
+	</form>
+</div>
+<?php if(count($this->products) > 0): ?>
+	<?php echo $this->paginationControl($this->products, 'Elastic', 'controls.phtml', array('translate' => $this->translate)); ?>
+	<table class="main">
+		<thead>
+			<tr>
+				<th class="<?php $col = "d1.value"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Name"); ?></th>
+				<th class="<?php $col = "species"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Species"); ?></th>
+				<th class="<?php $col = "x.name"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Owner"); ?></th>
+				<th class="<?php $col = "a.date_created"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Created on"); ?></th>
+				<th class="<?php $col = "a.views"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Views"); ?></th>
+				<th class="<?php $col = "a.archived"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Archived"); ?></th>
+				<th class="<?php $col = "flagged_count"; echo strcasecmp($this->order, $col) == 0 ? strcasecmp($this->dir, "asc") == 0 ? "sortable selectedUp" : "sortable selectedDown" : "sortable"; ?>" nowrap="nowrap" data-col="<?php echo $col; ?>"><?php echo $this->translate->_("Flagged"); ?></th>
+				<th width="1%"></th>
+				<th width="1%"></th>
+				<th width="1%"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach($this->products as $product): ?>
+				<tr>
+					<td><a href="<?php echo $this->url(array('controller'=>'products', 'action'=>'edit-product', 'id'=> $product["id"]), 'admin', true); ?>"><?php echo $product['title']; ?></a></td>
+					<td><?php echo $product['species']; ?></td>
+					<td><a href="<?php echo $this->url(array('controller'=>'members', 'action'=>'edit-user', 'id'=> $product["user_id"]), 'admin', true); ?>"><?php echo $product['user_name']; ?></a></td>
+					<td><?php echo Petolio_Service_Util::formatDate($product["date_created"], null, true, true); ?></td>
+					<td><?php echo $product['views']; ?></td>
+					<td><?php echo $product['archived'] == 1 ? $this->translate->_("Yes") : $this->translate->_("No"); ?></td>
+					<td><?php echo $product['flagged'] == 1 ? $this->translate->_("Yes") : $this->translate->_("No"); ?> (<a href="<?php echo $this->url(array('controller'=>'products', 'action'=>'list-flags', 'id'=> $product["id"]), 'admin', true); ?>"><?php echo $product['flagged_count']; ?></a>)</td>
+					<td nowrap="nowrap" style="text-align: center;"><a href="<?php echo $this->url(array('controller'=>'products', 'action'=>'send-msg', 'id'=> $product["user_id"]), 'admin', true); ?>"><?php echo $this->translate->_("Msg") ?></a></td>
+					<td nowrap="nowrap" style="text-align: center;"><a href="<?php echo $this->url(array('controller'=>'products', 'action'=>'edit-product', 'id'=> $product["id"]), 'admin', true); ?>"><?php echo $this->translate->_("Edit") ?></a></td>
+					<td nowrap="nowrap" style="text-align: center;"><a href="<?php echo $this->url(array('controller'=>'products', 'action'=>'delete-product', 'id'=> $product["id"]), 'admin', true); ?>" class="reqconf" title="<?php echo $product['archived'] == 1 ? $this->translate->_("Are you sure you want to restore this product?") : $this->translate->_("Are you sure you want to archive this product?"); ?>"><?php echo $product['archived'] == 1 ? $this->translate->_("Restore") : $this->translate->_("Archive"); ?></a></td>
+				</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+	<?php echo $this->paginationControl($this->products, 'Elastic', 'controls.phtml', array('translate' => $this->translate)); ?>
+	<form style="background: #fff;">
+		<input type="button" onclick="document.location='<?php echo $this->url(array('action' => 'import-products')); ?>';" class="submit" value="<?php echo $this->translate->_("Import products"); ?>" />
+		<input type="button" onclick="document.location='<?php echo $this->url(array('action' => 'export-csv')); ?>';" class="submit" value="<?php echo $this->translate->_("Export records to CVS"); ?>" />
+		<div class="clear"></div>
+	</form>
+<?php else: ?>
+	<div class="error"><?php echo $this->translate->_("No records found."); ?></div>
+	<form style="background: #fff;">
+		<input type="button" onclick="document.location='<?php echo $this->url(array('action' => 'import-products')); ?>';" class="submit" value="<?php echo $this->translate->_("Import products"); ?>" />
+		<div class="clear"></div>
+	</form>
+<?php endif; ?>
+<script type="text/javascript">
+	READY(function() {
+		Admin.loadJs('filters/base.js');
+		Filters.load('/products/list-products');
+		Filters.Advanced.init({
+			translate: {
+				label: '<?php echo $this->translate->_("Filter #"); ?>',
+				remove: '<?php echo $this->translate->_("Remove"); ?>',
+				clear: '<?php echo $this->translate->_("Clear"); ?>',
+				yes: '<?php echo $this->translate->_("Yes"); ?>',
+				no: '<?php echo $this->translate->_("No"); ?>'
+			},
+			filters: [
+				{category: '<?php echo $this->translate->_("Product Filters"); ?>', name: '<?php echo $this->translate->_("Type"); ?>', field: 'f2.value', type: 'enum', resource: 'product_type'},
+				{category: '<?php echo $this->translate->_("Product Filters"); ?>', name: '<?php echo $this->translate->_("Condition"); ?>', field: 'f4.value', type: 'enum', resource: 'product_condition'},
+				{category: '<?php echo $this->translate->_("Product Filters"); ?>', name: '<?php echo $this->translate->_("Duration"); ?>', field: 'f6.value', type: 'enum', resource: 'product_duration'},
+				{category: '<?php echo $this->translate->_("Product Filters"); ?>', name: '<?php echo $this->translate->_("Price Euros"); ?>', field: 'f8.value', type: 'int'},
+				{category: '<?php echo $this->translate->_("Product Filters"); ?>', name: '<?php echo $this->translate->_("Price Dollars"); ?>', field: 'f10.value', type: 'int'},
+				{category: '<?php echo $this->translate->_("Product Filters"); ?>', name: '<?php echo $this->translate->_("Price Type"); ?>', field: 'f12.value', type: 'enum', resource: 'product_pricetype'},
+				{category: '<?php echo $this->translate->_("Product Filters"); ?>', name: '<?php echo $this->translate->_("Show Address"); ?>', field: 'f14.value', type: 'bool'},
+				{category: '<?php echo $this->translate->_("Product Filters"); ?>', name: '<?php echo $this->translate->_("Show Cell Phone"); ?>', field: 'f16.value', type: 'bool'},
+				{category: '<?php echo $this->translate->_("Product Filters"); ?>', name: '<?php echo $this->translate->_("Shipping"); ?>', field: 'f18.value', type: 'bool'},
+				{category: '<?php echo $this->translate->_("Product Filters"); ?>', name: '<?php echo $this->translate->_("Shipping Cost Euros"); ?>', field: 'f20.value', type: 'int'},
+				{category: '<?php echo $this->translate->_("Product Filters"); ?>', name: '<?php echo $this->translate->_("Shipping Cost Dollars"); ?>', field: 'f22.value', type: 'int'},
+				{category: '<?php echo $this->translate->_("Product Filters"); ?>', name: '<?php echo $this->translate->_("Primary Currency"); ?>', field: 'a.primary_currency_id', type: 'enum', resource: 'product_currency'},
+			],
+			resources: {
+				product_type: <?php echo json_encode($this->product_type); ?>,
+				product_condition: <?php echo json_encode($this->product_condition); ?>,
+				product_duration: <?php echo json_encode($this->product_duration); ?>,
+				product_pricetype: <?php echo json_encode($this->product_pricetype); ?>,
+				product_currency: <?php echo json_encode($this->product_currency); ?>
+			}
+		});
+	});
+</script>

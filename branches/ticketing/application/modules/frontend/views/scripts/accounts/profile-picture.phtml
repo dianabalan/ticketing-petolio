@@ -1,0 +1,22 @@
+<?php
+
+// avatar control
+$avatar = null;
+if(!is_null($this->user->getAvatar())) {
+	$ds = DIRECTORY_SEPARATOR;
+	$image = "..{$ds}data{$ds}userfiles{$ds}avatars{$ds}{$this->user->getId()}{$ds}{$this->user->getAvatar()}";
+
+	if(is_file($image)) {
+		$cache = filemtime($image);
+		$avatar = "/images/userfiles/avatars/{$this->user->getId()}/{$this->user->getAvatar()}?{$cache}";
+	}
+}
+
+?>
+<?php if(!is_null($avatar)): $this->placeholder('sidebar')->captureStart(); ?>
+<h3><?php echo $this->translate->_("Profile Picture"); ?></h3>
+<div style="width: 320px; border: 1px solid #B3B3B3; margin: 0px auto; padding: 5px; background: white;">
+	<img style="display: block; margin: 0px auto;" src="<?php echo $avatar; ?>" alt="<?php echo $this->translate->_("Profile Picture"); ?>" />
+</div>
+<br />
+<?php $this->placeholder('sidebar')->captureEnd(); endif; ?>

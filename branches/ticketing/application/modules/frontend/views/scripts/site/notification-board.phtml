@@ -1,0 +1,93 @@
+<div class="rightbox">
+	<h1><?php echo $this->translate->_("Notification board"); ?></h1>
+	<div class="cls"></div>
+	
+	<a href="<?php echo $this->url(array('controller'=>'calendar'), 'default', true); ?>" 
+			title="<?php echo $this->translate->_("Calendar"); ?>" class="notification-item calendar-noti">
+		<div>
+			<?php
+				if ( isset($this->new_events) && intval($this->new_events) > 0 ) {
+					echo '<span class="starred"></span>';
+					echo "<div>";
+					echo sprintf(
+							$this->translate->ngettext(
+									'You have one important event coming up.', 
+									'You have %1$s important events coming up.', 
+									$this->new_events), 
+							$this->new_events);
+					echo "</div>";
+				} else {
+					echo '<span></span>';
+					echo "<div>".$this->translate->_('You have no coming up events.')."</div>";
+				}
+			?>
+		</div>
+	</a>
+
+	<a href="<?php echo $this->url(array('controller'=>'messages', 'action'=>'inbox'), 'default', true); ?>" 
+			title="<?php echo $this->translate->_("Messages"); ?>" class="notification-item messages-noti">
+		<div>
+			<?php
+				if ( isset($this->new_messages) && intval($this->new_messages) > 0 ) {
+					echo '<span class="starred"></span>';
+					echo "<div>";
+					echo sprintf(
+							$this->translate->ngettext('You have one new message.', 'You have %1$s new messages.', $this->new_messages), 
+							$this->new_messages);
+					echo "</div>";
+				} else {
+					echo '<span></span>';
+					echo "<div>".$this->translate->_('You have no new message.')."</div>";
+				}
+			?>
+		</div>
+	</a>
+	
+	<div class="cl"></div>
+	
+	<a href="<?php echo $this->url(array('controller'=>'help', 'action'=>'myquestions'), 'default', true); ?>" 
+			title="<?php echo $this->translate->_("Messages"); ?>" class="notification-item help-noti">
+		<div>
+			<?php
+				if ( isset($this->new_answers) && intval($this->new_answers) > 0 ) {
+					echo '<span class="starred"></span>';
+					echo "<div>";
+					echo sprintf(
+							$this->translate->ngettext(
+								'You have a new answer to your question.', 
+								'You have %1$s new answers to your questions.', 
+								$this->new_answers), 
+							$this->new_answers);
+					echo "</div>";
+				} else {
+					echo '<span></span>';
+					echo "<div>".$this->translate->_('You have no new answers to your questions.')."</div>";
+				}
+			?>
+		</div>
+	</a>
+
+	<a href="<?php echo $this->url(array('controller'=>'friends'), 'default', true); ?>" 
+			title="<?php echo $this->translate->_("Friends"); ?>" class="notification-item friend-requests-noti">
+		<div>
+			<?php
+				if ( isset($this->new_friend_requests) && intval($this->new_friend_requests) > 0 ) {
+					echo '<span class="starred"></span>';
+					echo "<div>";
+					echo sprintf(
+							$this->translate->ngettext(
+								'You have a new friend request.', 
+								'You have %1$s new friend requests.', 
+								$this->new_friend_requests), 
+							$this->new_friend_requests);
+					echo "</div>";
+				} else {
+					echo '<span></span>';
+					echo "<div>".$this->translate->_('You have no new friend requests.')."</div>";
+				}
+			?>
+		</div>
+	</a>
+
+	<div class="cl"></div>
+</div>

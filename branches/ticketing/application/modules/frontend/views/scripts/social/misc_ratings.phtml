@@ -1,0 +1,46 @@
+<?php if($this->plugin->data): ?>
+	<br />
+	<div style="margin-top: 10px; border: 1px solid #ddd; background: white; padding: 0px 10px 10px 0px; width: 450px;">
+		<?php foreach($this->plugin->data as $idx => $like): ?>
+		<?php
+		 	// avatar control
+			$avatar = $this->partial('avatar.phtml', array(
+				'user' => array('id' => $like['user_id'], 'avatar' => $like['user_avatar'])
+			));
+		?>
+			<div style="float: left; margin-top: 10px; margin-left: 10px;">
+				<table cellpadding="0" cellspacing="0" style="width: 215px">
+				<col width="50" /><col />
+				<tr>
+					<td style="vertical-align: top;">
+						<img style="display: block; float: right; margin-top: 1px; border: 1px solid white;" src="<?php echo $avatar; ?>" />
+						<div style="clear: both;"></div>
+					</td>
+					<td style="padding-left: 8px; line-height: 16px;">
+						<a style="font-weight: bold; color: green;" href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $like['user_id']), 'default', true); ?>"><?php echo $like['user_name']; ?></a>
+					</td>
+				</tr>
+				</table>
+			</div>
+		<?php endforeach; ?>
+		<div class="clear"></div>
+		<?php if($this->plugin->pagination): ?>
+			<div class="rating_pagination" style="padding-left: 10px;">
+				<div style="height: 13px;"></div>
+				<?php if(isset($this->plugin->pagination['previous'])) { ?>
+					<a href="javascript:void(0);" style="padding: 2px 5px; border: 1px solid #ccc; background: white;" rel="<?php echo $this->plugin->pagination['previous']; ?>">&laquo; <?php echo $this->translate->_("Previous"); ?></a>
+				<?php } ?>
+				<?php if(isset($this->plugin->pagination['pages'])): foreach($this->plugin->pagination['pages'] as $page): ?>
+					<?php $p = is_array($page) ? reset($page) : $page;
+						$p = $p == 'delimiter' ? '&hellip;' : $p;
+					?>
+					<a href="javascript:void(0);" style="padding: 2px 5px; border: 1px solid <?php if(is_array($page)): ?>green<?php else: ?>#ccc<?php endif; ?>; background: white;" rel="<?php echo $p; ?>"><?php echo $p; ?></a>
+				<?php endforeach; endif; ?>
+				<?php if(isset($this->plugin->pagination['next'])) { ?>
+					<a href="javascript:void(0);" style="padding: 2px 5px; border: 1px solid #ccc; background: white;" rel="<?php echo $this->plugin->pagination['next']; ?>"><?php echo $this->translate->_("Next"); ?> &raquo;</a>
+				<?php } ?>
+				<div style="height: 4px;"></div>
+			</div>
+		<?php endif; ?>
+	</div>
+<?php endif; ?>

@@ -1,0 +1,25 @@
+<div class="normal">
+	<textarea class="normal" name="post_body" autocomplete="off"><?php echo $this->translate->_("What's on your mind?"); ?></textarea>
+	<div style="display:none;">
+		<a href="javascript:void(0);" name="link_picture" class="link picture"><?php echo $this->translate->_('Attach Picture'); ?></a>
+		<a href="javascript:void(0);" name="link_video" class="link video"><?php echo $this->translate->_('Attach Video'); ?></a>
+		<a href="javascript:void(0);" name="link_audio" class="link audio"><?php echo $this->translate->_('Attach Audio'); ?></a>
+		<a href="javascript:void(0);" target="_blank" style="display: none;" name="attached_picture" class="link picture"></a>
+		<a href="javascript:void(0);" target="_blank" style="display: none;" name="attached_video" class="link video"></a>
+		<a href="javascript:void(0);" target="_blank" style="display: none;" name="attached_audio" class="link audio"></a>
+		<a href="javascript:void(0);" style="display: none;" name="attached_delete" class="link delete"></a>
+		<a href="javascript:void(0);" name="entry_post" class="post"><?php echo $this->translate->_('Post Entry'); ?></a>
+		<span class="privacy_wrap" style="z-index: 105;">
+			<i class="p_public"></i>
+			<i class="p_down"></i>
+			<ul>
+				<dfn></dfn>
+				<li class="active"><i class="p_public margin"></i><a href="javascript:void(0);"><?php echo $this->translate->_("Public"); ?></a></li>
+				<li><i class="p_friends margin"></i><a href="javascript:void(0);"><?php echo $this->translate->_("Friends"); ?></a></li>
+				<li><i class="p_me margin"></i><a href="javascript:void(0);"><?php echo $this->translate->_("Only Me"); ?></a></li>
+				<li><i class="p_custom margin"></i><a href="javascript:void(0);"><?php echo $this->translate->_("Custom"); ?></a></li>
+			</ul>
+		</span>
+		<div class="clear"></div>
+	</div>
+</div>

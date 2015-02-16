@@ -1,0 +1,382 @@
+@CHARSET "UTF-8";
+
+/** Main **/
+#petolio_content {
+	min-width: 721px;
+	background: white;
+	padding: 10px;
+	border: 1px solid #d6d6d6;
+	border-radius: 5px;
+	font-family: 'FuturaBkBTBook', Arial, Helvetica, sans-serif;
+	font-size: 62.5%;
+	color: #111;
+	line-height: 1.4em;
+}
+
+/** Global **/
+#petolio_content .cl { height: 2px; font-size: 1px; clear: both; }
+#petolio_content .clear { clear: both; }
+#petolio_content .left { float: left; }
+#petolio_content .right { float: right; }
+
+#petolio_content .fivepx { height: 5px; }
+#petolio_content .tenpx { height: 10px; }
+
+#petolio_content .red { color: red !important; }
+#petolio_content .bigger { font-size: 1.2em; }
+
+#petolio_content p {
+	margin: 0px;
+	padding: 0px;
+}
+
+#petolio_content a {
+	outline: none;
+	font-size: 1.2em;
+	color: #047E00;
+	text-decoration: none;
+}
+
+#petolio_content h1 {
+	padding: 2px 0;
+	margin: 0;
+	font-size: 3em;
+	font-weight: bold;
+	color: #ccdbcc;
+	letter-spacing: -2px;
+	text-align: left;
+	line-height: 30px;
+	clear: both;
+}
+
+#petolio_content h3 {
+	margin: 0;
+	padding: 0;
+	font-size: 1.6em;
+	line-height: 1.6em;
+	font-weight: bold;
+	color: #004b00;
+	letter-spacing: -0.06em;
+}
+
+#petolio_content hr {
+	margin: 10px 0px 10px 0px;
+	padding: 0px;
+	height: 1px;
+	background: none;
+	border: none;
+	border-bottom: 1px solid #eee;
+}
+
+/** Table Base **/
+#petolio_content table {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	list-style: none;
+	font-size: 1em;
+	line-height: 1.4em;
+	color: #444;
+	text-align: left;
+}
+
+/** Grid **/
+#petolio_content table.grid {
+	margin: 0px auto 0px auto;
+	border: 1px solid #eee;
+	border-bottom: none;
+	font-size: 1.2em;
+}
+	#petolio_content table.grid tr > th {
+		padding: 9px 5px 5px 5px;
+		font-weight: bold;
+		border-bottom: 1px solid #eee;
+		background: #F8F8F8;
+		text-align: left; /* stupid IE */
+		font-size: 0.9em;
+		line-height: 1em;
+	}
+
+	#petolio_content table.grid tr > td {
+		padding: 5px;
+		border-bottom: 1px solid #eee;
+	}
+
+	#petolio_content table.grid td a {
+		padding: 2px 0;
+		font-size: 1em;
+	}
+
+/** List **/
+#petolio_content table.list {
+	margin: 0px auto;
+	border: 1px solid #eee;
+	border-bottom: none;
+}
+	#petolio_content table.list tr > th {
+		width: 150px;
+		padding: 5px;
+		font-weight: bold;
+		vertical-align: top;
+		border-bottom: 1px solid #eee;
+		text-align: left; /* stupid IE */
+		background: #F8F8F8;
+		font-size: 1.2em;
+	}
+
+	#petolio_content table.list tr > td {
+		padding: 5px;
+		vertical-align: top;
+		border-bottom: 1px solid #eee;
+		font-size: 1.2em;
+	}
+		#petolio_content table.list tr > td a {
+			padding: 2px 0;
+			font-size: 1em;
+		}
+
+	#petolio_content table.list ul {
+		margin: 0px 0px 0px 15px;
+	}
+
+	#petolio_content table.list ol {
+		margin: 0px 0px 0px 20px;
+	}
+
+/** Gallery **/
+#petolio_content div.gallery {
+	position: relative;
+	width: auto;
+	padding: 0;
+	margin-top: -7px;
+	margin-right: -10px;
+}
+
+	#petolio_content div.gallery > div.picture {
+		float: left;
+		background: #fff;
+		border: 1px solid #a2a2a2;
+		padding: 1px;
+		margin: 7px 7px 0 0;
+		position: relative;
+		border-radius: 4px;
+	}
+
+		#petolio_content div.gallery div.picture > a > span.img,
+		#petolio_content div.gallery div.picture > a > span.aud,
+		#petolio_content div.gallery div.picture > a > span.vid {
+			position: relative;
+			display: block;
+			width: 120px;
+			height: 80px;
+			border-radius: 4px 4px 0px 0px;
+			display: table-cell;
+			text-align: center;
+			vertical-align: middle;
+			font-size: 11px;
+		}
+
+		#petolio_content div.gallery div.picture > span.name {
+			background: #edf3e3;
+			display: block;
+			padding: 3px 4px 3px 4px;
+			width: 112px;
+			height: 15px;
+			overflow: hidden;
+			line-height: 16px;
+			white-space: nowrap;
+			border-top: 1px solid #fff;
+		}
+
+		#petolio_content div.gallery div.picture > span.name a {
+			color: #004b00 !important;
+			font-weight: bold;
+			font-size: 12px;
+		}
+
+		#petolio_content div.gallery div.picture > span.info {
+			display: block;
+			background: #e3ebd4;
+			color: #666666;
+			padding: 6px 4px 3px 4px;
+			width: 112px;
+			height: 28px;
+			overflow: hidden;
+			border-top: 1px solid #fff;
+			font-size: 1.1em;
+			border-radius: 0px 0px 4px 4px;
+		}
+
+/** Pictures **/
+#petolio_content div.pictures {
+	width: 800px;
+	margin-top: -7px;
+}
+	#petolio_content div.pictures > div.pic {
+		float: left;
+		background: #fff;
+		border: 1px solid #a2a2a2;
+		padding: 1px;
+		margin: 7px 7px 0 0;
+		border-radius: 4px;
+		position: relative;
+	}
+
+	#petolio_content div.pictures > div.pic > span.img,
+	#petolio_content div.pictures > div.pic > span.aud,
+	#petolio_content div.pictures > div.pic > span.vid {
+		cursor: pointer;
+		display: block;
+		width: 99px;
+		height: 66px;
+		border-radius: 4px;
+	}
+
+	#petolio_content div.pictures > div.pic > span.aud {
+		background: transparent url("../images/play.png") center center no-repeat;
+		height: 44px;
+	}
+
+	#petolio_content div.pictures > div.pic > span.name {
+		display: block;
+		border-top: 1px solid white;
+		overflow: hidden;
+		white-space: nowrap;
+		line-height: 14px;
+		background: #E3EBD4;
+		color: #666;
+		padding: 4px 3px 3px 3px;
+		width: 93px;
+		overflow: hidden;
+		font-size: 11px;
+		border-radius: 0px 0px 4px 4px;
+	}
+
+	#petolio_content div.pictures > div.pic > span.duration {
+		display: block;
+		position: absolute;
+		bottom: 3px;
+		right: 3px;
+		padding: 0 4px;
+		border-radius: 3px;
+		background: #000;
+		font-weight: bold;
+		color: #fff;
+		opacity: 0.75;
+		font-size: 10px;
+	}
+
+/** Green Box **/
+#petolio_content .green_box {
+	border: 1px solid green;
+	border-radius: 15px;
+	padding: 25px 15px 15px 15px;
+	position: relative;
+}
+
+#petolio_content .green_box .title {
+	position: absolute;
+	top: -18px;
+	left: 50px;
+}
+
+#petolio_content .green_box .title span {
+	border: 1px solid green;
+	border-radius: 10px;
+	padding: 10px 15px;
+	background: white;
+	color: #047E00;
+	font-weight: bold;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+#petolio_content .green_box .title span.active {
+	background: #e7e7e7;
+}
+
+/** For Main Menu **/
+#petolio_content a.category {
+	font-weight: bold;
+	font-size: 16px;
+	padding: 4px 6px 0px 30px;
+	background: transparent url('/images/leftmenu/pets_sm.png') no-repeat left center;
+	display: block;
+	float: left;
+}
+
+#petolio_content span.count {
+	font-size: 11px;
+	color: #999;
+	display: block;
+	float: left;
+	margin-top: 3px;
+}
+
+/** Buttons **/
+#petolio_content input {
+	float: left;
+	width: 200px;
+	margin: 0 0 0 5px;
+	position: relative;
+	font-size: 1.3em;
+	color: #555;
+	background-color: #f6f9f2;
+	border: 1px solid #e1eae0;
+	border-radius: 5px;
+	padding: 5px 4px 3px 4px;
+}
+
+#petolio_content #submit {
+	width: auto;
+	font-size: 11px;
+	padding: 5px 10px 3px 10px;
+	background-color: #CBE7CB;
+	color: #004C00;
+	cursor: pointer;
+}
+
+/** Elipsis and Multiline **/
+#petolio_content .ellipsis {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#petolio_content .multiline {
+	white-space: normal;
+}
+
+/** Pagination **/
+#petolio_content .pagefirst, #petolio_content .pagefirstoff, #petolio_content .pageprev, #petolio_content .pageprevoff, #petolio_content .pagenext, #petolio_content .pagenextoff, #petolio_content .pagelast, #petolio_content .pagelastoff {
+	display: block;
+	height: 24px;
+	width: 24px;
+	float: left;
+	margin: 0px 2px 0px 0px;
+	border: 1px solid #ddd;
+}
+#petolio_content .pagefirst:hover, #petolio_content .pagefirstoff:hover, #petolio_content .pageprev:hover, #petolio_content .pageprevoff:hover, #petolio_content .pagenext:hover, #petolio_content .pagenextoff:hover, #petolio_content .pagelast:hover, #petolio_content .pagelastoff:hover {
+	text-decoration: none !important;
+}
+#petolio_content .pagefirst { background: #fff url("../images/pagination/first.png"); }
+#petolio_content .pagefirstoff { background: #eee url("../images/pagination/first_off.png"); }
+#petolio_content .pageprev { background: #fff url("../images/pagination/prev.png"); }
+#petolio_content .pageprevoff { background: #eee url("../images/pagination/prev_off.png"); }
+#petolio_content .pagenext { background: #fff url("../images/pagination/next.png"); }
+#petolio_content .pagenextoff { background: #eee url("../images/pagination/next_off.png"); }
+#petolio_content .pagelast { background: #fff url("../images/pagination/last.png"); }
+#petolio_content .pagelastoff { background: #eee url("../images/pagination/last_off.png"); }
+
+/** Footer **/
+#petolio_content > div.inner-footer {
+	color: #999;
+	font-size: 12px;
+	width: 100%;
+	text-align: right;
+	margin: 10px 5px 0px 0px;
+}
+
+#petolio_content > div.inner-footer a {
+	font-size: 12px;
+}

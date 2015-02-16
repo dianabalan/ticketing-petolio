@@ -1,0 +1,28 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->translate->_("Edit Microsite"); ?></h1>
+		<br />
+		<div>
+	    	<label for="default_logo"><?php echo $this->translate->_('Template'); ?></label>
+	       	<div style="padding: 6px 0px 3px; float: left; margin: 0pt 0pt 0pt 5px; height: 16px;"><span style="font-size:12px;"><?php echo $this->template; ?> - </span><a href="<?php echo $this->url(array('change' => true)); ?>" class="reqconf" title="<?php echo $this->translate->_("Are you sure you want to change the template? Doing so will result in deleting all of your previous saved content."); ?>"><?php echo $this->translate->_('Change Template'); ?></a></div>
+	       	<div class="cls"></div>
+		</div>
+		<?php echo $this->form; ?>
+	</div>
+</div>
+<script type="text/javascript">
+	var Comply = function() {
+		function __construct() {
+			$('label.description').css({width: 'auto'});
+			$('label.description').css({marginLeft: '130px'});
+		};
+
+		return {
+			init: __construct
+		}
+	}();
+
+	READY(Comply.init);
+</script>

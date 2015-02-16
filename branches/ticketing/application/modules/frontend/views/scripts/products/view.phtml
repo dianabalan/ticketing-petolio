@@ -1,0 +1,240 @@
+<?php 
+	include "menu.phtml"; 
+	$product_name = ucfirst($this->product_attr['title']->getAttributeEntity()->getValue());
+	$this->headTitle($product_name);
+	$this->headMeta()->appendProperty('og:title', $product_name);
+?>
+<div id="right">
+	<div class="rightbox">
+		<?php if($this->flagged): ?>
+			<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+			<h1><?php echo $this->translate->_("Product:"); ?> <?php echo $product_name; ?></h1>
+			<br />
+			<div class="c_error">
+				<div><b><?php echo $this->translate->_("Cannot display this product because it was flagged by the community."); ?></b></div>
+				<ul>
+					<?php foreach(array_unique($this->flagged) as $item): ?>
+						<li><?php echo $item; ?></li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+		<?php else: ?>
+			<div class="context"><div class="in">
+				<a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a>
+				<?php if ($this->hasIdentity && !$this->admin): ?>
+					<div class="dialog-flag" title="<?php echo $this->translate->_("Flag as inappropriate"); ?>">
+						<div id="in-flag" style="margin: 8px 0px 2px 0px; line-height: 18px;" rel="<?php echo $this->product->getId(); ?>_<?php echo $this->product->getUserId(); ?>">
+							<span id="flag-text"><?php echo $this->translate->_("Please select the category that most closely reflects your concern about the content presented before you."); ?><br /><br /></span>
+							<?php echo $this->flag; ?><br />
+							<span class="grey"><small>
+								<?php echo $this->translate->_("You may only flag as inappropriate once per content."); ?><br /><br />
+								<?php echo $this->translate->_("Anything more than that would be against our Terms and Conditions and it may lead to the suspension or your account or a permanent ban."); ?><br /><br />
+								<?php echo $this->translate->_("Abusing this feature is also a violation of our Terms and Conditions, so please don't do it."); ?>
+							</small></span>
+						</div>
+					</div>
+					<?php $flag_opt = 'PoProducts'; include "../application/modules/frontend/views/scripts/flag.phtml"; ?>
+				<?php endif; ?>
+			</div></div>
+			<h1><span class="ellipsis" style="width: 700px; display: block;"><?php echo $product_name; ?></span></h1>
+			<br />
+			<?php if(count($this->gallery) > 0): ?>
+			    <div class="pictures">
+					<?php
+						$first = true;
+						foreach($this->gallery as $idx => $pic):
+							if($first) {
+								$image = PO_BASE_URL."images/userfiles/products/{$this->product->getId()}/{$pic}";
+								$this->headMeta()->appendProperty('og:image', $image);
+								$first = false;
+							}
+					?>
+						<div class="pic">
+							<span class="img" rel="<?php echo $idx; ?>" style="background: #000 url('/images/userfiles/products/<?php echo $this->product->getId(); ?>/small_<?php echo $pic; ?>') center center no-repeat;"></span>
+						</div>
+					<?php endforeach; ?>
+					<div class="clear"></div>
+				</div>
+			    <div class="clear"></div>
+			    <?php
+			    	// if there is more then 1 page
+			    	if ($this->picture_paginator->count() > 1) {
+			    		echo $this->paginationControl($this->picture_paginator, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot'));
+			    		echo '<div class="clear"></div>';
+			    	}
+			    ?>
+				<?php if($this->admin): ?>
+					<a href="<?php echo $this->url(array('controller'=>'products', 'action'=>'pictures', 'product'=>$this->product->getId()), 'default', true); ?>" class='icon_link edit right'><span><?php echo $this->translate->_("Edit Pictures"); ?></span></a>
+					<div class="clear"></div>
+				<?php endif; ?>
+				<br />
+			<?php else:
+				$image = PO_BASE_URL."images/new/logo.png";
+				$this->headMeta()->appendProperty('og:image', $image);
+			endif; ?>
+			<?php if(isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'products') !== false && strpos($_SERVER['HTTP_REFERER'], 'products/view') === false): ?>
+				<div class="left"><input onclick="Petolio.go('<?php echo $_SERVER['HTTP_REFERER']; ?>');" type="button" value="<?php echo $this->translate->_("< Back to List"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+				<div class="clear"></div>
+				<br />
+			<?php else: ?>
+				<div class="left"><input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'products'), 'default', true) ?>');" type="button" value="<?php echo $this->translate->_("< Back to List"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+				<div class="clear"></div>
+				<br />
+			<?php endif; ?>
+			<div class="right" style="width: 281px;">
+				<h2><?php echo $this->translate->_("Contact"); ?></h2>
+				<table cellspacing="0" cellpadding="5" border="0" class="list">
+		    		<tr>
+		    			<th style="width: 80px;"><?php echo $this->translate->_("Owner"); ?></th>
+		    			<td><a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user'=>$this->product->getUserId()), 'default', true); ?>"><?php echo $this->product->getOwner()->getName(); ?></a></td>
+		    		</tr>
+					<?php if($this->cell && $this->product->getOwner()->getPhone()) { ?>
+			    		<tr>
+			    			<th style="width: 80px;"><?php echo $this->translate->_("Cell Phone"); ?></th>
+			    			<td><?php echo $this->product->getOwner()->getPhone(); ?></td>
+			    		</tr>
+		    		<?php } if($this->address) {
+		    			// compile address
+		    			$compiled = null;
+						if($this->translate->getLocale() == 'en') {
+							$compiled .= $this->product->getOwner()->getAddress().' '.$this->product->getOwner()->getLocation().' '.$this->product->getOwner()->getZipCode();
+							if(strlen($this->product->getOwner()->getAddress()) > 0 || strlen($this->product->getOwner()->getLocation()) > 0) {
+								if(strlen(@$this->country_list[$this->product->getOwner()->getCountryId()]) > 0)
+									$compiled .= ', ';
+							}
+							$compiled .= @$this->country_list[$this->product->getOwner()->getCountryId()];
+						} else {
+							$compiled .= $this->product->getOwner()->getZipCode().' '.$this->product->getOwner()->getAddress();
+							if(strlen($this->product->getOwner()->getZipCode()) > 0 || strlen($this->product->getOwner()->getAddress()) > 0) {
+								if(strlen($this->product->getOwner()->getLocation()) > 0)
+									$compiled .= ', ';
+							}
+							$compiled .= $this->product->getOwner()->getLocation();
+							if(strlen($this->product->getOwner()->getLocation()) > 0 || strlen($this->product->getOwner()->getZipCode()) > 0 || strlen($this->product->getOwner()->getAddress()) > 0) {
+								if(strlen(@$this->country_list[$this->product->getOwner()->getCountryId()]) > 0)
+									$compiled .= ', ';
+							}
+							$compiled .= @$this->country_list[$this->product->getOwner()->getCountryId()];
+						}
+		    		} if(isset($compiled) && strlen(trim($compiled)) > 0) { ?>
+			    		<tr>
+			    			<th style="width: 80px;"><?php echo $this->translate->_("Address"); ?></th>
+			    			<td><?php echo $compiled; ?></td>
+			    		</tr>
+		    		<?php } ?>
+		    		<tr>
+		    			<th style="width: 80px;"></th>
+		    			<td><input onclick="Petolio.go(window.location.href.replace('view', 'contact'));" type="button" value="<?php echo $this->translate->_("Send Message"); ?>" id="submit" name="prev" style="margin: 0px;" /></td>
+		    		</tr>
+			    </table>
+			    <br />
+				<h2><?php echo $this->translate->_("Recommend"); ?></h2>
+				<div style="padding-top: 10px; font-size: 12px;"><?php echo $this->translate->_("Recommend this product to your friends! All you have to do is to write their emails in the box below:"); ?></div>
+				<div id='recommend-social'>
+					<div class='social' style='text-align: left; width: 280px; margin: 0 auto; position: relative;'>
+						<div class='recommend'><div style='height: 7px;'></div><div style='text-align: center; padding: 2px 5px; border: 1px solid #A5CC7D; background: #CEECB0;'><?php echo $this->translate->_('Loading Social Plugins...'); ?></div></div>
+					</div>
+				</div>
+			</div>
+			<div class="left" style="width: 509px;">
+			    <h2><?php echo $this->translate->_("Details"); ?></h2>
+			    <table cellspacing="0" cellpadding="5" border="0" class="list">
+					<?php foreach($this->attrs['details'] as $label => $value): ?>
+		        		<tr>
+		        			<th><?php echo $label; ?></th>
+		        			<td><?php echo $value; ?></td>
+		        		</tr>
+					<?php endforeach; ?>
+			    </table>
+				<?php if($this->auth->hasIdentity() && $this->admin): ?>
+			    	<div class="tenpx"></div>
+					<a href="<?php echo $this->url(array('controller'=>'products', 'action'=>'edit', 'product'=>$this->product->getId()), 'default', true); ?>" class='icon_link edit right'><span><?php echo $this->translate->_("Edit Product Details"); ?></span></a>
+					<div class="cls"></div>
+				<?php else: ?>
+					<br />
+				<?php endif; ?>
+				<div class="left" style="width: 60%;">
+					<?php if(isset($this->attrs['pricing'])): ?>
+					    <h2><?php echo $this->translate->_("Pricing"); ?></h2>
+						<table cellspacing="0" cellpadding="5" border="0" class="list">
+							<?php foreach($this->attrs['pricing'] as $label => $price): ?>
+								<tr>
+					        		<th style="width: 100px;"><?php echo $label; ?></th>
+					        		<td>
+										<?php foreach($price as $idx => $value) { ?>
+											<span class="price price_<?php echo $idx; ?>" style="text-align: right; width: 80px; display: inline-block;"><?php echo $value; ?></span>
+										<?php } ?>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+					    </table>
+					<?php endif; ?>
+				</div>
+				<div class="right" style="width: 38%; margin-left: 2%;">
+					<?php if($this->product->getLinks()) { ?>
+					    <h2><?php echo $this->translate->_("Links"); ?></h2>
+					    <div style="white-space: nowrap; width: 100%; overflow: hidden; text-overflow: ellipsis; margin-top: 8px;">
+							<?php foreach(unserialize($this->product->getLinks()) as $name => $link) { ?>
+				        		<a target="_blank" href="<?php echo $link; ?>"><?php echo $name; ?></a><br />
+					        <?php } ?>
+					    </div>
+					    </table>
+						<?php if($this->auth->hasIdentity() && $this->admin): ?>
+					    	<div class="tenpx"></div>
+							<a href="<?php echo $this->url(array('controller'=>'products', 'action'=>'links', 'product'=>$this->product->getId()), 'default', true); ?>" class='icon_link edit right'><span><?php echo $this->translate->_("Edit Product Links"); ?></span></a>
+							<div class="clear"></div>
+						<?php endif; ?>
+					<?php } ?>
+				</div>
+				<div class="clear"></div>
+			</div>
+			<div class="clear"></div>
+			<?php if(isset($this->attrs['description'])): ?>
+				<div style="font-size: 12px; line-height: 18px;">
+					<br />
+	 				<h2><?php echo $this->translate->_("Description"); ?></h2>
+				    <div class="description_box reset"><?php echo reset($this->attrs['description']); ?></div>
+				    <?php $this->headMeta()->appendProperty('og:description', Petolio_Service_Util::shortenText(reset($this->attrs['description']), 200, true)); ?>
+				</div>
+			<?php endif; ?>
+			<br />
+			<?php if(isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'products') !== false && strpos($_SERVER['HTTP_REFERER'], 'products/view') === false): ?>
+				<div class="left"><input onclick="Petolio.go('<?php echo $_SERVER['HTTP_REFERER']; ?>');" type="button" value="<?php echo $this->translate->_("< Back to List"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+				<div class="clear"></div>
+			<?php else: ?>
+				<div class="left"><input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'products'), 'default', true) ?>');" type="button" value="<?php echo $this->translate->_("< Back to List"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+				<div class="clear"></div>
+			<?php endif; ?>
+		<?php endif; ?>
+		
+		<div class="right">
+			<?php echo $this->partial('addthis.phtml', array('title' => $product_name, 'translate' => $this->translate)); ?>
+		</div>
+		
+	</div>
+</div>
+<?php $imgsw_path = array(
+	'image' => "/images/userfiles/products/{$this->product->getId()}/{image}",
+	'audio' => "/images/userfiles/products/{$this->product->getId()}/audios/{audio}",
+	'video' => "http://www.youtube.com/embed/{video}"
+); include "../application/modules/frontend/views/scripts/imgsw.phtml"; ?>
+<script type="text/javascript">
+	var Recommend = function() {
+		var _load = function() {
+			Petolio.loadJs('social/base.js');
+			var params = {
+				scope: 'po_products',
+				id: <?php echo $this->product->getId(); ?>,
+			};
+			Social.load('recommend', $("#recommend-social"), params);
+		}, __construct = function() {
+			_load();
+		};
+
+		return {
+			init: __construct
+		}
+	}();
+
+	READY(Recommend.init);
+</script>

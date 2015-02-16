@@ -1,0 +1,24 @@
+<script type="text/javascript">
+	var __flagOpt = {
+		reason: '<?php echo $this->translate->_("Please select a reason for flagging this page."); ?>',
+		ok: '<?php echo $this->translate->_("OK"); ?>',
+		cancel: '<?php echo $this->translate->_("Cancel"); ?>'
+	};
+</script>
+<?php if($this->frame): ?>
+	<script type="text/javascript">
+		READY(function() {
+			var f = parent.window;
+
+			f.Petolio.loadJs('flag.js');
+			f.Flag.init('<?php echo $flag_opt; ?>', __flagOpt, 1);
+		});
+	</script>
+<?php else: ?>
+	<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/flag.js'); ?>"></script>
+	<script type="text/javascript">
+		READY(function() {
+			Flag.init('<?php echo $flag_opt; ?>', __flagOpt);
+		});
+	</script>
+<?php endif; ?>

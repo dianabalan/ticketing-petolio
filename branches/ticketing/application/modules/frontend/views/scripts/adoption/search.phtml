@@ -1,0 +1,103 @@
+<?php 
+	$keyword = $this->request->getParam('keyword');
+	$country = $this->request->getParam('country');
+	$category = $this->request->getParam('category');
+	$zipcode = $this->request->getParam('zipcode');
+	$address = $this->request->getParam('address');
+	$location = $this->request->getParam('location');
+	$owner = $this->request->getParam('owner');
+	$species = $this->request->getParam('species');
+?>
+<div class="left">
+	<div class="search-box">
+		<form id="front_search_form" action="<?php echo $this->action; ?>">
+			<input type="text" name="keyword" 
+				value="<?php echo isset($keyword) ? $keyword : $this->translate->_('Search...'); ?>" 
+				label="<?php echo $this->translate->_('Search...'); ?>" />
+			<input type="submit" class="search_submit" value="" />
+			<div class="clear"></div>
+		</form>
+	</div>
+	<div class="clear"></div>
+	<div class="search-more">
+		<a href="javascript:void(0);" class="rreset"><?php echo $this->translate->_("Reset"); ?></a>
+		<a href="javascript:void(0);" hide="<?php echo $this->translate->_("Close search options"); ?>" 
+			show="<?php echo $this->translate->_("More search options"); ?>" class="mmore">
+			<?php echo $this->translate->_("More search options"); ?></a>
+		<div class="advanced-search">
+			<div class="nub"></div>
+			<?php
+				// countries
+				$scountry = "<option value=''> ".$this->translate->_('Select Country')."</option>";
+				foreach($this->country_list as $id => $val) {
+					$sel = $country && $country == $id ? 'selected="selected"' : null;
+					$scountry .= "<option value='{$id}' {$sel}>{$val}</option>";
+				}
+	
+				// categories
+				$scategory = "<option value=''> ".$this->translate->_('All')."</option>";
+				$sel = isset($category) && $category == 0 ? 'selected="selected"' : null;
+				$scategory .= "<option value='0' {$sel}> ".$this->translate->_('Pet Owners')."</option>";
+				foreach($this->category_list as $id => $val) {
+					$sel = isset($category) && $category == $id ? 'selected="selected"' : null;
+					$scategory .= "<option value='{$id}' {$sel}>{$val}</option>";
+				}
+				
+				// species
+				$sel = isset($species) && $species == 0 ? 'selected="selected"' : null;
+				$sspecies = "<option value='0' {$sel}> ".$this->translate->_('All')."</option>";
+				foreach($this->types as $id => $val) {
+					$sel = isset($species) && $species == $id ? 'selected="selected"' : null;
+					$sspecies .= "<option value='{$id}' {$sel}>{$val}</option>";
+				}
+			?>
+			<form id="advanced_search_form" action="<?php echo $this->action; ?>">
+				<table width="100%" cellspacing="5" cellpadding="5" border="0">
+					<tr>
+						<td><label><?php echo $this->translate->_("Keywords"); ?></label></td>
+						<td style="padding-left: 5px;"><input type="text" name="keyword" value="<?php echo $keyword; ?>" /></td>
+					</tr>
+					<tr>
+						<td><label><?php echo $this->translate->_("Species"); ?></label></td>
+						<td style='padding-left: 5px;'>
+							<select name='species'><?php echo $sspecies; ?></select>
+						</td>
+					</tr>
+					<tr>
+						<td><label><?php echo $this->translate->_("Category"); ?></label></td>
+						<td style='padding-left: 5px;'>
+							<select name='category'><?php echo $scategory; ?></select>
+						</td>
+					</tr>
+					<tr>
+						<td><label><?php echo $this->translate->_("Country"); ?></label></td>
+						<td style='padding-left: 5px;'><select name='country'><?php echo $scountry; ?></select></td>
+					</tr>
+					<tr>
+						<td><label><?php echo $this->translate->_("Zipcode"); ?></label></td>
+						<td style='padding-left: 5px;'><input type='text' name='zipcode' value='<?php echo $zipcode; ?>' /></td>
+					</tr>
+					<tr>
+						<td><label><?php echo $this->translate->_("Address"); ?></label></td>
+						<td style='padding-left: 5px;'><input type='text' name='address' value='<?php echo $address; ?>' /></td>
+					</tr>
+					<tr>
+						<td><label><?php echo $this->translate->_("State"); ?></label></td>
+						<td style='padding-left: 5px;'><input type='text' name='location' value='<?php echo $location; ?>' /></td>
+					</tr>
+					<tr>
+						<td><label><?php echo $this->translate->_("Owner"); ?></label></td>
+						<td style='padding-left: 5px;'><input type='text' name='owner' value='<?php echo $owner; ?>' /></td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<input class="submit" style="float: right;" type="button" id="search_reset" value="<?php echo $this->translate->_("Reset"); ?>" />
+							<input class="submit" style="float: right;" type="submit" value="<?php echo $this->translate->_("Go"); ?>" />
+						</td>
+					</tr>
+				</table>
+			</form>
+			<script type="text/javascript" src="/js/search.js"></script>
+		</div>
+	</div>
+</div>

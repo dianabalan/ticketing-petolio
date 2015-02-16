@@ -1,0 +1,175 @@
+<?php
+
+$this->placeholder('sidebar')->captureStart();
+$service_name = Petolio_Service_Parse::do_limit(ucfirst($this->service_attr['name']->getAttributeEntity()->getValue()), 20, false, true);
+
+if ( $this->auth->hasIdentity() && $this->service->getUserId() == $this->auth->getIdentity()->id ) {
+	$options = array(
+		array(
+			'link' => $this->url(array('controller'=>'services', 'action'=>'view', 'service'=>$this->service->getId()), 'default', true),
+			'name' => $this->translate->_("View service"),
+			'class' => 'lm-services_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'services', 'action'=>'edit', 'service'=>$this->service->getId()), 'default', true),
+			'name' => $this->translate->_("Edit Details"),
+			'class' => 'lm-services_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'services', 'action'=>'map', 'service'=>$this->service->getId()), 'default', true),
+			'name' => $this->translate->_("Map Register"),
+			'class' => 'lm-services_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'services', 'action'=>'pictures', 'service'=>$this->service->getId()), 'default', true),
+			'name' => $this->translate->_("Pictures"),
+			'class' => 'lm-services_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'services', 'action'=>'videos', 'service'=>$this->service->getId()), 'default', true),
+			'name' => $this->translate->_("Videos"),
+			'class' => 'lm-services_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'services', 'action'=>'archive', 'service'=>$this->service->getId()), 'default', true),
+			'name'  => sprintf($this->translate->_("Archive %s"), $service_name),
+			'title'	=> sprintf($this->translate->_("Are you sure you want to archive %s?"), $service_name),
+			'class' => 'lm-services_sm reqconf'
+		)
+	);
+
+	if ($this->service_type == 1)
+		$options[] =
+			array(
+				'link' =>  "{$this->url(array('controller'=>'services', 'action'=>'view', 'service' => $this->service->getId()), 'default', true)}#invite_members",
+				'name' => $this->translate->_("Invite Users"),
+				'class' => 'lm-services_sm',
+				'id' => "invite_members"
+			);
+	else
+		$options[] =
+			array(
+				'link' =>  "{$this->url(array('controller'=>'services', 'action'=>'view', 'service' => $this->service->getId()), 'default', true)}#invite_partners",
+				'name' => $this->translate->_("Invite Users"),
+				'class' => 'lm-services_sm',
+				'id' => "invite_partners"
+			);
+
+} else {
+	$options = array(
+		array(
+			'link' => $this->url(array('controller'=>'services', 'action'=>'view', 'service'=>$this->service->getId()), 'default', true),
+			'name' => $this->translate->_("View service"),
+			'class' => 'lm-services_sm'
+		),
+		array(
+			'link' => $this->url(array('controller'=>'accounts', 'action'=>'view', 'user'=>$this->service->getUserId()), 'default', true),
+			'name' => $this->translate->_("View Owner's Profile"),
+			'class' => 'lm-services_sm'
+		)
+	);
+
+	$member = false;
+	if ( $this->auth->hasIdentity() ) {
+		if ( $this->service_type == 1 ) {
+			if ( isset($this->accepted_members_users) ) {
+				foreach ( $this->accepted_members_users as $member_user ) {
+					if ( $member_user->getUserId() == $this->auth->getIdentity()->id ) {
+						$member = true;
+						$options[] = array(
+							'link'	=> $this->url(array('controller'=>'services', 'action'=>'send-message', 'user' => $this->service->getUserId(), 'service' => $this->service->getId()), 'default', true),
+							'name'	=> $this->translate->_("Send message"),
+							'class' => 'lm-services_sm'
+						);
+						$options[] = array(
+							'link'	=> $this->url(array('controller'=>'services', 'action'=>'remove-membership', 'link' => $member_user->getId()), 'default', true),
+							'name'	=> $this->translate->_("Cancel membership"),
+							'class' => 'lm-services_sm reqconf'
+						);
+					}
+				}
+			}
+		} else {
+			if ( isset($this->accepted_members_pets) ) {
+				foreach ( $this->accepted_members_pets as $member_pet ) {
+					if ( $member_pet->getMemberPet()->getUserId() == $this->auth->getIdentity()->id && !$member ) {
+						$member = true;
+						$options[] = array(
+							'link'	=> $this->url(array('controller'=>'services', 'action'=>'send-message', 'user' => $this->service->getUserId(), 'service' => $this->service->getId()), 'default', true),
+							'name'	=> $this->translate->_("Send message"),
+							'class' => 'lm-services_sm'
+						);
+					}
+				}
+			}
+		}
+	}
+
+	if ($this->service_type == 1) {
+		if ( !$member ) {
+			$options[] = array(
+				'link'	=> $this->url(array('controller'=>'services', 'action'=>'request-membership', 'service'=>$this->service->getId()), 'default', true),
+				'name'	=> $this->translate->_("Request membership"),
+				'class' => 'lm-services_sm'
+			);
+		}
+	} else {
+		$options[] = array(
+			'link' => $this->url(array('controller'=>'services', 'action'=>'request-partnership', 'service'=>$this->service->getId()), 'default', true),
+			'name' => $this->translate->_("Request partnership"),
+			'class' => 'lm-services_sm');
+	}
+}
+
+$links = null;
+foreach($options as $link) {
+	$id = $class = $rel = null;
+	$name = $link['name'];
+
+	if(isset($link['id']))
+		$id = " id='{$link['id']}'";
+
+	if(isset($link['class'])) {
+		$class = " class='{$link['class']}'";
+		if ( !isset($link['title']) ) $class .= " title='{$link['name']}'";
+		$name = "{$link['name']}";
+	}
+
+	if ( isset($link['title']) ) {
+		$class .= " title='{$link['title']}'";
+	}
+
+	if(isset($link['rel']))
+		$rel = " rel='{$link['rel']}'";
+
+	$links .= "<li><a href='{$link['link']}'{$id}{$class}{$rel}>{$name}</a></li>";
+}
+
+?>
+<h3><?php echo $this->translate->_("Options"); ?></h3>
+<ul class="leftsubmenu" data-context="true"><?php echo $links; ?></ul>
+
+<?php if ( $this->auth->hasIdentity() && $this->service->getUserId() != $this->auth->getIdentity()->id ): ?>
+<ul class="leftsubmenu" style="display: none;" data-context="true">
+	<li>
+		<a href="#" class="icon_link caution openflag">
+			<span style="padding: 0px; font-weight: normal; font-size: 12px !important;"><?php echo $this->translate->_("Flag as inappropriate"); ?></span>
+		</a>
+	</li>
+</ul>
+<div class="dialog-flag" title="<?php echo $this->translate->_("Flag as inappropriate"); ?>">
+	<div id="in-flag" style="margin: 8px 0px 2px 0px; line-height: 18px;" rel="<?php echo $this->service->getId(); ?>_<?php echo $this->service->getUserId(); ?>">
+		<span id="flag-text"><?php echo $this->translate->_("Please select the category that most closely reflects your concern about the content presented before you."); ?><br /><br /></span>
+		<?php echo $this->flag; ?><br />
+		<span class="grey"><small>
+			<?php echo $this->translate->_("You may only flag as inappropriate once per content."); ?><br /><br />
+			<?php echo $this->translate->_("Anything more than that would be against our Terms and Conditions and it may lead to the suspension or your account or a permanent ban."); ?><br /><br />
+			<?php echo $this->translate->_("Abusing this feature is also a violation of our Terms and Conditions, so please don't do it."); ?>
+		</small></span>
+	</div>
+</div>
+<?php $flag_opt = 'PoPets'; include "../application/modules/frontend/views/scripts/flag.phtml"; ?>
+<?php endif; ?>
+
+<div class="clear">&nbsp;</div>
+<?php $this->placeholder('sidebar')->captureEnd(); ?>

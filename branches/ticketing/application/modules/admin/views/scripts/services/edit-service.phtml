@@ -1,0 +1,20 @@
+<h1><a href="<?php echo $this->url(array("controller" => "services", "action" => "index"), "admin", true); ?>"><?php echo $this->translate->_("Services"); ?></a> &raquo; <?php echo $this->translate->_("Edit Service"); ?></h1>
+<?php echo str_replace(array('<form id="Employees" enctype="application/x-www-form-urlencoded" class="subform" method="post" action="">', '</dl></fieldset></form>'), array('', '</dl></fieldset>'), $this->form); ?>
+<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/service.js'); ?>"></script>
+<script type="text/javascript">
+	READY(function() {
+		$('fieldset').after('<div style="height: 0px; padding: 0px;"></div>');
+		$('select').next('input').css('margin-left', '10px');
+	});
+	<?php
+		if(isset($this->subform_data) && is_array($this->subform_data)):
+			echo 'READY(function() {'.chr(10);
+			foreach ($this->subform_data as $data) {
+				echo "items = ".$data["items"].";".chr(10);
+				echo 'addSubformData(items, \''.$data["group_name"].'\');'.chr(10);
+			}
+			echo '});'.chr(10);
+		endif;
+	?>
+	var isRequired = '<?php echo $this->translate->_('is required'); ?>';
+</script>

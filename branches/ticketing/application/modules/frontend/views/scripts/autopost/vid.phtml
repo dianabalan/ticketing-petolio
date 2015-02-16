@@ -1,0 +1,20 @@
+<?php
+
+// get video thumbnail
+$thumb = $this->results->getMapper()->getVideoThumbnails();
+
+// get video duration
+$duration = date("i:s", $this->results->getMapper()->getVideoDuration());
+
+?>
+<div class="data">
+	{{vid}}
+    <div class="pictures">
+		<div class="pic">
+			<span class="vid" rel="<?php echo $this->results->getId(); ?>" data-url="<?php echo $this->args[4]; ?>" style="background: #000 url('<?php echo $thumb[1]['url']; ?>') center center no-repeat;"></span>
+			<span class="duration"><?php echo $duration; ?></span>
+		</div>
+		<div class="clear"></div>
+	</div>
+    <div class="clear"></div>
+</div>

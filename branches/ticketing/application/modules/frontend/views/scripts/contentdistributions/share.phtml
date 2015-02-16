@@ -1,0 +1,7 @@
+<?php if($this->distribution_attributes['targetplace']->getAttributeEntity()->getValue() == 'Facebook'): ?>
+	<p style="margin-bottom: 10px;"><?php echo $this->translate->_("To share your content on facebook please click on the following button. This will add your content as a facebook tab."); ?></p>
+	<center><a id="fb_page_add" class="fb_button fb_button_medium"><span class="fb_button_text"><?php echo $this->translate->_("Add to your page"); ?></span></a></center>
+<?php else: ?>
+	<p style="margin-bottom: 10px;"><?php echo $this->translate->_("To share your content on websites please copy and paste the embed code above."); ?></p>
+	<textarea class="box share"><?php echo Petolio_Service_Util::escape('<iframe src="' . $this->baseUrl() . '/distribution/'.$this->content_distributions->getUrl().'" width="750" height="100%" frameborder="0"></iframe>'); ?></textarea>
+<?php endif; ?>

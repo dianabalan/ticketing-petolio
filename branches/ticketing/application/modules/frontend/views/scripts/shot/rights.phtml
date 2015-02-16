@@ -1,0 +1,79 @@
+<?php if($this->dialog == true): ?>
+	<style type="text/css">
+		form label {
+			margin-left: 0px;
+			padding: 4px 5px 0 0;
+			width: auto;
+			cursor: pointer;
+			display: block;
+			float: left;
+			text-align: right;
+			font-size: 1.3em;
+			color: #999;
+		}
+
+		form label > input {
+			width: 20px;
+			border: none;
+			padding: 0px;
+			margin: 1px 0px 4px 4px;
+			float: left;
+			position: relative;
+			font-size: 1.3em;
+			color: #555;
+			background-color: #f6f9f2;
+			border-radius: 5px;
+		}
+
+		form label > span {
+			display: block;
+			float: left;
+			text-align: right;
+			font-size: 13px;
+			color: #000;
+			padding: 2px 5px 0px 3px;
+		}
+
+		form .cls {
+			clear: both;
+			height: 10px;
+		}
+	</style>
+<?php endif; ?>
+<form id="rights" action="" method="post">
+	<div><label class="checkbox" for="item_0"><input type="radio" id="item_0" name="access_value" value="0" <?php if($this->rights['access'] == 0): ?>checked="checked"<?php endif; ?>><span><?php echo $this->translate->_("Private"); ?></span></label><div class="cls"></div></div>
+	<div><label class="checkbox" for="item_1"><input type="radio" id="item_1" name="access_value" value="1" <?php if($this->rights['access'] == 1): ?>checked="checked"<?php endif; ?>><span><?php echo $this->translate->_("Everyone"); ?></span></label><div class="cls"></div></div>
+	<div>
+		<table cellpadding="0" cellspacing="0"><col width="265" /><tr><td valign="top"><label class="checkbox" for="item_2"><input type="radio" id="item_2" name="access_value" value="2" <?php if($this->rights['access'] == 2): ?>checked="checked"<?php endif; ?>><span><?php echo $this->translate->_("Link Partners"); ?></span></label><div class="cls"></div></td>
+		<td valign="top"><div id="multi_item_2">
+		<select title="<?php echo $this->translate->_("All Link Partners"); ?>" name="access_partners[]" class="chzn-select chzn-custom" multiple="multiple" style="width:390px;" id="multi_partners">
+			<?php foreach($this->partners as $idx => $user): ?>
+				<option value="<?php echo $idx; ?>" <?php if($this->rights['access'] == 2 && in_array($idx, $this->rights['users_id'])): ?>selected="selected"<?php endif; ?>><?php echo $user['name']; ?></option>
+			<?php endforeach; ?>
+		</select>
+		</div>
+		</td></tr></table>
+	</div>
+	<div>
+		<table cellpadding="0" cellspacing="0"><col width="265" /><tr><td valign="top"><label class="checkbox" for="item_3"><input type="radio" id="item_3" name="access_value" value="3" <?php if($this->rights['access'] == 3): ?>checked="checked"<?php endif; ?>><span><?php echo $this->translate->_("Friends"); ?></span></label><div class="cls"></div></td>
+		<td valign="top"><div id="multi_item_3">
+		<select title="<?php echo $this->translate->_("All Friends"); ?>" name="access_friends[]" class="chzn-select chzn-custom" multiple="multiple" style="width:390px;" id="multi_friends">
+			<?php foreach($this->friends as $idx => $user): ?>
+				<option value="<?php echo $idx; ?>" <?php if($this->rights['access'] == 3 && in_array($idx, $this->rights['users_id'])): ?>selected="selected"<?php endif; ?>><?php echo $user['name']; ?></option>
+			<?php endforeach; ?>
+		</select>
+		</div>
+		</td></tr></table>
+	</div>
+	<div><table cellpadding="0" cellspacing="0"><col width="265" /><tr><td valign="top"><label class="checkbox" for="item_4"><input type="radio" id="item_4" name="access_value" value="4" <?php if($this->rights['access'] == 4): ?>checked="checked"<?php endif; ?>><span><?php echo $this->translate->_("Users"); ?></span></label><div class="cls"></div></td>
+		<td valign="top"><div id="multi_item_4">
+		<input type="text" title="<?php echo $this->translate->_("Select Users"); ?>" name="access_users" class="chzn-select chzn-custom" multiple="multiple" style="width:386px;" id="multi_users" value="<?php echo $this->rights['access'] == 4 ? $this->rights['users_id_name'] : null; ?>">
+		</div>
+		</td></tr></table><div class="cls"></div>
+	</div>
+	<?php if($this->dialog == false): ?>
+		<div><label for="submit">&nbsp;</label><input type="submit" value="<?php echo $this->translate->_("Save Access Rights >"); ?>" id="submit" name="submit"><div class="cls"></div></div>
+		<?php if($this->mass_selection): ?><input type="hidden" name="mass_selection" value="<?php echo $this->mass_selection; ?>" /><?php endif; ?>
+		<?php if($this->mass_action): ?><input type="hidden" name="mass_action" value="<?php echo $this->mass_action; ?>" /><?php endif; ?>
+	<?php endif; ?>
+</form>

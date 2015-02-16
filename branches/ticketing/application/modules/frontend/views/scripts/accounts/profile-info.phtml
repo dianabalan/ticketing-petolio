@@ -1,0 +1,105 @@
+<div class="left profilebox">
+	<h3 class="profile"><?php echo $this->translate->_("Owner Information"); ?></h3>
+	<div>
+		<label><?php echo $this->translate->_("Shown Name"); ?></label>
+		<span class="input"><?php echo $this->data['name']; ?></span>
+		<div class="cls"></div>
+	</div>
+	<div>
+		<label><?php echo $this->translate->_("First Name"); ?></label>
+		<span class="input"><?php echo $this->data['first_name']; ?></span>
+		<div class="cls"></div>
+	</div>
+	<div>
+		<label><?php echo $this->translate->_("Last Name"); ?></label>
+		<span class="input"><?php echo $this->data['last_name']; ?></span>
+		<div class="cls"></div>
+	</div>
+	<?php if ($this->data['type'] == 2): ?>
+		<div>
+			<label><?php echo $this->translate->_("Service Category"); ?></label>
+			<span class="input"><?php echo $this->data['category_id']; ?></span>
+			<div class="cls"></div>
+		</div>
+	<?php endif; ?>
+</div>
+<div class="left profilebox">
+	<h3 class="profile"><?php echo $this->translate->_("Personal Information"); ?></h3>
+	<div>
+		<label><?php echo $this->translate->_("Date of Birth"); ?></label>
+		<span class="input"><?php echo $this->data['date_of_birth']; ?></span>
+		<div class="cls"></div>
+	</div>
+	<div>
+		<label><?php echo $this->translate->_("Gender"); ?></label>
+		<span class="input"><?php echo $this->data['gender']; ?></span>
+		<div class="cls"></div>
+	</div>
+	<div>
+		<label><?php echo $this->translate->_("E-Mail"); ?></label>
+		<span class="input"><?php echo $this->data['email']; ?></span>
+		<div class="cls"></div>
+	</div>
+	<div>
+		<label><?php echo $this->translate->_("Internet"); ?></label>
+		<span class="input"><?php echo $this->data['homepage']; ?></span>
+		<div class="cls"></div>
+	</div>
+</div>
+<div class="left profilebox">
+	<h3 class="profile"><?php echo $this->translate->_("Contact Information"); ?></h3>
+	<div>
+		<label><?php echo $this->translate->_("Cell Phone"); ?></label>
+		<span class="input"><?php echo $this->data['phone']; ?></span>
+		<div class="cls"></div>
+	</div>
+	<div>
+		<label><?php echo $this->translate->_("Private Phone"); ?></label>
+		<span class="input"><?php echo $this->data['private_phone']; ?></span>
+		<div class="cls"></div>
+	</div>
+	<div>
+		<label><?php echo $this->translate->_("Business Phone"); ?></label>
+		<span class="input"><?php echo $this->data['business_phone']; ?></span>
+		<div class="cls"></div>
+	</div>
+	<div>
+		<label><?php echo $this->translate->_("Private Fax"); ?></label>
+		<span class="input"><?php echo $this->data['private_fax']; ?></span>
+		<div class="cls"></div>
+	</div>
+	<div>
+		<label><?php echo $this->translate->_("Business Fax"); ?></label>
+		<span class="input"><?php echo $this->data['business_fax']; ?></span>
+		<div class="cls"></div>
+	</div>
+</div>
+<div class="left profilebox">
+	<h3 class="profile"><?php echo $this->translate->_("Address Information"); ?></h3>
+	<div>
+		<label><?php echo $this->translate->_("Street"); ?></label>
+		<span class="input"><?php echo $this->data['street']; ?></span>
+		<div class="cls"></div>
+	</div>
+	<div>
+		<label><?php echo $this->translate->_("Address"); ?></label>
+		<span class="input"><?php echo $this->data['address']; ?></span>
+		<div class="cls"></div>
+	</div>
+	<div>
+		<label><?php echo $this->translate->_("Zip Code"); ?></label>
+		<span class="input"><?php echo $this->data['zipcode']; ?></span>
+		<div class="cls"></div>
+	</div>
+	<div>
+		<label><?php echo $this->translate->_("State"); ?></label>
+		<span class="input"><?php echo $this->data['location']; ?></span>
+		<div class="cls"></div>
+	</div>
+	<div>
+		<label><?php echo $this->translate->_("Country"); ?></label>
+		<span class="input"><?php echo $this->data['country_id']; ?></span>
+		<div class="cls"></div>
+	</div>
+</div>
+<div class="clear"></div>

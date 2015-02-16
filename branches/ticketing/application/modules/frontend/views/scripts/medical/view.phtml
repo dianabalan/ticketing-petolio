@@ -1,0 +1,313 @@
+<?php function formatSize($size) {
+	if($size == 0)
+		return null;
+
+	$sizes = array(" Bytes", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB");
+	return (round($size/pow(1024, ($i = floor(log($size, 1024)))), $i > 1 ? 2 : 0) . $sizes[$i]);
+} ?>
+<?php if(!$this->frame) include "menu.phtml"; ?>
+<?php $pet_name = ucfirst($this->pet_attr['name']->getAttributeEntity()->getValue()); ?>
+<?php if($this->frame): echo $this->header; else: ?>
+	<style type="text/css">
+		h3 {
+			position: relative;
+		}
+		
+		h3 > span {
+			display: block;
+			width: 530px;
+		}
+
+		h3 > a {
+			display: block;
+			position: absolute;
+			top: 0px;
+			right: 0px;
+		}
+
+		h3 > a:hover {
+			text-decoration: none !important;
+		}
+
+		h3 > a > span {
+			display: block;
+			letter-spacing: 0em;
+			font-size: 12px;
+			color: #999;
+			font-weight: normal;
+			float: left;
+			line-height: 15px;
+			margin-right: 10px !important;
+			text-align: right;
+		}
+		
+		h3 > a > span.ellipsis {
+			display: block;
+			width: 130px;
+		}
+
+		h3 > a > span > b {
+			color: #444;
+		}
+
+		h3 > a > label {
+			width: auto !important;
+			float: right !important;
+			font-size: inherit !important;
+			padding: 7px 0px 7px 10px !important;
+			cursor: pointer;
+		}
+
+		h3 > a > label > input {
+			display: block;
+			float: right !important;
+			width: auto !important;
+			margin: 2px 5px 0px 0px !important;
+			position: inherit !important;
+			font-size: inherit !important;
+			border: none !important;
+			border-radius: 0 !important;
+			padding: 0 !important;
+		}
+
+		h3 > a > label > i {
+			display: block;
+			float: right;
+			font-style: normal;
+			color: green;
+			margin-top: 2px;
+			letter-spacing: 0em;
+			font-size: 12px;
+			font-weight: normal;
+			line-height: 16px;
+		}
+	</style>
+	<div id="right">
+		<div class="rightbox">
+			<div class="context"><div class="in">
+				<a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a>
+				<a href="<?php echo $this->url(array('controller'=>'medical', 'action'=>'add-subentries', 'id' => $this->medical_record->getId()), 'default', true); ?>" class="icon_link appointment" title="<?php echo $this->translate->_('New'); ?>"><span><?php echo $this->translate->_('New'); ?></span></a>
+				<a href="<?php echo $this->url(array('controller'=>'medical', 'action'=>'export', 'id' => $this->medical_record->getId()), 'default', true); ?>" class="icon_link pdf" title="<?php echo $this->translate->_('Export'); ?>"><span><?php echo $this->translate->_('Export'); ?></span></a>
+				<?php if($this->admin): ?><a href="<?php echo $this->url(array('controller'=>'medical', 'action'=>'send', 'id' => $this->medical_record->getId()), 'default', true); ?>" class="icon_link send" title="<?php echo $this->translate->_('Send'); ?>"><span><?php echo $this->translate->_('Send'); ?></span></a><?php endif; ?>
+			</div></div>
+<?php endif; ?>
+			<h1><?php echo $this->translate->_('Medical Record'); ?></h1>
+			<br />
+			<table cellspacing="0" cellpadding="5" border="0" class="list" style="width: 635px; float: left;">
+				<tr>
+					<th colspan="2">
+						<h3><?php echo $this->medical_record->getHeadline1(); ?></h3>
+						<?php echo $this->medical_record->getHeadline2(); ?>
+					</th>
+				</tr>
+				<tr>
+					<th><?php echo $this->translate->_('Pet name:')?></th>
+					<td><a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'view', 'pet' => $this->medical_record->getPetId()), 'default', true); ?>"><?php echo $pet_name; ?></a></td>
+				</tr>
+				<?php if(isset($this->service)): ?>
+					<tr>
+						<th><?php echo $this->translate->_('Service:')?></th>
+						<td><a href="<?php echo $this->url(array('controller'=>'services', 'action'=>'view', 'service' => $this->medical_record->getServiceId()), 'default', true); ?>"><?php echo ucfirst($this->service_attributes['name']->getAttributeEntity()->getValue()); ?></a></td>
+					</tr>
+				<?php endif; ?>
+				<tr>
+					<th><?php echo $this->translate->_('Written by:')?></th>
+					<td><a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $this->owner->getId()), 'default', true); ?>"><?php echo $this->owner->getName(); ?></a></td>
+				</tr>
+				<tr>
+					<th><?php echo $this->translate->_('Start date:')?></th>
+					<td><?php echo Petolio_Service_Util::formatDate($this->medical_record->getStartDate(), Petolio_Service_Util::MEDIUMDATE, false); ?></td>
+				</tr>
+				<tr>
+					<th><?php echo $this->translate->_('End date:')?></th>
+					<td><?php echo Petolio_Service_Util::formatDate($this->medical_record->getEndDate(), Petolio_Service_Util::MEDIUMDATE, false); ?></td>
+				</tr>
+				<tr>
+					<th><?php echo $this->translate->_('Description:')?></th>
+					<td style="line-height: 18px;"><?php echo html_entity_decode($this->medical_record->getDescription()); ?></td>
+				</tr>
+				<?php if(isset($this->files) && count($this->files) > 0): ?>
+					<tr><td colspan="2">
+						<?php foreach($this->files as $file): // attached files ?>
+							<div class="afile"><a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'files', 'download'=>$file->getId()), 'default', true); ?>"><img src='/images/files/<?php echo $file->getIcon(); ?>' /><span><?php echo $file->getDescription()." (".formatSize($file->getSize() * 1024).")"; ?></span></a></div>
+						<?php endforeach; ?>
+						<div class="clear"></div>
+					</td></tr>
+				<?php endif; if($this->admin && !$this->frame): ?>
+					<tr><td colspan="2">
+						<div class="left">
+							<input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'medical', 'action'=>'edit', 'id'=>$this->medical_record->getId()), 'default', true); ?>');" type="button" value="<?php echo $this->translate->_("Edit Record >"); ?>" id="submit" name="edit" style="margin: 0px 5px 0px 0px;" />
+							<input href="<?php echo $this->url(array('controller'=>'medical', 'action'=>'delete', 'id'=>$this->medical_record->getId()), 'default', true); ?>" type="button" value="<?php echo $this->translate->_("Delete Record"); ?>" id="submit" name="delete" style="margin: 0px;" class="reqconf" title="<?php echo $this->translate->_("Delete Record?"); ?>" />
+							<div class="clear"></div>
+						</div>
+					</td></tr>
+				<?php endif; ?>
+				<tr><td style="padding: 0px; height: 5px; background: #74a428;" colspan="4"></td></tr>
+			</table>
+			<img src="/images/notes/b_medical.png" style="float: left; padding: 10px 10px 10px 15px;" />
+			<div class="clear"></div>
+			<?php if(isset($this->subentries) && count($this->subentries) > 0): ?>
+				<br /><br />
+				<h1><?php echo $this->translate->_('Medical Record Subentries'); ?></h1>
+				<br />
+				<table cellspacing="0" cellpadding="5" border="0" class="list">
+				<?php foreach($this->subentries as $subentry): ?>
+					<tr>
+						<th colspan="4">
+							<h3>
+								<span><?php echo $subentry->getHeadline1(); ?></span>
+								<?php if(isset($this->subentries_notes[$subentry->getId()])): $note = $this->subentries_notes[$subentry->getId()]; ?>
+									<a href="javascript:void(0);" name="note_view" id="<?php echo $note['id']; ?>"><span class="ellipsis"><b><?php echo $note['mod'] == 1 ? "<del>" : ""; ?><?php echo $note['title']; ?><?php echo $note['mod'] == 1 ? "</del>" : ""; ?></b><br /><?php echo $note['deadline']; ?></span><img src="/images/notes/todo.png" height="30" /><label name="note_done" for="done_<?php echo $note['id']; ?>"><i><?php echo $this->translate->_("Done"); ?></i><input type="checkbox" id="done_<?php echo $note['id']; ?>" <?php echo $note['mod'] == 1 ? "checked='checked'" : ""; ?> /></label></a>
+								<?php else: if($subentry->getOwnerId() == $this->auth->getIdentity()->id): ?>
+									<a href="javascript:Calendar.Todo.addEditWindow({}, null, <?php echo $this->medical_record->getPetId(); ?>, 'm_<?php echo $subentry->getId(); ?>');"><span style="margin-top: 8px;" class="ellipsis"><b><?php echo $this->translate->_("Add To-Do"); ?></b></span><img src="/images/notes/todo.png" height="30" /></a>
+								<?php endif; endif; ?>
+							</h3>
+							<?php echo $subentry->getHeadline2(); ?>
+						</th>
+					</tr>
+					<tr>
+						<th><?php echo $this->translate->_('Written by:')?></th>
+						<td><a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $subentry->getOwnerId()), 'default', true); ?>"><?php echo $subentry->getOwner()->getName(); ?></a></td>
+						<?php if($subentry->getServiceId()): ?>
+							<th><?php echo $this->translate->_('Service:')?></th>
+							<td><a href="<?php echo $this->url(array('controller'=>'services', 'action'=>'view', 'service' => $subentry->getServiceId()), 'default', true); ?>"><?php echo ucfirst($subentry->getServiceName()); ?></a></td>
+						<?php else: ?>
+							<td></td>
+							<td></td>
+						<?php endif; ?>
+					</tr>
+					<tr>
+						<th><?php echo $this->translate->_('Visit date:')?></th>
+						<td colspan="3"><?php echo Petolio_Service_Util::formatDate($subentry->getVisitDate(), Petolio_Service_Util::MEDIUMDATE, false); ?></td>
+					</tr>
+					<tr>
+						<th><?php echo $this->translate->_('Description:')?></th>
+						<td colspan="3" style="line-height: 18px;"><?php echo html_entity_decode($subentry->getDescription()); ?></td>
+					</tr>
+					<tr>
+						<?php if($subentry->getRecommendation()): ?><th colspan="<?php echo ($subentry->getDrugs() ? '2' : '4'); ?>"><?php echo $this->translate->_('Recommendation:')?></th><?php endif; ?>
+						<?php if($subentry->getDrugs()): ?><th colspan="<?php echo ($subentry->getRecommendation() ? '2' : '4'); ?>"><?php echo $this->translate->_('Drugs:')?></th><?php endif; ?>
+					</tr>
+					<tr>
+						<?php if($subentry->getRecommendation()): ?><td colspan="<?php echo ($subentry->getDrugs() ? '2' : '4'); ?>" style="line-height: 18px;"><?php echo html_entity_decode($subentry->getRecommendation()); ?></td><?php endif; ?>
+						<?php if($subentry->getDrugs()): ?><td colspan="<?php echo ($subentry->getRecommendation() ? '2' : '4'); ?>" style="line-height: 18px;"><?php echo html_entity_decode($subentry->getDrugs()); ?></td><?php endif; ?>
+					</tr>
+					<?php if(isset($this->subentries_files[$subentry->getId()]) && count($this->subentries_files[$subentry->getId()]) > 0): ?>
+						<tr><td colspan="4">
+							<?php foreach($this->subentries_files[$subentry->getId()] as $file): // attached files ?>
+								<div class="afile"><a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'files', 'download'=>$file->getId()), 'default', true); ?>"><img src='/images/files/<?php echo $file->getIcon(); ?>' /><span><?php echo $file->getDescription()." (".formatSize($file->getSize() * 1024).")"; ?></span></a></div>
+							<?php endforeach; ?>
+							<div class="clear"></div>
+						</td></tr>
+					<?php endif; if($subentry->getOwnerId() == $this->auth->getIdentity()->id && !$this->frame): ?>
+						<tr><td colspan="4">
+							<div class="left">
+								<input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'medical', 'action'=>'edit-subentry', 'id'=>$subentry->getId()), 'default', true); ?>');" type="button" value="<?php echo $this->translate->_("Edit Subentry >"); ?>" id="submit" name="edit" style="margin: 0px 5px 0px 0px;" />
+								<input href="<?php echo $this->url(array('controller'=>'medical', 'action'=>'delete-subentry', 'id'=>$subentry->getId()), 'default', true); ?>" type="button" value="<?php echo $this->translate->_("Delete Subentry"); ?>" id="submit" name="delete" style="margin: 0px;" class="reqconf" title="<?php echo $this->translate->_("Delete Subentry?"); ?>" />
+								<div class="clear"></div>
+							</div>
+						</td></tr>
+					<?php endif; ?>
+					<tr><td style="padding: 0px; height: 5px; background: #74a428;" colspan="4"></td></tr>
+				<?php endforeach; ?>
+				</table>
+			<?php endif; ?>
+<?php if(!$this->frame): ?>
+		</div>
+		<div class="rightbox" style="padding: 0px; border: 0px;">
+			<?php if(isset($_SERVER['HTTP_REFERER']) && (strpos($_SERVER['HTTP_REFERER'], 'medical/index') !== false || strpos($_SERVER['HTTP_REFERER'], 'site/view-notes') !== false  || strpos($_SERVER['HTTP_REFERER'], 'site/view-all-notes') !== false)): ?>
+				<div class="left"><input onclick="Petolio.go('<?php echo $_SERVER['HTTP_REFERER']; ?>');" type="button" value="<?php echo $this->translate->_("< Back to List"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+			<?php else: ?>
+				<div class="left"><input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'medical', 'action'=>'index', 'pet'=>$this->pet->getId()), 'default', true) ?>');" type="button" value="<?php echo $this->translate->_("< Back to List"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+			<?php endif; ?>
+			<div class="left"><input onclick="Petolio.go('<?php echo $this->url(array('controller'=>'medical', 'action'=>'add-subentries', 'id' => $this->medical_record->getId()), 'default', true); ?>');" type="button" value="<?php echo $this->translate->_("Create new Subentry"); ?>" id="submit" name="prev" style="margin: 0px 0px 0px 5px;"><div class="clear"></div></div>
+			<div class="clear"></div>
+		</div>
+	</div>
+	<?php include_once "../application/modules/frontend/views/scripts/calendar/init.phtml"; ?>
+	<script type="text/javascript">
+		var Notes = function() {
+			store = {
+
+			// the binder
+			}, bind = function() {
+				// on done click
+				$("div.rightbox").delegate('label[name="note_done"]', 'click', function(e) {
+					e.stopPropagation();
+					e.preventDefault();
+
+					// get some stuff
+					var i = $(this).find('input'),
+						k = i.attr('id').split('_');
+
+					// prevent spam
+					if(i.is(':disabled'))
+						return false;
+
+					i.attr('disabled', 'disabled');
+					Petolio.ajax({
+						url: 'calendar/mark',
+						type: 'post',
+						data: {id: k[1], ajax: 1},
+						cache: false,
+						success: function (d) {
+							i.removeAttr('disabled');
+
+							// mark as done
+							if(d.value) {
+								$("b", i.closest('a')).wrapInner('<del />');
+								i.attr('checked', 'checked');
+
+							// mark as not done
+							} else {
+								$("b", i.closest('a')).html($("del", i.closest('a')).html());
+								i.removeAttr('checked');
+							}
+						}
+					});
+				});
+
+				// on event click
+				$("div.rightbox").delegate('a[name="note_view"]', 'click', function(e) {
+					e.preventDefault();
+					Petolio.showLoading();
+			    	Petolio.ajax({
+						url: 'events/view',
+						type: 'post',
+						data: {id: $(this).attr('id')},
+						cache: false,
+						success: function (d) {
+							Petolio.hideLoading();
+							Calendar.eventClick(d.event);
+						}
+					});
+				});
+
+			// constructor
+			}, __construct = function() {
+				bind();
+			};
+
+			// public, yay
+			return {
+				init: __construct
+			};
+		}();
+
+		READY(Notes.init);
+	</script>
+<?php else: ?>
+	<script type="text/javascript">
+		var Chicane = function() {
+			function __construct() {
+				$('a').attr('target', '_parent');
+			};
+
+			return {
+				init: __construct
+			}
+		}();
+
+		READY(Chicane.init);
+	</script>
+<?php echo $this->footer; endif; ?>

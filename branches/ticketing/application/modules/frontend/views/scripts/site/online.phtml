@@ -1,0 +1,182 @@
+<div class="up ask">
+	<h3><?php echo $this->translate->_("Ask Service Provider"); ?></h3>
+	<div class="fivepx"></div>
+	<div id="providers">
+		<div class="inside">
+			<span class="msg"><i class="grey bigger"><?php echo $this->translate->_('Please wait while loading...'); ?></i></span>
+		</div>
+	</div>
+	<br />
+	<div class="right"><a href="<?php echo $this->url(array('controller'=>'accounts', 'type' => '2'), 'default', true) ?>"><b>Search providers</b></a></div>
+	<div class="clear"></div>
+</div>
+<style type="text/css">
+	#providers div.user {
+		padding: 5px 0px;
+	}
+
+	#providers div.user:hover {
+		cursor: pointer;
+	}
+
+	#providers div.user > table {
+		border-collapse: collapse;
+		border-spacing: 0;
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+
+	#providers div.user > table div.avatar {
+		margin-right: 5px;
+	}
+
+	#providers div.user > table div.avatar img {
+		display: block;
+		border: 1px solid white;
+		width: 50px;
+		height: 33px;
+	}
+
+	#providers div.user > table div.desc {
+		font-size: 12px;
+		color: #444;
+	}
+
+	#providers div.user > table div.online,
+	#providers div.user > table div.offline {
+		width: 30px;
+		height: 25px;
+		/* background: transparent url('/images/broadcast_small.png') center center no-repeat; */
+	}
+
+	#providers div.user > table div.offline {
+		background: transparent;
+	}
+</style>
+<script type="text/javascript">
+	var LiveProviders = function() {
+		// this is the data
+		var data = [],
+			nobody = '<?php echo $this->translate->_('Nobody is online'); ?>',
+			profile = '<?php echo $this->translate->_('Profile'); ?>',
+			noinfo = '<?php echo $this->translate->_('No information available.'); ?>'
+
+		// filter only online providers
+		, filter = function() {
+			var online = [];
+			$.each(data, function(k, v){
+				if(v.status == 'online' && v.type == '2')
+					online.push(v);
+			});
+
+			// sorting function
+			function __sort(a, b){
+				var nameA = a.name.toLowerCase(), nameB = b.name.toLowerCase();
+				if (nameA < nameB) return -1 ;
+				if (nameA > nameB) return 1;
+				return 0;
+			};
+
+			// sort providers
+			online.sort(__sort);
+
+			// write in dom
+			write(online);
+
+		// write in dom
+		}, write = function(data) {
+			// remove providers or messages
+			$('#providers div.inside div.user, #providers div.inside span.msg').remove();
+
+			$('#providers div.inside').html('');
+			
+			// so what happend?
+			if(data.length <= 0)
+				$('#providers div.inside').html('<div class="green bigger">'+ nobody +'</div>');
+
+			// fill the provider list
+			$.each(data, function(k, v) {
+				var cat = v.category.length == 0 ? noinfo : v.category;
+
+				$('#providers div.inside').append(
+					'<div class="user">'+
+						'<table class="user_'+ v.id +'" border="1">'+
+						'<col width="1%"><col>'+
+						'<tr style="border-bottom: 1px dashed #eaeaea;">'+
+							'<td valign="top" style="vertical-align: top;">'+
+								'<div class="avatar"><img src="'+ v.avatar +'"></div>'+
+							'</td>'+
+							'<td>'+
+								'<a style="font-weight: bold;" href="javascript:void(0);">'+ v.name +'</a>'+
+								'<div class="desc">'+
+									'<span class="' + (v.category.length == 0 ? 'grey' : '') + '">'+ cat +'</span>'+
+									'<a class="icon_link profile" style="font-size: 11px;" href="'+ v.url +'"><span>'+ profile +'</span></a>'+
+								'</div>'+
+							'</td>'+
+						'</tr>'+
+						'</table>'+
+					'</div>');
+			});
+
+			// add the glow effect
+			$('div.online', '#providers').each(function() {
+				glow($(this));
+			});
+
+		// random number
+		}, randomXToY = function(minVal, maxVal, floatVal) {
+			var randVal = minVal + (Math.random() * (maxVal - minVal));
+			return typeof floatVal == 'undefined' ? Math.round(randVal) : randVal.toFixed(floatVal);
+
+		// glow broadcast
+		}, glow = function(e) {
+			$(e).fadeOut(randomXToY(800, 1200), function() {
+				$(e).fadeIn(randomXToY(500, 1000), function() {
+					glow(e);
+				});
+			});
+
+		// bind
+		}, bind = function() {
+			// bind on buddy click
+			$('#providers').delegate('div.user', 'click', function(e){
+				var t = $(e.target).hasClass('profile');
+
+				// profile click?
+				if(t) {
+					Petolio.go($(e.target).attr("href"));
+					return false;
+				}
+
+				// open chat
+				Online.Dock.open($$(e.target).closest('table').attr('class'), 1);
+			});
+
+		// constructor
+		}, __construct = function() {
+			// wait till data becomes available
+			if(!Online.Data.providers)
+				window.setTimeout(function(){
+					__construct();
+				}, 500);
+			else {
+				data = Online.Data.providers;
+
+				// setup binds
+				bind();
+
+				// setup timeout and interval
+				window.setTimeout(filter, 1000);
+				window.setInterval(filter, 5000);
+			}
+		};
+
+		// public, yay
+		return {
+			init: __construct
+		}
+	}();
+
+	READY(LiveProviders.init);
+</script>

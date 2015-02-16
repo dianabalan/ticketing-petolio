@@ -1,0 +1,42 @@
+<?php
+
+$links = array();
+$links[] = array(
+	'link' => $this->url(array('controller'=>'map', 'action'=>'index'), 'default', true),
+	'name' => $this->translate->_("Overview"),
+	'class' => 'lm-map_sm'
+);
+
+if($this->auth->getIdentity()->type == 2) {
+	$links[] = array(
+		'link' => $this->url(array('controller'=>'map', 'action'=>'services'), 'default', true),
+		'name' => $this->translate->_("Pinpoint your Services"),
+		'class' => 'lm-map_sm'
+	);
+}
+
+$links[] = array(
+	'link' => $this->url(array('controller'=>'map', 'action'=>'products'), 'default', true),
+	'name' => $this->translate->_("Pinpoint your Products"),
+	'class' => 'lm-map_sm'
+);
+
+$html = null;
+foreach($links as $link)
+	$html .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+
+$this->placeholder('sidebar')
+     ->append("<h3>".$this->translate->_("Map")."</h3>
+     	<ul class=\"leftsubmenu fullwidth\" data-context=\"true\">{$html}</ul><div class=\"clear\"></div>");
+
+$this->placeholder('sidebar')
+	->append("<h3>".$this->translate->_("Search")."</h3>
+		<form id='search'>
+		<table width='100%' cellspacing='3' cellpadding='3' border='0'>
+			<tr>
+				<td><label>".$this->translate->_("Find an Address")."</label></td>
+				<td style='padding-left: 5px;'><input type='text' id='search_address' size='23' /></td>
+			</tr>
+			<tr><td colspan='2'><input class='srcbtn' type='button' id='search_go' value='".$this->translate->_("Go")."' /></td></tr>
+		</table>
+		</form>");

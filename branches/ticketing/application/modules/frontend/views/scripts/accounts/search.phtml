@@ -1,0 +1,90 @@
+<?php 
+	$keyword = $this->request->getParam('keyword');
+	$country = $this->request->getParam('country');
+	$zipcode = $this->request->getParam('zipcode');
+	$address = $this->request->getParam('address');
+	$location = $this->request->getParam('location');
+	$gender = $this->request->getParam('gender');
+	$type = $this->request->getParam('type');
+	
+	// countries
+	$scountry = "<option value=''> ".$this->translate->_('Select Country')."</option>";
+	foreach($this->countries as $id => $val) {
+		$sel = $country && $country == $id ? 'selected="selected"' : null;
+		$scountry .= "<option value='{$id}' {$sel}>{$val}</option>";
+	}
+	
+	// genders
+	$sgender = "<option value=''> ".$this->translate->_('Select Gender')."</option>";
+	foreach($this->genders as $id => $val) {
+		$sel = $gender && $gender == $id ? 'selected="selected"' : null;
+		$sgender .= "<option value='{$id}' {$sel}>{$val}</option>";
+	}
+	
+	// types
+	$stype = "<option value=''> ".$this->translate->_('All')."</option>";
+	foreach($this->types as $id => $val) {
+		$sel = $type && $type == $id ? 'selected="selected"' : null;
+		$stype .= "<option value='{$id}' {$sel}>{$val}</option>";
+	}
+?>
+<div class="left">
+	<div class="search-box">
+		<form id="front_search_form" action="<?php echo $this->action; ?>">
+			<input type="text" name="keyword" 
+				value="<?php echo isset($keyword) ? $keyword : $this->translate->_('Search...'); ?>" 
+				label="<?php echo $this->translate->_('Search...'); ?>" />
+			<input type="submit" class="search_submit" value="" />
+			<div class="clear"></div>
+		</form>
+	</div>
+	<div class="clear"></div>
+	<div class="search-more">
+		<a href="javascript:void(0);" class="rreset"><?php echo $this->translate->_("Reset"); ?></a>
+		<a href="javascript:void(0);" hide="<?php echo $this->translate->_("Close search options"); ?>" 
+			show="<?php echo $this->translate->_("More search options"); ?>" class="mmore">
+			<?php echo $this->translate->_("More search options"); ?></a>
+		<div class="advanced-search">
+			<div class="nub"></div>
+			<form id="advanced_search_form" action="<?php echo $this->action; ?>">
+				<table width="100%" cellspacing="5" cellpadding="5" border="0">
+					<tr>
+						<td><label><?php echo $this->translate->_("Name"); ?></label></td>
+						<td style="padding-left: 5px;"><input type="text" name="keyword" value="<?php echo $keyword; ?>" /></td>
+					</tr>
+					<tr>
+						<td><label><?php echo $this->translate->_("Country"); ?></label></td>
+						<td style='padding-left: 5px;'><select name='country'><?php echo $scountry; ?></select></td>
+					</tr>
+					<tr>
+						<td><label><?php echo $this->translate->_("Zipcode"); ?></label></td>
+						<td style='padding-left: 5px;'><input type='text' name='zipcode' value='<?php echo $zipcode; ?>' /></td>
+					</tr>
+					<tr>
+						<td><label><?php echo $this->translate->_("Address"); ?></label></td>
+						<td style='padding-left: 5px;'><input type='text' name='address' value='<?php echo $address; ?>' /></td>
+					</tr>
+					<tr>
+						<td><label><?php echo $this->translate->_("State"); ?></label></td>
+						<td style='padding-left: 5px;'><input type='text' name='location' value='<?php echo $location; ?>' /></td>
+					</tr>
+					<tr>
+						<td><label><?php echo $this->translate->_("Gender"); ?></label></td>
+						<td style="padding-left: 5px;"><select name="gender"><?php echo $sgender; ?></select></td>
+					</tr>
+					<tr>
+						<td><label><?php echo $this->translate->_("Type"); ?></label></td>
+						<td style="padding-left: 5px;"><select name="type"><?php echo $stype; ?></select></td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<input class="submit" style="float: right;" type="button" id="search_reset" value="<?php echo $this->translate->_("Reset"); ?>" />
+							<input class="submit" style="float: right;" type="submit" value="<?php echo $this->translate->_("Go"); ?>" />
+						</td>
+					</tr>
+				</table>
+			</form>
+			<script type="text/javascript" src="/js/search.js"></script>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,112 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<div>
+			<div class="left"><img src="/images/new/large/pets.png" alt="<?php echo $this->title; ?>" /></div>
+			<ul class="title-menu">
+				<li><h3 class="ellipsis"><?php echo $this->title; ?></h3></li>
+				<li>
+					<a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'mypets'), 'default', true); ?>" 
+						title="<?php echo $this->translate->_("My Pets"); ?>">
+						<?php echo $this->translate->_("My Pets"); ?>
+					</a>
+				</li>
+				<li>
+					<?php
+						echo $this->partial("pets/search.phtml", array(
+							"request" => $this->request,
+							"translate" => $this->translate,
+							"country_list" => $this->country_list,
+							"types" => $this->types,
+							"action" => $this->url(array('controller'=>'pets'), 'default', true)."/index"
+						));
+					?>
+				</li>
+			</ul>
+		</div>
+		<div class="clear tenpx"></div>
+		<?php if(isset($this->pets) && count($this->pets) > 0): ?>
+			<?php echo $this->paginationControl($this->pets, 'Elastic', 'pets/all-controls.phtml', array('pos' => 'top')); ?>
+			<?php if($this->list == 'grid'): ?>
+				<div id="pin-container">
+					<?php
+						foreach($this->pets as $pet):
+							$links = array();
+							if ($this->auth->hasIdentity() && isset($pet["to_adopt"]) && intval($pet["to_adopt"]) == 1 && $this->auth->getIdentity()->id != $pet['user_id']):
+								$links[] = array (
+					    			'class' => 'adoptpet reqconf',
+					    			'title' => $this->translate->_("Show interest for")." {$pet['name']}?",
+					    			'url' => $this->url(array('controller'=>'adoption', 'action'=>'interest', 'pet' => $pet["id"]), 'default', true)
+					    		);
+							endif;
+						    echo $this->partial('pet-template.phtml', array(
+					        	'translate' => $this->translate,
+					        	'pet' => $pet,
+						    	'sp' => ($this->identity && $this->identity->type == 2 && $pet['user_id'] != $this->identity->id),
+					    		'allow' => true,
+				    			'links' => $links
+				    		));
+						endforeach;
+					?>
+				</div>
+				<div class="clear"></div>
+			<?php else: ?>
+				<table cellspacing="0" cellpadding="5" class="grid">
+				<col width="115" /><col /><col width="125" /><col width="125" /><col width="125" /><col width="100" /><col width="58" />
+					<tr>
+						<th></th>
+						<th><a href="<?php echo $this->url(array('order' => 'name', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Name"); ?><?php if($this->order == 'name'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+						<th><a href="<?php echo $this->url(array('order' => 'type', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Type"); ?><?php if($this->order == 'type'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+						<th><a href="<?php echo $this->url(array('order' => 'breed', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Breed"); ?><?php if($this->order == 'breed'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+						<th><a href="<?php echo $this->url(array('order' => 'owner', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Owner"); ?><?php if($this->order == 'owner'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+						<th><a href="<?php echo $this->url(array('order' => 'country', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Country"); ?><?php if($this->order == 'country'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+						<th><a href="<?php echo $this->url(array('order' => 'adopt', 'dir' => $this->rdir)); ?>"><?php echo $this->translate->_("Adopt"); ?><?php if($this->order == 'adopt'): ?>&nbsp;<img src="/images/order/<?php echo $this->dir; ?>.png" /><?php endif; ?></a></th>
+					</tr>
+					<?php
+						foreach($this->pets as $pet):
+							// picture control
+							$image = "/images/small_no-pet.jpg";
+							if ($pet["picture"] && strlen($pet["picture"]) > 0)
+								$image = "/images/userfiles/pets/{$pet["id"]}/gallery/small_{$pet["picture"]}";
+							?>
+								<tr>
+									<td align="right"><a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'view', 'pet' => $pet["id"]), 'default', true); ?>"><img src="<?php echo $image; ?>" style="display: block; padding: 3px; border: 1px solid #B3B3B3; background: white;" alt="<?php echo $this->translate->_("Pet Picture"); ?>" /></a></td>
+									<td><a href="<?php echo $this->url(array('controller'=>'pets', 'action'=>'view', 'pet' => $pet["id"]), 'default', true); ?>"><?php echo $pet["name"]; ?></a></td>
+									<td><a href="<?php echo $this->url(array('species' => $pet['attribute_set_id'])); ?>"><?php echo $pet["type"]; ?></a></td>
+									<td><?php echo $pet["breed"]; ?></td>
+									<td><a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $pet["user_id"]), 'default', true); ?>"><?php echo $this->Tr($pet["user_name"]); ?></a></td>
+									<td><?php echo @$this->country_list[$pet["user_country_id"]]; ?></td>
+									<td align="center"><?php if($pet["to_adopt"] == 1): ?><img src="/images/icons/accept.png" title="<?php echo $this->translate->_("Available for Adoption"); ?>" /><?php else: ?><img src="/images/icons/deny.png" title="<?php echo $this->translate->_("Not available for Adoption"); ?>" /><?php endif; ?></td>
+								</tr>
+					<?php endforeach; ?>
+				</table>
+			<?php endif; ?>
+			<?php echo $this->paginationControl($this->pets, 'Elastic', 'pets/all-controls.phtml', array('pos' => 'bot')); ?>
+		<?php else: ?>
+			<b class="red bigger"><?php echo $this->translate->_("No pets found."); ?></b>
+		<?php endif; ?>
+	</div>
+	<!-- <div class="rightbox" style="padding: 0px; border: 0px;">
+		<div class="left"><input onclick="Petolio.go('<?php echo $this->url(array('list' => $this->list == 'grid' ? 1 : 0)); ?>');" type="button" value="<?php echo $this->list == 'grid' ? $this->translate->_("Switch to List >") : $this->translate->_("Switch to Grid >"); ?>" id="submit" name="prev" style="margin: 0px;"><div class="clear"></div></div>
+		<div class="clear"></div>
+	</div> -->
+</div>
+<?php include "../application/modules/frontend/views/scripts/plus.phtml"; ?>
+<script type="text/javascript" src="<?php echo Petolio_Service_Util::autoVersion('/js/jquery/masonry.pkgd.min.js'); ?>"></script>
+<script type="text/javascript">
+	READY(function() {
+		var $container = $('#pin-container');
+
+		// initialize
+		$container.masonry({
+			itemSelector: '.pet-item',
+			gutter: 7,
+		});
+
+		// redraw the layout after all the images were loaded
+		$(window).load(function() {
+			$container.masonry();
+		});
+	});
+</script>

@@ -1,0 +1,44 @@
+<ul class="sf-menu">
+	<?php if(!$this->editor): ?>
+		<li><a href="#"><?php echo $this->translate->_("Please login to access the editing menu."); ?></a></li>
+	<?php else: ?>
+		<li>
+			<a href="<?php echo $this->url(array("controller" => "rss", "action" => "index"), "editor", true); ?>" class="sf-with-ul"><?php echo $this->translate->_("RSS"); ?><span class="sf-sub-indicator"> &#187;</span></a>
+			<ul>
+				<li><dfn></dfn></li>
+				<li><a href="<?php echo $this->url(array("controller" => "rss", "action" => "add"), "editor", true); ?>"><?php echo $this->translate->_("Add news"); ?></a></li>
+				<li><a href="<?php echo $this->url(array("controller" => "rss", "action" => "index"), "editor", true); ?>"><?php echo $this->translate->_("List news"); ?></a></li>
+			</ul>
+		</li>
+
+		<li>
+			<a href="<?php echo $this->url(array("controller" => "index", "action" => "logout"), "editor", true); ?>"><?php echo $this->translate->_("Logout"); ?></a>
+		</li>
+	<?php endif; ?>
+</ul>
+<div class="clear"></div>
+<script type="text/javascript">
+	READY(function(){
+		$("body").bind("Editor", function(e){
+			if(e.unveiled === true) {
+				Editor.loadJs('menu/supersubs.js');
+				Editor.loadJs('menu/superfish.js');
+
+				if($('ul.sf-menu').children().length > 1)
+					$('div.disable', 'div.menu').remove();
+
+				$('ul.sf-menu').supersubs({
+			        minWidth: 12,
+			        maxWidth: 20,
+			        extraWidth: 2
+			    }).superfish({
+				    delay: 500,
+				    animation: { height:'show' },
+				    speed: 'fast',
+				    autoArrows: true,
+				    dropShadows: false
+				});
+			}
+		});
+	});
+</script>
