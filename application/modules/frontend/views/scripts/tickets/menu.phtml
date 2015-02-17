@@ -1,72 +1,97 @@
 <?php
 if ($this->auth->hasIdentity()) {
-	// links to ticket management
-	$ticketLinks = array(
-			array(
-				'link' => $this->url(array('controller'=>'tickets', 'action'=>'my-tickets'), 'default', true),
-				'name' => $this->translate->_("My Tickets"),
-				'class' => 'lm-products_sm'
-			),
-			array(
-				'link' => $this->url(array('controller'=>'tickets', 'action'=>'add-ticket'), 'default', true),
-				'name' => $this->translate->_("Add Ticket"),
-				'class' => 'lm-products_sm'
-			),
-			array(
-					'link' => $this->url(array('controller'=>'tickets', 'action'=>'tickets-archives'), 'default', true),
-					'name' => $this->translate->_("Tickets Archives"),
-					'class' => 'lm-products_sm'
-			)
+	if ($this->auth->getIdentity()->type == 1)
+	{
+		$ticketLinks = array(
+				array(
+						'link' => $this->url(array('controller'=>'tickets', 'action'=>'my-tickets'), 'default', true),
+						'name' => $this->translate->_("My Tickets"),
+						'class' => 'lm-products_sm'
+				)
 		);
-	// links to client management
-	$clientLinks = array(
-			array(
-				'link' => $this->url(array('controller'=>'tickets', 'action'=>'my-clients'), 'default', true),
-				'name' => $this->translate->_("My Clients"),
-				'class' => 'lm-friends_sm'
-			),
-			array(
-					'link' => $this->url(array('controller'=>'tickets', 'action'=>'add-client'), 'default', true),
-					'name' => $this->translate->_("Add Client"),
-					'class' => 'lm-friends_sm'
-			),
-			array(
-					'link' => $this->url(array('controller'=>'tickets', 'action'=>'manage-non-petolio-members'), 'default', true),
-					'name' => $this->translate->_("Manage Non-Petolio Members"),
-					'class' => 'lm-friends_sm'
-			),
-			array(
-					'link' => $this->url(array('controller'=>'tickets', 'action'=>'clients-archives'), 'default', true),
-					'name' => $this->translate->_("Clients Archives"),
-					'class' => 'lm-friends_sm'
-			)
-	);
-	
-	// add buttons on the right side combo-box
-	// for tickets
-	$links = null;
-	foreach($ticketLinks as $link) {
-		if (isset($link['class']) && strlen($link['class']) > 0)
-			$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
-		else
-			$links .= "<li><a href='{$link['link']}'>{$link['name']}</a></li>";
+		// add buttons on the right side combo-box
+		$links = null;
+		foreach($ticketLinks as $link) {
+			if (isset($link['class']) && strlen($link['class']) > 0)
+				$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+			else
+				$links .= "<li><a href='{$link['link']}'>{$link['name']}</a></li>";
+		}
+		
+		$this->placeholder('sidebar')
+		->append("<h3 {$hide}>".$this->translate->_("Tickets")."</h3>
+		<ul class=\"leftsubmenu\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
 	}
-
-	$this->placeholder('sidebar')
-	     ->append("<h3 {$hide}>".$this->translate->_("Tickets")."</h3>
-	     	<ul class=\"leftsubmenu\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
+	else if($this->auth->getIdentity()->type == 2)
+	{
+		// links to ticket management
+		$ticketLinks = array(
+				array(
+					'link' => $this->url(array('controller'=>'tickets', 'action'=>'my-tickets'), 'default', true),
+					'name' => $this->translate->_("My Tickets"),
+					'class' => 'lm-products_sm'
+				),
+				array(
+					'link' => $this->url(array('controller'=>'tickets', 'action'=>'add-ticket'), 'default', true),
+					'name' => $this->translate->_("Add Ticket"),
+					'class' => 'lm-products_sm'
+				),
+				array(
+						'link' => $this->url(array('controller'=>'tickets', 'action'=>'tickets-archives'), 'default', true),
+						'name' => $this->translate->_("Tickets Archives"),
+						'class' => 'lm-products_sm'
+				)
+			);
+		// links to client management
+		$clientLinks = array(
+				array(
+					'link' => $this->url(array('controller'=>'tickets', 'action'=>'my-clients'), 'default', true),
+					'name' => $this->translate->_("My Clients"),
+					'class' => 'lm-friends_sm'
+				),
+				array(
+						'link' => $this->url(array('controller'=>'tickets', 'action'=>'add-client'), 'default', true),
+						'name' => $this->translate->_("Add Client"),
+						'class' => 'lm-friends_sm'
+				),
+				array(
+						'link' => $this->url(array('controller'=>'tickets', 'action'=>'manage-non-petolio-members'), 'default', true),
+						'name' => $this->translate->_("Manage Non-Petolio Members"),
+						'class' => 'lm-friends_sm'
+				),
+				array(
+						'link' => $this->url(array('controller'=>'tickets', 'action'=>'clients-archives'), 'default', true),
+						'name' => $this->translate->_("Clients Archives"),
+						'class' => 'lm-friends_sm'
+				)
+		);
+		
+		// add buttons on the right side combo-box
+		// for tickets
+		$links = null;
+		foreach($ticketLinks as $link) {
+			if (isset($link['class']) && strlen($link['class']) > 0)
+				$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+			else
+				$links .= "<li><a href='{$link['link']}'>{$link['name']}</a></li>";
+		}
 	
-	// for clients
-	$links = null;
-	foreach($clientLinks as $link) {
-		if (isset($link['class']) && strlen($link['class']) > 0)
-			$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
-		else
-			$links .= "<li><a href='{$link['link']}'>{$link['name']}</a></li>";
+		$this->placeholder('sidebar')
+		     ->append("<h3 {$hide}>".$this->translate->_("Tickets")."</h3>
+		     	<ul class=\"leftsubmenu\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
+		
+		// for clients
+		$links = null;
+		foreach($clientLinks as $link) {
+			if (isset($link['class']) && strlen($link['class']) > 0)
+				$links .= "<li><a href='{$link['link']}' class='{$link['class']}'><span>{$link['name']}</span></a></li>";
+			else
+				$links .= "<li><a href='{$link['link']}'>{$link['name']}</a></li>";
+		}
+		
+		$this->placeholder('sidebar')
+		->append("<h3 {$hide}>".$this->translate->_("Clients")."</h3>
+		<ul class=\"leftsubmenu\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
 	}
-	
-	$this->placeholder('sidebar')
-	->append("<h3 {$hide}>".$this->translate->_("Clients")."</h3>
-	<ul class=\"leftsubmenu\" data-context=\"true\">{$links}</ul><div class=\"clear\"></div>");
 }
 ?>
