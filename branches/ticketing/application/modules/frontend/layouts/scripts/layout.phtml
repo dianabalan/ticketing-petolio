@@ -306,6 +306,8 @@ if (!isset($_COOKIE["user_timezone"])
 								<?php endif; ?>
 								<img src="/images/new/small/meet2chat.png" />
 							</a>
+							<a href="<?php echo $this->url(array('controller'=>'tickets', 'action'=>'my-tickets'), 'default', true); ?>" 
+								title="<?php echo $this->translate->_("My Tickets"); ?>"><img src="/images/new/small/ticket.png" /></a>
 						</div>
 						<div class="clear"></div>
 					</div>
