@@ -8,6 +8,36 @@ class TicketsController extends Zend_Controller_Action
 
 	private $msg = null;
 	
+	private static $roles = array(
+			2 => 'po',
+			1 => 'sp'
+	);
+	
+	private static $action_to_roles_map = array(
+			'my-tickets' => array(
+					'sp',
+					'po'
+			),
+			'add-ticket' => array(
+					'sp'
+			),
+			'tickets-archives' => array(
+					'sp'
+			),
+			'my-clients' => array(
+					'sp'
+			),
+			'add-client' => array(
+					'sp'
+			),
+			'manage-non-petolio-members' => array(
+					'sp'
+			),
+			'clients-archives' => array(
+					'sp'
+			),
+	);
+	
 	public function init() {
 		// init
 		$this->auth = Zend_Auth::getInstance();
@@ -50,9 +80,10 @@ class TicketsController extends Zend_Controller_Action
 	private function verifyRole()
 	{
 		$action_name = $this->request->getActionName();
-		$usrType = $this->auth->getIdentity()->type;
-	
-		if ( $action_name != "my-tickets" && $usrType == 1 )
+        $action_roles = self::$action_to_roles_map[$action_name];
+        $role = self::$roles[$this->auth->getIdentity()->type];
+        
+        if ( !in_array($role, $action_roles, true) )
 		{
 			Petolio_Service_Util::saveRequest();
             $this->msg->messages[] = $this->translate->_("Please log in or sign up as 'Service Provider' to access this page");
