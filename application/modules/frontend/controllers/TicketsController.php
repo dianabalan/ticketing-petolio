@@ -9,8 +9,8 @@ class TicketsController extends Zend_Controller_Action
 	private $msg = null;
 	
 	private static $roles = array(
-			2 => 'po',
-			1 => 'sp'
+			1 => 'po',
+			2 => 'sp'
 	);
 	
 	private static $action_to_roles_map = array(
