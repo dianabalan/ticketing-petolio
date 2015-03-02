@@ -1,0 +1,48 @@
+<?php include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context">
+			<div class="in">
+				<a href="javascript:void(0);" id="context_menu"
+					class="icon_link the_down"><span></span></a>
+			</div>
+		</div>
+		<h1><?php echo $this->title; ?></h1>
+		<div>
+<?php
+echo $this->partial("tickets/partials/search.phtml", 
+        array(
+            "request" => $this->request,
+            "translate" => $this->translate,
+            "country_list" => $this->country_list,
+            "action" => $this->url(array(
+                'controller' => 'tickets'
+            ), 'default', true) . "/users"
+        ));
+?>
+        </div>
+		<div id="users-list-wrapper" style="margin-top: 50px">
+<?php
+echo $this->partial("tickets/partials/list-with-pagination.phtml", 
+        array(
+            "request" => $this->request,
+            "translate" => $this->translate,
+            "country_list" => $this->country_list,
+            "paginator" => $this->paginator
+        ));
+?>
+</div>
+        <?php $action = $this->url(array(
+                'controller' => 'tickets',
+                'action' => 'save-users-as-clients'
+            ), 'default', true);
+        ?>
+        <form id="save-clients" method="POST" action="<?php echo $action; ?>">
+            <input name="submit" type="submit" 
+                   style="min-width: 100px; min-height: 40px; margin-top: 15px; margin-left: 0px;" 
+                   value="<?php echo $this->translate->_("Save") ?>" />
+        </form>
+	</div>
+</div>
+
+<script type="text/javascript" src="/js/ticket/saveUsers.js"></script>

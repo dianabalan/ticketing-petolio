@@ -1,0 +1,28 @@
+<?php
+	$var_name = $this->var_name ? $this->var_name : "page";
+	$anchor = $this->anchor ? "#nav-{$var_name}" : "";
+?>
+<?php if($this->pageCount > 1): ?>
+	<?php if ($this->anchor): ?>
+		<a name="<?php echo "nav-{$var_name}"; ?>"></a>
+	<?php endif; ?>
+	<div class="clear <?php if($this->pos == 'bot') echo 'tenpx'; ?>"></div>
+		<?php if (isset($this->previous)): ?>
+			<a href="<?php echo $this->url(array($var_name => $this->first)).$anchor; ?>" title="First" class="pagefirst">&nbsp;</a>
+		<?php else: ?>
+			<span class="disabled pagefirstoff" title="First">&nbsp;</span>
+		<?php endif; if (isset($this->previous)): ?>
+			<a href="<?php echo $this->url(array($var_name => $this->previous)).$anchor; ?>" title="Previous" class="pageprev">&nbsp;</a>
+		<?php else: ?>
+			<span class="disabled pageprevoff" title="Previous">&nbsp;</span>
+		<?php endif; if (isset($this->next)): ?>
+			<a href="<?php echo $this->url(array($var_name => $this->next)).$anchor; ?>" title="Next" class="pagenext">&nbsp;</a>
+		<?php else: ?>
+			<span class="disabled pagenextoff" title="Next">&nbsp;</span>
+		<?php endif; if (isset($this->next)): ?>
+			<a href="<?php echo $this->url(array($var_name => $this->last)).$anchor; ?>" title="Last" class="pagelast">&nbsp;</a>
+		<?php else: ?>
+			<span class="disabled pagelastoff" title="Last">&nbsp;</span>
+		<?php endif; ?>
+	<div class="clear <?php if($this->pos == 'top') echo 'tenpx'; ?>"></div>
+<?php endif; ?>

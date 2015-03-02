@@ -1,0 +1,15 @@
+<?php 
+echo $this->paginationControl($this->paginator, 'Elastic', 'tickets/partials/pagination-controls.phtml', array('pos' => 'top'));
+?>
+<?php
+echo $this->partial("tickets/partials/list.phtml", 
+        array(
+            "request" => $this->request,
+            "translate" => $this->translate,
+            "country_list" => $this->country_list,
+            "users" => $this->paginator
+        ));
+?>
+<?php
+echo $this->paginationControl($this->paginator, 'Elastic', 'tickets/partials/pagination-controls.phtml', array('pos' => 'bot'));
+?>
