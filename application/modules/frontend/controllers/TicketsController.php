@@ -19,7 +19,7 @@ class TicketsController extends Zend_Controller_Action
      * @author Stefan Baiu
      */
     private static $roles = array(
-        1 => 'po',
+        1 => 'po', 
         2 => 'sp'
     );
 
@@ -30,25 +30,31 @@ class TicketsController extends Zend_Controller_Action
      */
     private static $action_to_roles_map = array(
         'my-tickets' => array(
-            'sp',
+            'sp', 
             'po'
-        ),
+        ), 
         'add-ticket' => array(
             'sp'
-        ),
+        ), 
         'tickets-archives' => array(
             'sp'
-        ),
+        ), 
         'my-clients' => array(
             'sp'
-        ),
-        'add-client' => array(
-            'sp'
-        ),
+        ), 
         'manage-non-petolio-members' => array(
             'sp'
-        ),
+        ), 
         'clients-archives' => array(
+            'sp'
+        ), 
+        'add-non-petolio-member' => array(
+            'sp'
+        ), 
+        'users' => array(
+            'sp'
+        ),
+        'save-users-as-clients' => array(
             'sp'
         )
     );
@@ -126,6 +132,18 @@ class TicketsController extends Zend_Controller_Action
         }
     }
 
+    private function getCountries()
+    {
+        $countries = new Petolio_Model_PoCountriesMapper();
+        $countries_map = array();
+        foreach ($countries->fetchAll() as $country)
+        {
+            $countries_map[$country->getId()] = $country->getName();
+        }
+        
+        return $countries_map;
+    }
+
     /**
      * This method is called before the action method.
      *
@@ -165,14 +183,79 @@ class TicketsController extends Zend_Controller_Action
         $this->view->title = $this->translate->_("Tickets Archives");
     }
 
+    public function usersAction()
+    {
+        $this->view->title = $this->translate->_("Users");
+        $this->view->country_list = $this->getCountries();
+        
+        $page = $this->request->getParam('page');
+        $page = isset($page) ? intval($page) : 0;
+        $items_per_page = (int) $this->cfg["users"]["pagination"]["itemsperpage"];
+        
+        $manager = new Petolio_Model_Ticket_UsersManager();
+        $sp_id = (int) $this->auth->getIdentity()->id;
+        
+        $cache = new Zend_Session_Namespace("cache");
+        
+        if ( $this->_request->isXmlHttpRequest() )
+        {
+            $filter = $cache->filter;
+            $paginator = $manager->getNonClients($sp_id, $page, $items_per_page, $filter);
+            
+            $this->view->paginator = $paginator;
+            $this->_helper->layout()->disableLayout();
+            $this->_helper->viewRenderer('partials/list-with-pagination');
+        }
+        else
+        {
+            unset($cache->filter);
+            
+            $filter = new Petolio_Model_Ticket_SearchUserFilter();
+            $filter->setKeyword($this->request->getParam('keyword'));
+            $filter->setCountry($this->request->getParam('country'));
+            $filter->setZipcode($this->request->getParam('zipcode'));
+            $filter->setAddress($this->request->getParam('address'));
+            $filter->setLocation($this->request->getParam('location'));
+            $filter->setRadius($this->request->getParam('radius'));
+            
+            if ( !$filter->hasValues() )
+            {
+                $filter = null;
+            }
+            
+            $paginator = $manager->getNonClients($sp_id, $page, $items_per_page, $filter);
+            
+            $cache->filter = $filter;
+            
+            $this->view->paginator = $paginator;
+        }
+    }
+    
+    public function saveUsersAsClientsAction()
+    {
+        if ( !($this->request->isPost() && $this->request->getPost('submit')) )
+        {
+            return $this->_helper->redirector('index', 'site');
+        }
+        
+        $post_data = $this->request->getPost();
+        $user_ids = $post_data['client_id'];
+        $sp_id = (int) $this->auth->getIdentity()->id;
+        
+        $manager = new Petolio_Model_Ticket_ClientsManager();
+        $count = $manager->addClients($user_ids, $sp_id);
+        
+        $messages = new Zend_Session_Namespace("po_messages");
+        
+        $text = $this->translate->_('clients were added successfully');
+        $messages->messages[] = $count . '/' . count($user_ids) . ' ' . $text;
+
+        return $this->_redirect('/tickets/my-tickets');
+    }
+
     public function myClientsAction()
     {
         $this->view->title = $this->translate->_("My Clients");
-    }
-
-    public function addClientAction()
-    {
-        $this->view->title = $this->translate->_("Add Client");
     }
 
     public function manageNonPetolioMembersAction()
@@ -184,4 +267,5 @@ class TicketsController extends Zend_Controller_Action
     {
         $this->view->title = $this->translate->_("Clients Archives");
     }
+
 }

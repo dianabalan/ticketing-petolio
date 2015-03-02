@@ -1,0 +1,20 @@
+<?php
+$avatar = "/images/no-avatar.jpg";
+$user = $this->user;
+
+if ( !is_null($user['avatar']) )
+{
+    $user['avatar'] = 'thumb_' . $user['avatar'];
+    $ds = DIRECTORY_SEPARATOR;
+    $image = "..{$ds}data{$ds}userfiles{$ds}avatars{$ds}{$user['id']}{$ds}{$user['avatar']}";
+    
+    // get cache
+    if ( is_file($image) )
+    {
+        $cache = filemtime($image);
+        $avatar = "/images/userfiles/avatars/{$user['id']}/{$user['avatar']}?{$cache}";
+    }
+}
+
+// output our avatar
+echo $avatar;
