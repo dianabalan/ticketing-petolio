@@ -36,6 +36,9 @@ class TicketsController extends Zend_Controller_Action
         'add-ticket' => array(
             'sp'
         ), 
+        'manage-tickets' => array(
+            'sp'
+        ), 
         'tickets-archives' => array(
             'sp'
         ), 
@@ -176,6 +179,11 @@ class TicketsController extends Zend_Controller_Action
     public function addTicketAction()
     {
         $this->view->title = $this->translate->_("Add Ticket");
+    }
+    
+    public function manageTicketsAction()
+    {
+    	$this->view->title = $this->translate->_("Manage Tickets");
     }
 
     public function ticketsArchivesAction()

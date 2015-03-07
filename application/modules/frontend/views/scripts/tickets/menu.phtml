@@ -37,6 +37,11 @@ if ($this->auth->hasIdentity()) {
 					'class' => 'lm-products_sm'
 				),
 				array(
+					'link' => $this->url(array('controller'=>'tickets', 'action'=>'manage-tickets'), 'default', true),
+					'name' => $this->translate->_("Manage Tickets"),
+					'class' => 'lm-products_sm'
+				),
+				array(
 						'link' => $this->url(array('controller'=>'tickets', 'action'=>'tickets-archives'), 'default', true),
 						'name' => $this->translate->_("Tickets Archives"),
 						'class' => 'lm-products_sm'
