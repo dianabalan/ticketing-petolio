@@ -64,20 +64,27 @@ foreach ($this->users as $idx => $user):
 	   </td>
 	   <td style="word-break: break-all">
 	       <a href="<?php echo $this->url(array(
-	               'controller'=>'tickets', 
-	               'action'=>'edit-client', 
-	               'id'=>$user["id"]
+	               'controller'=> 'tickets', 
+	               'action'=> 'edit-client', 
+	               'id' => $user["id"]
 	       ), 'default', true); ?>">
 	           <?php echo $this->translate->_("Edit"); ?>
 	       </a>
 		</td>
 		<td style="word-break: break-all">
-	       <a href="<?php $this->url(array('controller'=>'tickets', 'action'=>'archive-client'), 'default', true) ?>">
-	           <?php echo $this->translate->_("Archive"); ?>
-	       </a>
+		  <form class="archive-form" method="POST" action="<?php echo $this->url(array('controller'=> 'tickets', 'action'=> 'archive-client'), 'default', true); ?>">
+	           <input name="user_id" type="hidden" value="<?php echo $user["id"]; ?>" />
+	           <input name="go" type="submit" value="X" />
+	       </form>
 		</td>
     </tr>
 <?php endforeach; ?>
 </table>
 	</div>
 </div>
+
+<div id="archive-client-dialog-confirm" style="display: none" title="<?php echo $this->translate->_("Archive the client?") ?>">
+  <?php echo $this->translate->_("The client will be archived. Are you sure?"); ?>
+</div>
+
+<script type="text/javascript" src="/js/ticket/myClients.js"></script>
