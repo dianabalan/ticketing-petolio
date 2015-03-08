@@ -69,15 +69,15 @@ class TicketsController extends Zend_Controller_Action
     );
     
     /**
-     * Redirects to another URL, with the option of displaying a message afterwards.
+     * Redirects to another URL and displays a message to the user.
      * 
      * @author Stefan Baiu
      * 
-     * @param string $message (optional) The message to be displayed after users is redirected.
+     * @param string $message The message to be displayed after users is redirected.
      * 
      * @return void
      */
-    private function _redirectWithMessage($url, $message = null)
+    private function _redirectWithMessage($url, $message)
     {
         if ( $message )
         {
@@ -329,7 +329,7 @@ class TicketsController extends Zend_Controller_Action
         
         if ( null === $client )
         {
-            $this->_redirectWithMessage('/tickets/my-clients', 'No such client');
+            return $this->_redirectWithMessage('/tickets/my-clients', 'No such client');
         }
         
         if ( $this->request->isGet() )
@@ -372,9 +372,36 @@ class TicketsController extends Zend_Controller_Action
         return $this->_redirectWithMessage('/tickets/my-clients', 'Changes were applied');
     }
     
-    public function archiveClient()
+    public function archiveClientAction()
     {
+        if( !($this->request->isPost()) )
+        {
+            return $this->_helper->redirector('index', 'site');
+        }
         
+        $user_id = $this->request->getParam('user_id', 0);
+        $sp_id = (int) $this->auth->getIdentity()->id;
+        
+        $manager = new Petolio_Model_Ticket_ClientsManager();
+        $client = $manager->getClient($user_id, $sp_id);
+        
+        if ( null === $client )
+        {
+            return $this->_redirectWithMessage('/tickets/my-clients', 'No such client');
+        }
+        
+        $client->setIsActive(false);
+        
+        try 
+        {
+            $manager->save($client);
+        }
+        catch (Exception $e)
+        {
+            return $this->_redirectWithMessage('/tickets/my-clients', 'Something went wrong');
+        }
+        
+        return $this->_redirectWithMessage('/tickets/my-clients', 'The client was archived');
     }
     
     public function clientsArchiveAction()
