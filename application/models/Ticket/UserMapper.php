@@ -56,5 +56,18 @@ class Petolio_Model_Ticket_UserMapper extends Petolio_Model_Ticket_DataMapperAbs
         
         //return $users;
     }
+    
+    public function fetchClients($sp_id)
+    {
+        $rows = $this->getDbTable()->fetchClients($sp_id);
+        
+        $users = array();
+        foreach ($rows as $row)
+        {
+            $users[] = $this->fromDbToClass($row);
+        }
+        
+        return $users;
+    }
 
 }

@@ -56,6 +56,18 @@ class Petolio_Model_Ticket_ClientMapper extends Petolio_Model_Ticket_DataMapperA
         
         return $client;
     }
+    
+    public function fetchClient($user_id, $sp_id)
+    {
+        $row = $this->getDbTable()->fetchClient($user_id, $sp_id);
+        
+        if ( $row )
+        {
+            return $this->fromDbToClass($row);
+        }
+        
+        return null;
+    }
 
     public function save(Petolio_Model_Ticket_Client $client, $ignoreNullValues = true, $escapeValues = false)
     {
@@ -67,7 +79,7 @@ class Petolio_Model_Ticket_ClientMapper extends Petolio_Model_Ticket_DataMapperA
         {
             $client->setDateCreated($now);
             
-            $row = $this->getDbTable()->fetchClient($client->getSpId(), $client->getClientId());
+            $row = $this->getDbTable()->fetchClient($client->getClientId(), $client->getSpId());
             if ( $row )
             {
                 throw new Exception('client already added');

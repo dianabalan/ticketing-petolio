@@ -12,14 +12,14 @@ class Petolio_Model_DbTable_Ticket_PoUsers extends Zend_Db_Table_Abstract
         $db = $this->getAdapter();
         
         $columns = array(
-            'u.id',
-            'u.name',
-            'u.email',
-            'u.address',
-            'u.location',
-            'u.country_id',
+            'u.id', 
+            'u.name', 
+            'u.email', 
+            'u.address', 
+            'u.location', 
+            'u.country_id', 
             'u.zipcode', 
-            'u.avatar',
+            'u.avatar'
         );
         
         $subquery = 'SELECT c.client_id FROM po_clients c WHERE c.sp_id = :sp_id';
@@ -27,11 +27,11 @@ class Petolio_Model_DbTable_Ticket_PoUsers extends Zend_Db_Table_Abstract
         $params = array();
         
         $query = $db->select()
-            ->from(array('u' => $this->_name), $columns)
-            ->where('u.active = 1')
-            ->where(new Zend_Db_Expr('u.type = 1 OR u.type = 2'))
-            ->where('u.id <> :sp_id')
-            ->where(new Zend_Db_Expr('u.id NOT IN (' . $subquery . ')'));
+                    ->from(array('u' => $this->_name), $columns)
+                    ->where('u.active = 1')
+                    ->where(new Zend_Db_Expr('u.type = 1 OR u.type = 2'))
+                    ->where('u.id <> :sp_id')
+                    ->where(new Zend_Db_Expr('u.id NOT IN (' . $subquery . ')'));
         
         if ( is_array($filter_data) )
         {
@@ -40,25 +40,25 @@ class Petolio_Model_DbTable_Ticket_PoUsers extends Zend_Db_Table_Abstract
                 $query = $query->where(new Zend_Db_Expr("u.name LIKE :keyword"));
                 $params[':keyword'] = '%' . $filter_data['keyword'] . '%';
             }
-        
+            
             if ( isset($filter_data['country']) )
             {
                 $query = $query->where(new Zend_Db_Expr("u.country_id = :country"));
                 $params[':country'] = $filter_data['country'];
             }
-        
+            
             if ( isset($filter_data['zipcode']) )
             {
                 $query = $query->where(new Zend_Db_Expr("u.zipcode LIKE :zipcode"));
                 $params[':zipcode'] = '%' . $filter_data['zipcode'] . '%';
             }
-        
+            
             if ( isset($filter_data['address']) )
             {
                 $query = $query->where(new Zend_Db_Expr("u.address LIKE :address"));
                 $params[':address'] = '%' . $filter_data['address'] . '%';
             }
-        
+            
             if ( isset($filter_data['location']) )
             {
                 $query = $query->where(new Zend_Db_Expr("u.location LIKE :location"));
@@ -77,6 +77,35 @@ class Petolio_Model_DbTable_Ticket_PoUsers extends Zend_Db_Table_Abstract
         $paginator->setCurrentPageNumber((int) $page);
         
         return $paginator;
+    }
+
+    public function fetchClients($sp_id)
+    {
+        $db = $this->getAdapter();
+        
+        $columns = array(
+            'u.id', 
+            'u.name', 
+            'u.email', 
+            'u.address', 
+            'u.location', 
+            'u.country_id', 
+            'u.zipcode', 
+            'u.avatar',
+            'u.type'
+        );
+        
+        $query = $db->select()
+                    ->from(array('u' => $this->_name), $columns)
+                    ->joinInner(array('c' => 'po_clients'), 'u.id = c.client_id', array())
+                    ->where('c.sp_id = :sp_id')
+                    ->where('c.isActive = 1');
+        
+        $rows = $db->fetchAll($query, array(
+            ':sp_id' => $sp_id
+        ));
+        
+        return $rows;
     }
 
 }
