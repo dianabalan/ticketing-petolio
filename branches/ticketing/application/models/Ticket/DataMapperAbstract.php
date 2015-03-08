@@ -74,7 +74,7 @@ abstract class Petolio_Model_Ticket_DataMapperAbstract
         
         $dbTable = $this->getDbTable();
         // for our tables the primary key is composed of a single column
-        $pk_name = $dbTable->info(Zend_Db_Table::PRIMARY)[0];
+        $pk_name = $dbTable->info(Zend_Db_Table::PRIMARY)[1];
         $pk_value = $entity->getId();
         
         if ( null === $pk_value )

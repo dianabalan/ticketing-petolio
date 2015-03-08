@@ -14,9 +14,12 @@ class Petolio_Model_Ticket_ClientsManager
     {
         $success = true;
         
-        try {
+        try
+        {
             $this->_dataMapper->save($client, true, true);
-        } catch (Exception $e) {
+        }
+        catch (Exception $e)
+        {
             $success = false;
         }
         
@@ -41,6 +44,33 @@ class Petolio_Model_Ticket_ClientsManager
         }
         
         return $success_count;
+    }
+    
+    /**
+     * Saves the changes performed on the specified client to the data source.
+     * 
+     * @param Petolio_Model_Ticket_Client $client The client object to be saved.
+     * 
+     * @return void
+     */
+    public function save(Petolio_Model_Ticket_Client $client)
+    {
+        return $this->_dataMapper->save($client);
+    }
+
+    /**
+     * Gets a client associated with the specified service provider.
+     *
+     * @author Stefan Baiu
+     *        
+     * @param int $user_id The id of the user registered as client.
+     * @param int $sp_id The id of the service provider.
+     *       
+     * @return Petolio_Model_Ticket_Client
+     */
+    public function getClient($user_id, $sp_id)
+    {
+        return $this->_dataMapper->fetchClient($user_id, $sp_id);
     }
 
     public function getClients($sp_id)

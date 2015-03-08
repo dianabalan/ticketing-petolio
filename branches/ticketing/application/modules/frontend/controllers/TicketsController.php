@@ -48,9 +48,6 @@ class TicketsController extends Zend_Controller_Action
         'manage-non-petolio-members' => array(
             'sp'
         ), 
-        'clients-archives' => array(
-            'sp'
-        ), 
         'add-non-petolio-member' => array(
             'sp'
         ), 
@@ -59,8 +56,36 @@ class TicketsController extends Zend_Controller_Action
         ),
         'save-users-as-clients' => array(
             'sp'
+        ),
+        'edit-client' => array(
+            'sp'
+        ),
+        'clients-archive' => array(
+            'sp'
+        ),
+        'archive-client' => array(
+            'sp'
         )
     );
+    
+    /**
+     * Redirects to another URL, with the option of displaying a message afterwards.
+     * 
+     * @author Stefan Baiu
+     * 
+     * @param string $message (optional) The message to be displayed after users is redirected.
+     * 
+     * @return void
+     */
+    private function _redirectWithMessage($url, $message = null)
+    {
+        if ( $message )
+        {
+            $this->msg->messages[] = $this->translate->_($message);
+        }
+        
+        return $this->_redirect($url);
+    }
 
     /**
      * Initializes a new instance of the TicketsController class.
@@ -241,7 +266,7 @@ class TicketsController extends Zend_Controller_Action
     
     public function saveUsersAsClientsAction()
     {
-        if ( !($this->request->isPost() && $this->request->getPost('submit')) )
+        if ( !($this->request->isPost()) )
         {
             return $this->_helper->redirector('index', 'site');
         }
@@ -258,22 +283,108 @@ class TicketsController extends Zend_Controller_Action
         $text = $this->translate->_('clients were added successfully');
         $messages->messages[] = $count . '/' . count($user_ids) . ' ' . $text;
 
-        return $this->_redirect('/tickets/my-tickets');
+        return $this->_redirect('/tickets/my-clients');
     }
 
     public function myClientsAction()
     {
         $this->view->title = $this->translate->_("My Clients");
+        $this->view->country_list = $this->getCountries();
+        
+        $sp_id = (int) $this->auth->getIdentity()->id;
+        $manager = new Petolio_Model_Ticket_UsersManager();
+        $users = $manager->getClients($sp_id);
+        
+        $view_users = array();
+        foreach ($users as $user)
+        {
+            $view_users[] = array(
+                'id' => $user->getId(),
+                'name' => $user->getName(),
+                'avatar' => $user->getAvatar(),
+                'email' => $user->getEmail(),
+                'address' => $user->getAddress(),
+                'location' => $user->getLocation(),
+                'country_id' => $user->getCountryId(),
+                'zipcode' => $user->getZipcode(),
+                'type' => $user->getType()
+            );
+        }
+        
+        $this->view->users = $view_users;
     }
-
+    
+    public function editClientAction()
+    {
+        $this->view->title = $this->translate->_("Edit Client");
+        
+        $form = new Petolio_Form_Ticket_Client();
+        $this->view->form = $form;
+        
+        $user_id = $this->request->getParam('id', 0);
+        $sp_id = (int) $this->auth->getIdentity()->id;
+        
+        $manager = new Petolio_Model_Ticket_ClientsManager();
+        $client = $manager->getClient($user_id, $sp_id);
+        
+        if ( null === $client )
+        {
+            $this->_redirectWithMessage('/tickets/my-clients', 'No such client');
+        }
+        
+        if ( $this->request->isGet() )
+        {
+            $form->setDefaults(array(
+                'id' => $client->getClientId(),
+                'billing_interval' => $client->getBillingInterval(),
+                'payment' => $client->getPayment(),
+                'remarks' => $client->getRemarks()
+            ));
+            
+            return false;
+        }
+        
+        if( !($this->request->isPost()) )
+        {
+            return false;
+        }
+        
+        if( !$form->isValid($this->request->getPost()) )
+        {
+            return false;
+        }
+        
+        $data = $form->getValues();
+        
+        $client->setBillingInterval($data['billing_interval']);
+        $client->setPayment($data['payment']);
+        $client->setRemarks($data['remarks']);
+        
+        try 
+        {
+            $manager->save($client);
+        }
+        catch (Exception $e)
+        {
+            return $this->_redirectWithMessage('/tickets/my-clients', 'Something went wrong');
+        }
+        
+        return $this->_redirectWithMessage('/tickets/my-clients', 'Changes were applied');
+    }
+    
+    public function archiveClient()
+    {
+        
+    }
+    
+    public function clientsArchiveAction()
+    {
+        $this->view->title = $this->translate->_("Clients Archive");
+    }
+    
     public function manageNonPetolioMembersAction()
     {
         $this->view->title = $this->translate->_("Manage Non-Petolio Members");
-    }
-
-    public function clientsArchivesAction()
-    {
-        $this->view->title = $this->translate->_("Clients Archives");
     }
 
 }

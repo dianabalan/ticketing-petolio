@@ -11,7 +11,7 @@ class Petolio_Model_Ticket_UsersManager
     }
 
     /**
-     * Gets a list of users which are not registered as clients for the desired service provider.
+     * Gets a list of users which are not registered as clients for the specified service provider.
      *
      * @author Stefan Baiu
      *        
@@ -25,6 +25,20 @@ class Petolio_Model_Ticket_UsersManager
     public function getNonClients($sp_id, $page, $items_per_page, Petolio_Model_Ticket_SearchUserFilter $filter = null)
     {
         return $this->_dataMapper->fetchNonClients($sp_id, $page, $items_per_page, $filter);
+    }
+    
+    /**
+     * Gets a list of users which are registered as clients for the specified service provider.
+     *
+     * @author Stefan Baiu
+     *
+     * @param int $sp_id The service provider id.
+     *
+     * @return Petolio_Model_Ticket_User[]
+     */
+    public function getClients($sp_id)
+    {
+        return $this->_dataMapper->fetchClients($sp_id);
     }
 
 }
