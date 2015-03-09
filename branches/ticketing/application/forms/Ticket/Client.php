@@ -36,10 +36,7 @@ class Petolio_Form_Ticket_Client extends Zend_Form
         
         $this->addElement('select', 'billing_interval', 
                 array(
-                    'label' => $translate->_('Billing Interval'), 
-                    'attribs' => array(
-                        'empty' => $translate->_('Select Billing Interval')
-                    ), 
+                    'label' => $translate->_('Billing Interval'),
                     'multiOptions' => array(
                         '12' => $translate->_('Month'), 
                         '4' => $translate->_('Quarter'), 
@@ -50,10 +47,7 @@ class Petolio_Form_Ticket_Client extends Zend_Form
         
         $this->addElement('select', 'payment', 
                 array(
-                    'label' => $translate->_('Payment'), 
-                    'attribs' => array(
-                        'empty' => $translate->_('Select Payment')
-                    ), 
+                    'label' => $translate->_('Payment'),
                     'multiOptions' => array(
                         'cash' => $translate->_('Cash'), 
                         'paypal' => $translate->_('Paypal'), 
