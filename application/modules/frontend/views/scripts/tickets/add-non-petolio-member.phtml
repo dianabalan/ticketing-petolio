@@ -8,9 +8,7 @@
 			</div>
 		</div>
 		<h1><?php echo $this->title; ?></h1>
-
-		<a href="<?php echo $this->url(array('controller' => 'tickets', 'action' => 'add-non-petolio-member'), 'default', true); ?>" >
-		  <?php echo $this->translate->_("Add non-Petolio member"); ?>
-		</a>
+		
+		<?php echo $this->form; ?>
 	</div>
 </div>

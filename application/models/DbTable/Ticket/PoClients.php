@@ -37,5 +37,32 @@ class Petolio_Model_DbTable_Ticket_PoClients extends Zend_Db_Table_Abstract
         
         return $row;
     }
+    
+    public function insert(array $data)
+    {
+        date_default_timezone_set("UTC");
+        $now = date("Y-m-d H:i:s", time());
+        
+        $data['date_created'] = $now;
+        $data['date_modified'] = $now;
+        
+        $row = $this->fetchClient($data['client_id'], $data['sp_id']);
+        if ( $row )
+        {
+            throw new Exception('client already added');
+        }
+        
+        return parent::insert($data);
+    }
+    
+    public function update(array $data, $where)
+    {
+        date_default_timezone_set("UTC");
+        $now = date("Y-m-d H:i:s", time());
+        
+        $data['date_modified'] = $now;
+        
+        return parent::update($data, $where);
+    }
 
 }
