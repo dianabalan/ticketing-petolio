@@ -71,21 +71,6 @@ class Petolio_Model_Ticket_ClientMapper extends Petolio_Model_Ticket_DataMapperA
 
     public function save(Petolio_Model_Ticket_Client $client, $ignoreNullValues = true, $escapeValues = false)
     {
-        date_default_timezone_set("UTC");
-        $now = date("Y-m-d H:i:s", time());
-        
-        $client->setDateModified($now);
-        if ( null === $client->getId() )
-        {
-            $client->setDateCreated($now);
-            
-            $row = $this->getDbTable()->fetchClient($client->getClientId(), $client->getSpId());
-            if ( $row )
-            {
-                throw new Exception('client already added');
-            }
-        }
-        
         parent::save($client, $ignoreNullValues, $escapeValues);
     }
 

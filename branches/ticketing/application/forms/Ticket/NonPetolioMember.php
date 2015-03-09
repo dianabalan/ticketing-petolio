@@ -1,6 +1,6 @@
 <?php
 
-class Petolio_Form_TicketNonPetolioMember extends Petolio_Form_Main
+class Petolio_Form_Ticket_NonPetolioMember extends Zend_Form
 {
 
     public function init()
@@ -11,19 +11,17 @@ class Petolio_Form_TicketNonPetolioMember extends Petolio_Form_Main
             'FormElements',
             'Form'
         ));
+        
         $this->setElementDecorators(array(
             'PoStandardElement'
         ));
+        
         $this->removeDecorator('DtDdWrapper');
-        $this->addElementPrefixPaths(
-                array(
-                    'decorator' => array(
-                        'Petolio_Decorator' => APPLICATION_PATH . '/decorators'
-                    ),
-                    'validate' => array(
-                        'Petolio_Validator_' => APPLICATION_PATH . '/forms/validators/'
-                    )
-                ));
+        
+        $this->addElementPrefixPaths(array(
+            'decorator' => array('Petolio_Decorator' => APPLICATION_PATH . '/decorators'),
+            'validate' => array('Petolio_Validator_' => APPLICATION_PATH . '/forms/validators/')
+        ));
         
         $this->setMethod(Zend_Form::METHOD_POST);
         
@@ -101,14 +99,6 @@ class Petolio_Form_TicketNonPetolioMember extends Petolio_Form_Main
                             'Regex',
                             false,
                             "/^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*\@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*\.[a-zA-Z]{2,4}$/"
-                        ),
-                        array(
-                            'Db_NoRecordExists',
-                            false,
-                            array(
-                                'table' => 'po_users',
-                                'field' => 'email'
-                            )
                         )
                     )
                 ));

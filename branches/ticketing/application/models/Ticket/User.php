@@ -5,7 +5,13 @@ class Petolio_Model_Ticket_User extends Petolio_Model_Ticket_Entity
 
     private $_name;
 
+    private $_firstname;
+
+    private $_lastname;
+
     private $_email;
+
+    private $_street;
 
     private $_address;
 
@@ -19,6 +25,16 @@ class Petolio_Model_Ticket_User extends Petolio_Model_Ticket_Entity
 
     private $_avatar;
 
+    private $_phone;
+
+    private $_privatePhone;
+    
+    private $_gender;
+
+    public function __construct()
+    {
+    }
+    
     public function getName()
     {
         return $this->_name;
@@ -30,6 +46,28 @@ class Petolio_Model_Ticket_User extends Petolio_Model_Ticket_Entity
         return $this;
     }
 
+    public function getFirstname()
+    {
+        return $this->_firstname;
+    }
+
+    public function setFirstname($firstname)
+    {
+        $this->_firstname = $firstname;
+        return $this;
+    }
+
+    public function getLastname()
+    {
+        return $this->_lastname;
+    }
+
+    public function setLastname($lastname)
+    {
+        $this->_lastname = $lastname;
+        return $this;
+    }
+
     public function getEmail()
     {
         return $this->_email;
@@ -38,6 +76,17 @@ class Petolio_Model_Ticket_User extends Petolio_Model_Ticket_Entity
     public function setEmail($email)
     {
         $this->_email = $email;
+        return $this;
+    }
+
+    public function getStreet()
+    {
+        return $this->_street;
+    }
+
+    public function setStreet($street)
+    {
+        $this->_street = $street;
         return $this;
     }
 
@@ -109,6 +158,39 @@ class Petolio_Model_Ticket_User extends Petolio_Model_Ticket_Entity
     public function setAvatar($avatar)
     {
         $this->_avatar = $avatar;
+        return $this;
+    }
+
+    public function getPhone()
+    {
+        return $this->_phone;
+    }
+
+    public function setPhone($phone)
+    {
+        $this->_phone = $phone;
+        return $this;
+    }
+
+    public function getPrivatePhone()
+    {
+        return $this->_privatePhone;
+    }
+
+    public function setPrivatePhone($privatePhone)
+    {
+        $this->_privatePhone = $privatePhone;
+        return $this;
+    }
+    
+    public function getGender()
+    {
+        return $this->_gender;
+    }
+    
+    public function setGender($gender)
+    {
+        $this->_gender = $gender;
         return $this;
     }
 

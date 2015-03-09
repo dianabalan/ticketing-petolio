@@ -4,6 +4,10 @@ class Petolio_Model_Ticket_Entity
 {
 
     private $_id;
+    
+    public function __construct()
+    {
+    }
 
     public function getId()
     {

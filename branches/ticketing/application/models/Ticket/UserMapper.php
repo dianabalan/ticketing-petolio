@@ -11,15 +11,21 @@ class Petolio_Model_Ticket_UserMapper extends Petolio_Model_Ticket_DataMapperAbs
     protected function fromClassToDb($object)
     {
         $data = array(
-            'id' => $object->getId(),
-            'name' => $object->getName(),
-            'email' => $object->getEmail(),
-            'address' => $object->getAddress(),
-            'location' => $object->getLocation(),
-            'countryId' => $object->getCountryId(),
-            'zipcode' => $object->getZipcode(),
-            'type' => $object->getType(),
-            'avatar' => $object->getAvatar()
+            'id' => $object->getId(), 
+            'name' => $object->getName(), 
+            'first_name' => $object->getFirstname(), 
+            'last_name' => $object->getLastname(), 
+            'email' => $object->getEmail(), 
+            'street' => $object->getStreet(), 
+            'address' => $object->getAddress(), 
+            'location' => $object->getLocation(), 
+            'country_id' => $object->getCountryId(), 
+            'zipcode' => $object->getZipcode(), 
+            'type' => $object->getType(), 
+            'avatar' => $object->getAvatar(), 
+            'phone' => $object->getPhone(), 
+            'private_phone' => $object->getPrivatePhone(), 
+            'gender' => $object->getGender()
         );
         
         return $data;
@@ -31,32 +37,49 @@ class Petolio_Model_Ticket_UserMapper extends Petolio_Model_Ticket_DataMapperAbs
         
         $user->setId($row['id']);
         $user->setName($row['name']);
+        $user->setFirstname($row['first_name']);
+        $user->setLastname($row['last_name']);
         $user->setEmail($row['email']);
+        $user->setStreet($row['street']);
         $user->setAddress($row['address']);
         $user->setLocation($row['location']);
         $user->setCountryId($row['country_id']);
         $user->setZipcode($row['zipcode']);
         $user->setType($row['type']);
         $user->setAvatar($row['avatar']);
+        $user->setPhone($row['phone']);
+        $user->setPrivatePhone($row['private_phone']);
+        $user->setGender($row['gender']);
         
         return $user;
     }
     
+    private function _removeNullEntries(array &$data)
+    {
+        foreach ($data as $key => $value)
+        {
+            if ( null === $value )
+            {
+                unset($data[$key]);
+            }
+        }
+    }
+
     public function fetchNonClients($sp_id, $page, $items_per_page, Petolio_Model_Ticket_SearchUserFilter $filter = null)
     {
         $filter_data = isset($filter) ? $filter->toArray() : null;
         $paginator = $this->getDbTable()->fetchNonClients($sp_id, $page, $items_per_page, $filter_data);
         return $paginator;
         
-        //$users = array();
-        //foreach ($rows as $row)
-        //{
-           // $users[] = $this->fromDbToClass($row);
-        //}
+        // $users = array();
+        // foreach ($rows as $row)
+        // {
+        // $users[] = $this->fromDbToClass($row);
+        // }
         
-        //return $users;
+        // return $users;
     }
-    
+
     public function fetchClients($sp_id)
     {
         $rows = $this->getDbTable()->fetchClients($sp_id);
@@ -65,6 +88,46 @@ class Petolio_Model_Ticket_UserMapper extends Petolio_Model_Ticket_DataMapperAbs
         foreach ($rows as $row)
         {
             $users[] = $this->fromDbToClass($row);
+        }
+        
+        return $users;
+    }
+
+    public function registerNonPetolioMember(Petolio_Model_Ticket_NonPetolioMember $user, $sp_id)
+    {
+        $user_data = $this->fromClassToDb($user);
+        $user_data['remarks'] = $user->getRemarks();
+        $this->_removeNullEntries($user_data);
+        
+        return $this->getDbTable()->registerNonPetolioMember($user_data, $sp_id);
+    }
+    
+    public function fetchNonPetolioMember($user_id, $sp_id)
+    {
+        $row = $this->getDbTable()->fetchNonPetolioMember($user_id, $sp_id);
+        
+        if ( $row )
+        {
+            $user = $this->fromDbToClass($row);
+            $user->setRemarks($row['remarks']);
+            
+            return $user;
+        }
+        
+        return null;
+    }
+    
+    public function fetchNonPetolioMembers($sp_id)
+    {
+        $rows = $this->getDbTable()->fetchNonPetolioMembers($sp_id);
+        
+        $users = array();
+        foreach ($rows as $row)
+        {
+            $user = $this->fromDbToClass($row);
+            $user->setRemarks($row['remarks']);
+            
+            $users[] = $user;
         }
         
         return $users;
