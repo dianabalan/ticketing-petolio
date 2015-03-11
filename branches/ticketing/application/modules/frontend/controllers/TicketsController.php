@@ -226,7 +226,7 @@ class TicketsController extends Zend_Controller_Action
     	//get selection, and add to view
     	$this->view->category = $this->request->getParam("sel");
     	//add form
-    	$this->view->form = new Petolio_Form_TicketAdd($this->view->category);
+    	$this->view->form = new Petolio_Form_TicketAddSelection($this->view->category);
     	//add list of items to view, based on selection
     	switch ($this->view->category)
     	{
