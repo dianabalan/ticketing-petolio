@@ -1,0 +1,21 @@
+<table cellspacing="0" cellpadding="5" class="grid">
+	<col /><col width="200" /><col width="170" /><col width="150" />
+	<tr>
+		<th><?php echo $this->translate->_("Name"); ?></th>
+		<th><?php echo $this->translate->_("Specie"); ?></th>
+		<th><?php echo $this->translate->_("Date"); ?></th>
+		<th></th>
+	</tr>
+	<?php foreach($this->data as $product): ?>
+		<tr>
+			<td><a href="<?php echo $this->url(array('controller'=>'products', 'action'=>'view', 'product' => $product["id"]), 'default', true); ?>"><?php echo $product["title"]; ?></a></td>
+			<td><?php echo $product["species"]; ?></td>
+			<td><?php echo Petolio_Service_Util::formatDate($product["date_created"], null, true, true); ?></td>
+			<td align="right" nowrap="nowrap">
+				<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'add-ticket', 'product'=> $product["id"]), 'default', true); ?>' class='icon_link plus'>
+					<span><?php echo $this->translate->_('Add Ticket'); ?></span>
+				</a>
+			</td>
+		</tr>
+	<?php endforeach; ?>
+</table>
