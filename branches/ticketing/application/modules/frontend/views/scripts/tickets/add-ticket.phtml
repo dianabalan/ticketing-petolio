@@ -4,7 +4,51 @@
 	<div class="rightbox">
 		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
 		<h1><?php echo $this->title; ?></h1>
-		<br/>		
-		<?php echo "Under construction ;)" ?>
+		<br/>
+		<?php echo $this->form; ?>
+		<br/>
+		<?php if(isset($this->list) && count($this->list) > 0): ?>
+			<?php echo $this->paginationControl($this->list, 'Elastic', 'pagination-controls.phtml', array('pos' => 'top')); ?>
+			<?php
+				switch($this->category)
+				{
+					case "prod":
+						echo $this->partial('product-table-template.phtml', array(
+								'translate' => $this->translate,
+								'data' => $this->list
+						));
+						break;
+					case "serv":
+						echo $this->partial('service-table-template.phtml', array(
+								'translate' => $this->translate,
+								'data' => $this->list
+						));
+						break;
+				}				
+			?>
+			<?php echo $this->paginationControl($this->list, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot')); ?>
+		<?php else: ?>
+			<b class="red bigger">
+				<?php 
+					switch ($this->category)
+					{
+						case "prod":
+							echo $this->translate->_("No products found.");
+							break;
+						case "serv":
+							echo $this->translate->_("No services found."); 
+							break;
+					}	
+				?>
+			</b>
+		<?php endif; ?>
 	</div>
 </div>
+
+<script type="text/javascript">
+	function showData(select) {
+		var x = select.options[select.selectedIndex].value;
+		if(select.selectedIndex != 0)
+			Petolio.go("/tickets/add-ticket/sel/" + x);
+	};
+</script>

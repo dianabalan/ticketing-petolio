@@ -207,8 +207,53 @@ class TicketsController extends Zend_Controller_Action
     public function addTicketAction()
     {
         $this->view->title = $this->translate->_("Add Ticket");
+
+        $this->addTicketStep1();
     }
-    
+
+    /**
+     * Sets previously selected combo-box value, and shows a table according to selection.
+     * @author K Arpi
+     *        
+     * @return void
+     */
+    private function addTicketStep1()
+    {
+    	// get page
+    	$page = $this->request->getParam("page");
+    	$page = $page ? $page : 0;
+    	
+    	//get selection, and add to view
+    	$this->view->category = $this->request->getParam("sel");
+    	//add form
+    	$this->view->form = new Petolio_Form_TicketAdd($this->view->category);
+    	//add list of items to view, based on selection
+    	switch ($this->view->category)
+    	{
+    		case "prod":
+    			$products = new Petolio_Model_PoProducts();
+    			// set filter
+    			$filter = "a.archived = 0 AND a.user_id = {$this->auth->getIdentity()->id}";
+    			// get products
+    			$paginator = $products->getProducts('paginator', $filter, "id DESC", false, true);
+    			$paginator->setItemCountPerPage($this->cfg["products"]["pagination"]["itemsperpage"]);
+    			$paginator->setCurrentPageNumber($page);
+    	
+    			// output products
+    			$this->view->list = $products->formatProducts($paginator);
+    			break;
+    		case "serv":
+    			$services = new Petolio_Model_PoServices();
+    			// get services
+    			$paginator = $services->getServices('paginator', "a.user_id = {$this->auth->getIdentity()->id}", null, false, true);
+    			$paginator->setItemCountPerPage($this->cfg["services"]["pagination"]["itemsperpage"]);
+    			$paginator->setCurrentPageNumber($page);
+    	
+    			// output all services
+    			$this->view->list = $services->formatServices($paginator);
+    			break;
+    	}
+    }
     public function manageTicketsAction()
     {
     	$this->view->title = $this->translate->_("Manage Tickets");
