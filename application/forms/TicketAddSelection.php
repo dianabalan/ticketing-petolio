@@ -1,5 +1,5 @@
 <?php
-class Petolio_Form_TicketAdd extends Petolio_Form_Main
+class Petolio_Form_TicketAddSelection extends Petolio_Form_Main
 {
 	private $category = null;
 	
