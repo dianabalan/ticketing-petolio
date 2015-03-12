@@ -45,5 +45,30 @@ class Petolio_Model_Ticket_UsersManager
     {
         return $this->_dataMapper->registerNonPetolioMember($user, $sp_id);
     }
+    
+    public function updateNonPetolioMember(Petolio_Model_Ticket_NonPetolioMember $user, $sp_id)
+    {
+        return $this->_dataMapper->updateNonPetolioMember($user, $sp_id);
+    }
+    
+    /**
+     * Gets a non-Petolio member created by the specified service provider.
+     *
+     * @author Stefan Baiu
+     *
+     * @param int $user_id The user id.
+     * @param int $sp_id The service provider id.
+     *
+     * @return Petolio_Model_Ticket_NonPetolioMember
+     */
+    public function getNonPetolioMember($user_id, $sp_id)
+    {
+        return $this->_dataMapper->fetchNonPetolioMember($user_id, $sp_id);
+    }
+    
+    public function getNonPetolioMembers($sp_id)
+    {
+        return $this->_dataMapper->fetchNonPetolioMembers($sp_id);
+    }
 
 }

@@ -32,6 +32,10 @@ class Petolio_Form_Ticket_NonPetolioMember extends Zend_Form
             'msg_errors' => true
         );
         
+        $this->addElement('hidden', 'id', array(
+                'value' => null
+        ));
+        
         $this->addElement('text', 'name', 
                 array(
                     'label' => $translate->_('Name (shown name)'),
@@ -150,6 +154,14 @@ class Petolio_Form_Ticket_NonPetolioMember extends Zend_Form
                     'required' => false,
                     'attribs' => $errors
                 ));
+        
+        $this->addElement('text', 'location', array(
+                'label' => $translate->_('Location'),
+                'validators' => array(
+                        array('StringLength', false, array('max' => 100))
+                ),
+                'required' => false
+        ));
         
         $countries = array();
         $countriesMap = new Petolio_Model_PoCountriesMapper();

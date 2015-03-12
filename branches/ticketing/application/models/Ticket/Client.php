@@ -22,6 +22,11 @@ class Petolio_Model_Ticket_Client extends Petolio_Model_Ticket_Entity
     private $_dateCreated;
 
     private $_dateModified;
+    
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
     public function getSpId()
     {

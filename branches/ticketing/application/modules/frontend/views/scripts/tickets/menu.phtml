@@ -60,6 +60,11 @@ if ($this->auth->hasIdentity()) {
 						'name' => $this->translate->_("Users"),
 						'class' => 'lm-friends_sm'
 				),
+		        array(
+		                'link' => $this->url(array('controller'=>'tickets', 'action'=>'add-non-petolio-member'), 'default', true),
+		                'name' => $this->translate->_("Add Non-Petolio Member"),
+		                'class' => 'lm-friends_sm'
+		        ),
 				array(
 						'link' => $this->url(array('controller'=>'tickets', 'action'=>'manage-non-petolio-members'), 'default', true),
 						'name' => $this->translate->_("Manage Non-Petolio Members"),

@@ -33,6 +33,7 @@ class Petolio_Model_Ticket_User extends Petolio_Model_Ticket_Entity
 
     public function __construct()
     {
+        parent::__construct();
     }
     
     public function getName()

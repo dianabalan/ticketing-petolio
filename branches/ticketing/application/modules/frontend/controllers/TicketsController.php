@@ -459,11 +459,32 @@ class TicketsController extends Zend_Controller_Action
     public function manageNonPetolioMembersAction()
     {
         $this->view->title = $this->translate->_("Manage Non-Petolio Members");
+        
+        $sp_id = (int) $this->auth->getIdentity()->id;
+        $manager = new Petolio_Model_Ticket_UsersManager();
+        
+        $nonPetolioUsers = $manager->getNonPetolioMembers($sp_id);
+        
+        $view_users = array();
+        foreach ($nonPetolioUsers as $user)
+        {
+            $view_users[] = array(
+                'id' => $user->getId(),
+                'name' => $user->getName(),
+                'avatar' => $user->getAvatar(),
+                'email' => $user->getEmail(),
+                'address' => $user->getAddress(),
+                'location' => $user->getLocation(),
+                'zipcode' => $user->getZipcode()
+            );
+        }
+        
+        $this->view->users = $view_users;
     }
 
     public function addNonPetolioMemberAction()
     {
-        $this->view->title = $this->translate->_("Add Non-Petolio Members");
+        $this->view->title = $this->translate->_("Add Non-Petolio Member");
         
         $form = new Petolio_Form_Ticket_NonPetolioMember();
         $this->view->form = $form;
@@ -490,6 +511,7 @@ class TicketsController extends Zend_Controller_Action
         $nonPetolioUser->setStreet($form_data['street']);
         $nonPetolioUser->setAddress($form_data['address']);
         $nonPetolioUser->setZipcode($form_data['zipcode']);
+        $nonPetolioUser->setLocation($form_data['location']);
         $nonPetolioUser->setCountryId($form_data['country_id']);
         $nonPetolioUser->setPhone($form_data['phone']);
         $nonPetolioUser->setPrivatePhone($form_data['private_phone']);
@@ -502,18 +524,49 @@ class TicketsController extends Zend_Controller_Action
         }
         catch (Exception $e)
         {
-            return $this->_redirectWithMessage('/tickets/my-clients', 'Something went wrong');
+            return $this->_redirectWithMessage('/tickets/manage-non-petolio-members', 'Something went wrong');
         }
         
-        return $this->_redirectWithMessage('/tickets/my-clients', 'The non petolio user was added');
+        return $this->_redirectWithMessage('/tickets/manage-non-petolio-members', 'The non petolio user was added');
     }
     
     public function editNonPetolioMemberAction()
     {
-        $this->view->title = $this->translate->_("Edit Non-Petolio Members");
+        $this->view->title = $this->translate->_("Edit Non-Petolio Member");
         
         $form = new Petolio_Form_Ticket_NonPetolioMember();
         $this->view->form = $form;
+        
+        $user_id = (int) $this->request->getParam('id', 0);
+        $sp_id = (int) $this->auth->getIdentity()->id;
+        
+        $manager = new Petolio_Model_Ticket_UsersManager();
+        $nonPetolioUser = $manager->getNonPetolioMember($user_id, $sp_id);
+        
+        if ( null === $nonPetolioUser )
+        {
+            return $this->_redirectWithMessage('/tickets/manage-non-petolio-members', 'No such user');
+        }
+        
+        if ( $this->request->isGet() )
+        {
+            $form->setDefaults(array(
+                'id' => $user_id,
+                'name' => $nonPetolioUser->getName(),
+                'first_name' => $nonPetolioUser->getFirstname(),
+                'last_name' => $nonPetolioUser->getLastname(),
+                'email' => $nonPetolioUser->getEmail(),
+                'street' => $nonPetolioUser->getStreet(),
+                'address' => $nonPetolioUser->getAddress(),
+                'zipcode' => $nonPetolioUser->getZipcode(),
+                'location' => $nonPetolioUser->getLocation(),
+                'country_id' => $nonPetolioUser->getCountryId(),
+                'phone' => $nonPetolioUser->getPhone(),
+                'private_phone' => $nonPetolioUser->getPrivatePhone(),
+                'gender' => $nonPetolioUser->getGender(),
+                'remarks' => $nonPetolioUser->getRemarks()
+            ));
+        }
         
         if( !($this->request->isPost()) )
         {
@@ -524,5 +577,31 @@ class TicketsController extends Zend_Controller_Action
         {
             return false;
         }
+        
+        $form_data = $form->getValues();
+        $nonPetolioUser->setName($form_data['name']);
+        $nonPetolioUser->setFirstname($form_data['first_name']);
+        $nonPetolioUser->setLastname($form_data['last_name']);
+        $nonPetolioUser->setEmail($form_data['email']);
+        $nonPetolioUser->setStreet($form_data['street']);
+        $nonPetolioUser->setAddress($form_data['address']);
+        $nonPetolioUser->setZipcode($form_data['zipcode']);
+        $nonPetolioUser->setLocation($form_data['location']);
+        $nonPetolioUser->setCountryId($form_data['country_id']);
+        $nonPetolioUser->setPhone($form_data['phone']);
+        $nonPetolioUser->setPrivatePhone($form_data['private_phone']);
+        $nonPetolioUser->setGender($form_data['gender']);
+        $nonPetolioUser->setRemarks($form_data['remarks']);
+        
+        try
+        {
+            $manager->updateNonPetolioMember($nonPetolioUser, $sp_id);
+        }
+        catch (Exception $e)
+        {
+            return $this->_redirectWithMessage('/tickets/manage-non-petolio-members', 'Something went wrong');
+        }
+        
+        return $this->_redirectWithMessage('/tickets/manage-non-petolio-members', 'Changes were applied');
     }
 }
