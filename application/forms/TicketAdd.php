@@ -32,9 +32,9 @@ class Petolio_Form_TicketAdd extends Petolio_Form_Main
 		$errors = array('errors_class' => 'cluetip_errors', 'msg_errors' => true);
 		
 		$reminderType = array(
-				"non"=> $translate->_("No one"),
-				"me"=> $translate->_("Only me"),
-				"they"=> $translate->_("Only clients"),
+				"no"=> $translate->_("No one"),
+				"only SP"=> $translate->_("Only me"),
+				"only client"=> $translate->_("Only clients"),
 				"both"=> $translate->_("Both")
 		);
 		
@@ -42,7 +42,7 @@ class Petolio_Form_TicketAdd extends Petolio_Form_Main
 				'label' => $translate->_('Description'),
 				'required' => true,
 				'validators' => array(
-						array('StringLength', false, array('min' => 3, 'max' => 20))
+						array('StringLength', false, array('min' => 3, 'max' => 255))
 				),
 		));
 		
@@ -61,7 +61,6 @@ class Petolio_Form_TicketAdd extends Petolio_Form_Main
 				'label' => $translate->_('Reminder'),
 				'multiOptions' => $reminderType,
 				'required' => true,
-	        	'html' => 'onchange="showData(this)"'
 		));
 		
 		$this->addElement('text', 'amount', array(

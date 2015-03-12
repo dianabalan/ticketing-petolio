@@ -271,22 +271,42 @@ class TicketsController extends Zend_Controller_Action
     }
     
     /**
-     * Process date from form submition.
+     * Process data from form submition.
      * @author K Arpi
      *
      * @return void
      */
     private function addTicketStep3()
-    {    	
+    {
+    	//validate form
     	$form = new Petolio_Form_TicketAdd();
     	if(!$form->isValid($_POST))
     	{
     		$this->view->form = $form;
     		return ;
     	}
+    	//add data to db
     	else 
-    	{    	
-	    	$this->msg->messages[] = $this->translate->_("You succesfully added ticket.");    	
+    	{    		
+    		$ticket = new Petolio_Model_Ticket_Ticket();
+    		if($id=$this->request->getParam('product'))
+	    		$ticket->setScope('po_products');    	
+    		else if($id=$this->request->getParam('service'))
+    			$ticket->setScope('po_services');
+	    	$ticket->setItemId($id);
+	    	
+	    	$post = $this->request->getPost();
+	    	$ticket->setTicketDate($post['ticketDate']);
+	    	$ticket->setService($post['description']);
+	    	$ticket->setFlagReminder($post['reminder']);
+	    	$ticket->setAmount($post['amount']);
+	    	$ticket->setPrice($post['price']);
+	    	$ticket->setUserId($this->auth->getIdentity()->id);
+	    	
+	    	$manager = new Petolio_Model_Ticket_TicketManager();
+	    	$manager->save($ticket);
+    		
+    		$this->msg->messages[] = $this->translate->_("You succesfully added ticket.");
 	    	return $this->_helper->redirector('my-tickets', 'tickets');
     	}
     }
