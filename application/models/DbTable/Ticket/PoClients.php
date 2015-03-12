@@ -46,7 +46,15 @@ class Petolio_Model_DbTable_Ticket_PoClients extends Zend_Db_Table_Abstract
         $data['date_created'] = $now;
         $data['date_modified'] = $now;
         
-        $row = $this->fetchClient($data['client_id'], $data['sp_id']);
+        $client_id = $data['client_id'];
+        $sp_id = $data['sp_id'];
+        
+        if ( !isset($client_id, $sp_id) )
+        {
+            throw new Exception("either client_id or sp_id has not been set");    
+        }
+        
+        $row = $this->fetchClient($client_id, $sp_id);
         if ( $row )
         {
             throw new Exception('client already added');

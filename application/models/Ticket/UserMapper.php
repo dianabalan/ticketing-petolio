@@ -54,6 +54,30 @@ class Petolio_Model_Ticket_UserMapper extends Petolio_Model_Ticket_DataMapperAbs
         return $user;
     }
     
+    private function _fromDbToNonPetolioClass($row)
+    {
+        $user = new Petolio_Model_Ticket_NonPetolioMember();
+        
+        $user->setId($row['id']);
+        $user->setName($row['name']);
+        $user->setFirstname($row['first_name']);
+        $user->setLastname($row['last_name']);
+        $user->setEmail($row['email']);
+        $user->setStreet($row['street']);
+        $user->setAddress($row['address']);
+        $user->setLocation($row['location']);
+        $user->setCountryId($row['country_id']);
+        $user->setZipcode($row['zipcode']);
+        $user->setType($row['type']);
+        $user->setAvatar($row['avatar']);
+        $user->setPhone($row['phone']);
+        $user->setPrivatePhone($row['private_phone']);
+        $user->setGender($row['gender']);
+        $user->setRemarks($row['remarks']);
+        
+        return $user;
+    }
+    
     private function _removeNullEntries(array &$data)
     {
         foreach ($data as $key => $value)
@@ -102,15 +126,22 @@ class Petolio_Model_Ticket_UserMapper extends Petolio_Model_Ticket_DataMapperAbs
         return $this->getDbTable()->registerNonPetolioMember($user_data, $sp_id);
     }
     
+    public function updateNonPetolioMember(Petolio_Model_Ticket_NonPetolioMember $user, $sp_id)
+    {
+        $user_data = $this->fromClassToDb($user);
+        $user_data['remarks'] = $user->getRemarks();
+        $this->_removeNullEntries($user_data);
+    
+        return $this->getDbTable()->updateNonPetolioMember($user_data, $sp_id);
+    }
+    
     public function fetchNonPetolioMember($user_id, $sp_id)
     {
         $row = $this->getDbTable()->fetchNonPetolioMember($user_id, $sp_id);
         
         if ( $row )
         {
-            $user = $this->fromDbToClass($row);
-            $user->setRemarks($row['remarks']);
-            
+            $user = $this->_fromDbToNonPetolioClass($row);
             return $user;
         }
         
@@ -124,10 +155,7 @@ class Petolio_Model_Ticket_UserMapper extends Petolio_Model_Ticket_DataMapperAbs
         $users = array();
         foreach ($rows as $row)
         {
-            $user = $this->fromDbToClass($row);
-            $user->setRemarks($row['remarks']);
-            
-            $users[] = $user;
+            $users[] = $this->_fromDbToNonPetolioClass($row);
         }
         
         return $users;

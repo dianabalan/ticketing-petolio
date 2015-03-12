@@ -12,5 +12,59 @@
 		<a href="<?php echo $this->url(array('controller' => 'tickets', 'action' => 'add-non-petolio-member'), 'default', true); ?>" >
 		  <?php echo $this->translate->_("Add non-Petolio member"); ?>
 		</a>
+		
+<table cellspacing="0" cellpadding="5" class="grid" width="800px" style="table-layout: fixed; margin-top: 20px">
+	<tr>
+		<th><?php echo $this->translate->_("Name"); ?></th>
+		<th><?php echo $this->translate->_("Email"); ?></th>
+		<th><?php echo $this->translate->_("Address"); ?></th>
+		<th><?php echo $this->translate->_("City"); ?></th>
+		<th><?php echo $this->translate->_("Zipcode"); ?></th>
+		<th><?php echo $this->translate->_("Edit"); ?></th>
+	</tr>
+<?php
+foreach ($this->users as $idx => $user):
+    // avatar control
+    $avatar = $this->partial('tickets/partials/avatar.phtml', array(
+        'user' => $user
+    ));
+?>
+	<tr>
+		<td  style="word-break: break-all">
+    		<a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $user["id"]), 'default', true); ?>">
+    		  <img src="<?php echo $avatar; ?>"
+    			   style="display: block; padding: 3px; border: 1px solid #B3B3B3; background: white;"
+    			   alt="<?php echo $this->translate->_("Profile Picture"); ?>" />
+    		 </a>
+	
+	        <a href="<?php echo $this->url(array('controller'=>'accounts', 'action'=>'view', 'user' => $user["id"]), 'default', true); ?>">
+					   <?php echo Petolio_Service_Util::escape($user["name"]); ?>
+		    </a>
+	    </td>
+		<td style="word-break: break-all">
+		   <?php echo Petolio_Service_Util::escape($user["email"]); ?>
+		</td>
+		<td style="word-break: break-all">
+	       <?php echo Petolio_Service_Util::escape($user["address"]); ?>
+		</td>
+		<td style="word-break: break-all">
+	       <?php echo Petolio_Service_Util::escape($user["location"]); ?>
+		</td>
+		<td style="word-break: break-all">
+	       <?php echo Petolio_Service_Util::escape($user["zipcode"]); ?>
+		</td>
+	   <td style="word-break: break-all">
+	       <a href="<?php echo $this->url(array(
+	               'controller'=> 'tickets', 
+	               'action'=> 'edit-non-petolio-member', 
+	               'id' => $user["id"]
+	       ), 'default', true); ?>">
+	           <?php echo $this->translate->_("Edit"); ?>
+	       </a>
+		</td>
+    </tr>
+<?php endforeach; ?>
+</table>
+
 	</div>
 </div>
