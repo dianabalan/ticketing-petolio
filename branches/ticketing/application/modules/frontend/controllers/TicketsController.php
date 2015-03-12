@@ -12,7 +12,7 @@ class TicketsController extends Zend_Controller_Action
     private $cfg = null;
 
     private $msg = null;
-
+    
     /**
      * Maps each user type to a role name.
      *
@@ -208,6 +208,21 @@ class TicketsController extends Zend_Controller_Action
     {
         $this->view->title = $this->translate->_("Add Ticket");
 
+        //step3, process data
+        if($this->request->isPost())
+        {
+        	$this->addTicketStep3();
+        	return ;      
+        }
+        
+        //step2, render add ticket form
+        if($this->request->getParam('product') || $this->request->getParam('service'))
+        {
+        	$this->view->form = new Petolio_Form_TicketAdd();
+        	return;
+        }
+        
+        //step1, select product or service to make ticket with
         $this->addTicketStep1();
     }
 
@@ -254,6 +269,28 @@ class TicketsController extends Zend_Controller_Action
     			break;
     	}
     }
+    
+    /**
+     * Process date from form submition.
+     * @author K Arpi
+     *
+     * @return void
+     */
+    private function addTicketStep3()
+    {    	
+    	$form = new Petolio_Form_TicketAdd();
+    	if(!$form->isValid($_POST))
+    	{
+    		$this->view->form = $form;
+    		return ;
+    	}
+    	else 
+    	{    	
+	    	$this->msg->messages[] = $this->translate->_("You succesfully added ticket.");    	
+	    	return $this->_helper->redirector('my-tickets', 'tickets');
+    	}
+    }
+    
     public function manageTicketsAction()
     {
     	$this->view->title = $this->translate->_("Manage Tickets");
