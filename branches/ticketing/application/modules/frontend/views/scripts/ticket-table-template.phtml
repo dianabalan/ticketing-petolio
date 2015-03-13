@@ -1,0 +1,24 @@
+<table cellspacing="0" cellpadding="5" class="grid">
+	<col /><col width="200" /><col width="300" /><col width="100" />
+	<tr>
+		<th><?php echo $this->translate->_("Ticket No."); ?></th>
+		<th><?php echo $this->translate->_("Date"); ?></th>
+		<th><?php echo $this->translate->_("Description"); ?></th>
+		<th></th>
+	</tr>
+	<?php foreach($this->data as $ticket): ?>
+		<tr>
+			<td><?php echo $ticket["ID"]; ?></td>
+			<td><?php echo Petolio_Service_Util::formatDate($ticket["ticket_date"], null, true, true); ?></td>
+			<td><?php echo $ticket["description"]; ?></td>
+			<td align="right" nowrap="nowrap">
+				<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'edit-ticket', 'ticket'=> $ticket["ID"]), 'default', true); ?>' class='icon_link edit'>
+					<span><?php echo $this->translate->_('Edit'); ?></span>
+				</a>
+				<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'archive-ticket', 'ticket'=> $ticket["ID"]), 'default', true); ?>' class='icon_link delete'>
+					<span><?php echo $this->translate->_('Archive'); ?></span>
+				</a>
+			</td>
+		</tr>
+	<?php endforeach; ?>
+</table>
