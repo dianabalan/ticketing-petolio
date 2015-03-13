@@ -566,4 +566,9 @@ class Petolio_Model_PoUsersMapper {
     	$resultset = $this->fetchList("id = '{$id}' AND type = '2'");
 		return count($resultset) > 0 ? true : false;
     }
+    
+    public function deleteUserAsNonPetolio ($email)
+    {
+    	$this->getDbTable()->deleteUserAsNonPetolio($email);
+    }    
 }

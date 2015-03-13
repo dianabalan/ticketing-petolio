@@ -439,4 +439,28 @@ class Petolio_Model_DbTable_PoUsers extends Zend_Db_Table_Abstract {
 
 		return $this->fetchAll($select);
 	}
+	
+	public function deleteUserAsNonPetolio ($email)
+	{
+		$db = $this->getAdapter();
+		
+		$columns = array('id');
+		
+		$query = $db->select()
+		->from(array('u' => $this->_name), $columns)
+		->where('u.email = :email')
+		->where('u.type != 3');
+			
+		$id = $db->fetchOne($query, array(
+				':email' => $email
+		));
+		
+		$updateClients = "UPDATE po_clients JOIN po_users ON po_users.id = po_clients.client_id SET po_clients.client_id = ".$id." WHERE po_users.email = '".$email."' AND po_users.type = 3;";
+		$this->getAdapter()->query($updateClients);	
+		
+		$deleteNonPetolios = "DELETE FROM po_users WHERE po_users.email = '".$email."' AND po_users.type = 3;";
+		$this->getAdapter()->query($deleteNonPetolios);					
+		
+	}
+		
 }

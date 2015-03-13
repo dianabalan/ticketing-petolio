@@ -58,6 +58,9 @@ class Petolio_Controller_Helper_Login extends Zend_Controller_Action_Helper_Abst
 				if ($user->active == '0') {
 					$auth->clearIdentity();
 					$errors->messages[] = $this->translate->_("Your account is inactive.");
+				} else if ($user->type == '3') {
+					$auth->clearIdentity();
+					$errors->messages[] = $this->translate->_("This email is registered only as a non-petolio member");					
 				} else if ($user->is_banned == '1') {
 					$auth->clearIdentity();
 					$errors->messages[] = $this->translate->_("Your account was banned. Please <a href='/contact'>contact us</a> if you think there was a mistake.");

@@ -161,4 +161,8 @@ class Petolio_Model_Ticket_UserMapper extends Petolio_Model_Ticket_DataMapperAbs
         return $users;
     }
 
+    public function isAlreadyRegisteredAsPetolio($email)
+    {
+    	return $this->getDbTable()->isAlreadyRegisteredAsPetolio($email);
+    } 
 }

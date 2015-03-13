@@ -26,12 +26,14 @@ class Petolio_Form_Register extends Petolio_Form_Main {
 	    		array('PoStandardElement')
 	    	);
 	    	$this->removeDecorator('DtDdWrapper');
-	    	$this->addElementPrefixPaths(array(
-	            'decorator' => array('Petolio_Decorator' => APPLICATION_PATH.'/decorators'),
-	    		'validate' => array('Petolio_Validator_' => APPLICATION_PATH.'/forms/validators/')
-	        ));
 		}
-
+		
+		$this->addElementPrefixPaths(array(
+				'decorator' => array('Petolio_Decorator' => APPLICATION_PATH.'/decorators'),
+				'validate' => array('Petolio_Validator_' => APPLICATION_PATH.'/forms/validators/')
+		));
+		
+		
 		// set method
     	$this->setMethod(Zend_Form::METHOD_POST);
 
@@ -52,12 +54,15 @@ class Petolio_Form_Register extends Petolio_Form_Main {
         	'attribs' => $errors,
             'validators' => array(
                 array('StringLength', false, array('max'=>150)),
-                'EmailAddress',
-                //array('Regex', false, "/^[^\W][a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*\@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*\.[a-zA-Z]{2,4}$/"),
+            	'EmailAddress',
+				'EmailRegistration',
+            	//array('Regex', false, "/^[^\W][a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*\@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*\.[a-zA-Z]{2,4}$/"),
                 array('Regex', false, "/^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*\@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*\.[a-zA-Z]{2,4}$/"),
-                array('Db_NoRecordExists', false, array('table' => 'po_users', 'field' => 'email'))
+//				array('Db_NoRecordExists', false, array('table' => 'po_users', 'field' => 'email'))
             ),
         ));
+        
+        
         $this->addElement('password', 'password', array(
             'label' => $translate->_('Password'),
             'required' => true,
