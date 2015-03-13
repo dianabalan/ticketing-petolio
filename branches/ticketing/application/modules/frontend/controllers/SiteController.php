@@ -184,10 +184,10 @@ class SiteController extends Zend_Controller_Action
 		if(!($this->request->isPost() && $this->request->getPost('go')))
 			return false;
 
-		// is the form valid ? if not just return here
+		//is the form valid ? if not just return here
 		if(!$form->isValid($this->request->getPost()))
 			return false;
-
+		
 		// prepare data
 		$data = $form->getValues();
 
@@ -198,9 +198,13 @@ class SiteController extends Zend_Controller_Action
 		// do psswd
 		$data["password"] = sha1($data["password"]);
 
-		// save new user
+ 		// save new user
 		$users = new Petolio_Model_PoUsers();
 		$users->setOptions($data)->save(true, true);
+
+		// delete non petolio data
+		$userMapper = new Petolio_Model_PoUsersMapper();
+		$userMapper->deleteUserAsNonPetolio($data["email"]);
 
 		// add user's email field to private
 		$rights = new Petolio_Model_PoFieldRights();

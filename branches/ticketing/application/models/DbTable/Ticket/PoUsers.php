@@ -129,6 +129,24 @@ class Petolio_Model_DbTable_Ticket_PoUsers extends Zend_Db_Table_Abstract
         return $count > 0;
     }
 
+    public function isAlreadyRegisteredAsPetolio($email)
+    {
+    	$db = $this->getAdapter();
+    	
+    	$columns = array('COUNT(*)');
+    	 
+    	$query = $db->select()
+    				->from(array('u' => $this->_name), $columns)
+    				->where('u.email = :email')
+    				->where('u.type <> 3');
+    	
+    	$count = $db->fetchOne($query, array(
+    			':email' => $email
+    	));
+    	
+    	return $count > 0;
+    }
+    
     private function _getNonPetolioDefaults()
     {
         $defaults = array(
@@ -202,7 +220,7 @@ class Petolio_Model_DbTable_Ticket_PoUsers extends Zend_Db_Table_Abstract
             throw $e;
         }
     }
-    
+
     public function updateNonPetolioMember(array $user_data, $sp_id)
     {
         $db = $this->getAdapter();
@@ -307,5 +325,4 @@ class Petolio_Model_DbTable_Ticket_PoUsers extends Zend_Db_Table_Abstract
     
         return $row;
     }
-
 }
