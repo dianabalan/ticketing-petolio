@@ -202,6 +202,19 @@ class TicketsController extends Zend_Controller_Action
     public function myTicketsAction()
     {
         $this->view->title = $this->translate->_("My Tickets");
+        
+        //get user id
+        $user_id = $this->auth->getIdentity()->id;
+        
+        // get page
+        $page = $this->request->getParam("page");
+        $page = $page ? $page : 0;
+        //TODO: add to cfg: tickets.pagination.itemsperpage = 10;
+        $items_per_page = $this->cfg["products"]["pagination"]["itemsperpage"];
+        
+        $manager = new Petolio_Model_Ticket_TicketManager();
+        
+        $this->view->list = $manager->getTickets($user_id, $items_per_page, $page);
     }
 
     public function addTicketAction()
@@ -304,10 +317,67 @@ class TicketsController extends Zend_Controller_Action
 	    	$manager = new Petolio_Model_Ticket_TicketManager();
 	    	$manager->save($ticket);
     		
-    		$this->msg->messages[] = $this->translate->_("You succesfully added ticket.");
-	    	return $this->_helper->redirector('my-tickets', 'tickets');
+	    	return $this->_redirectWithMessage('/tickets/my-clients', 'You succesfully added ticket.');
     	}
     }
+    
+    public function editTicketAction()
+    {
+    	$this->view->title = $this->translate->_("Edit Ticket");
+    	$form = new Petolio_Form_TicketAdd();    	
+
+    	//prevent page from loading if ticket param is not set
+    	if(!$ticket_id = $this->request->getParam("ticket"))
+    		return $this->_redirect('/tickets/my-tickets');
+    	
+    	//fetch data and redirect if ticket with ticket_id does not exist
+    	$manager = new Petolio_Model_Ticket_TicketManager();
+    	if(!$ticket = $manager->getTicket($ticket_id))
+    		return $this->_redirectWithMessage('/tickets/my-tickets', 'No such ticket');
+    	
+    	if(!$this->request->isPost())
+    	{    	
+	    	//format date
+	    	$date = new Zend_Date($ticket->getTicketDate());
+	    	
+	    	//show on form
+	    	$form->setDefaults(array(
+	    			'description' => $ticket->getDescription(),
+	    			'ticketDate' => $date->get("YYYY-MM-dd"),
+	    			'reminder' => $ticket->getFlagReminder()
+	    	));
+    	}
+    	else if($form->isValid($_POST))
+    	{
+    		$post = $this->request->getPost();
+    		$ticket->setDescription($post['description']);
+    		$ticket->setTicketDate($post['ticketDate']);
+    		$ticket->setFlagReminder($post['reminder']);
+    		
+	    	$manager->save($ticket);
+    			
+    		return $this->_redirectWithMessage('/tickets/my-tickets', 'Ticket edited succesfully.');
+    	}
+    	$this->view->form = $form;
+    }
+    
+    public function archiveTicketAction()
+    {
+    	//prevent page from loading if ticket param is not set
+    	if(!$ticket_id = $this->request->getParam("ticket"))
+    		return $this->_redirect('/tickets/my-tickets');
+    	
+    	//fetch data and redirect if ticket with ticket_id does not exist
+    	$manager = new Petolio_Model_Ticket_TicketManager();
+    	if(!$ticket = $manager->getTicket($ticket_id))
+    		return $this->_redirectWithMessage('/tickets/my-tickets', 'No such ticket');
+    	
+    	//archive ticket
+    	$ticket->setArchive(0);
+    	$manager->save($ticket);
+    	
+    	return $this->_redirectWithMessage('/tickets/my-tickets', 'Ticket archived succesfully.');
+    } 
     
     public function manageTicketsAction()
     {

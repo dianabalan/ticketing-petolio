@@ -21,4 +21,30 @@ class Petolio_Model_Ticket_TicketManager
 	{
 		return $this->_dataMapper->save($ticket);
 	}
+	
+	/**
+	 * 
+	 * @param integer $id
+	 * @return Petolio_Model_Ticket_Ticket|NULL
+	 */
+	public function getTicket($id)
+	{
+		return $this->_dataMapper->fetchTicket($id);
+	}
+	
+	/**
+	 * 
+	 * @param integer $user_id
+	 * @param integer $items_per_page
+	 * @param integer $page
+	 * @return Zend_Paginator
+	 */
+	public function getTickets($user_id, $items_per_page, $page)
+	{
+		$paginator = $this->_dataMapper->fetchTickets($user_id);
+		$paginator->setItemCountPerPage((int) $items_per_page);
+        $paginator->setCurrentPageNumber((int) $page);
+        
+        return $paginator;
+	}
 }

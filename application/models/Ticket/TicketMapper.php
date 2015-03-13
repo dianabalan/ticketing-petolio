@@ -50,6 +50,11 @@ class Petolio_Model_Ticket_TicketMapper extends Petolio_Model_Ticket_DataMapperA
         return $ticket;
     }
     
+    /**
+     * 
+     * @param integer $id
+     * @return Petolio_Model_Ticket_Ticket|NULL
+     */
     public function fetchTicket($id)
     {
         $row = $this->getDbTable()->fetchTicket($id);
@@ -62,6 +67,19 @@ class Petolio_Model_Ticket_TicketMapper extends Petolio_Model_Ticket_DataMapperA
         return null;
     }
 
+    /**
+     * 
+     * @param integer $user_id
+     * @param integer $archive Defalut is 1. Can be set to 0.
+     * @return Zend_Paginator
+     */
+    public function fetchTickets($user_id, $archive = 1)
+    {
+    	$rows = $this->getDbTable()->fetchTickets($user_id, $archive);
+    	$adapter = new Zend_Paginator_Adapter_Array($rows);
+    	return new Zend_Paginator($adapter);
+    }
+    
     public function save(Petolio_Model_Ticket_Ticket $ticket, $ignoreNullValues = true, $escapeValues = false)
     {
         parent::save($ticket, $ignoreNullValues, $escapeValues);
