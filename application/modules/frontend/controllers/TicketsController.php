@@ -290,17 +290,15 @@ class TicketsController extends Zend_Controller_Action
     	{    		
     		$ticket = new Petolio_Model_Ticket_Ticket();
     		if($id=$this->request->getParam('product'))
-	    		$ticket->setScope('po_products');    	
+	    		$ticket->setScope('product');    	
     		else if($id=$this->request->getParam('service'))
-    			$ticket->setScope('po_services');
+    			$ticket->setScope('service');
 	    	$ticket->setItemId($id);
 	    	
 	    	$post = $this->request->getPost();
 	    	$ticket->setTicketDate($post['ticketDate']);
-	    	$ticket->setService($post['description']);
+	    	$ticket->setDescription($post['description']);
 	    	$ticket->setFlagReminder($post['reminder']);
-	    	$ticket->setAmount($post['amount']);
-	    	$ticket->setPrice($post['price']);
 	    	$ticket->setUserId($this->auth->getIdentity()->id);
 	    	
 	    	$manager = new Petolio_Model_Ticket_TicketManager();
