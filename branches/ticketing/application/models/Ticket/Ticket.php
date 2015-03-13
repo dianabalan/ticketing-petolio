@@ -3,9 +3,7 @@ class Petolio_Model_Ticket_Ticket extends Petolio_Model_Ticket_Entity
 {
 	private $_itemId;
 	private $_userId;
-	private $_service;
-	private $_amount;
-	private $_price;
+	private $_description;
 	private $_ticketDate;
 	private $_dateCreated;
 	private $_dateModified;
@@ -36,31 +34,13 @@ class Petolio_Model_Ticket_Ticket extends Petolio_Model_Ticket_Entity
 		$this->_userId = $value;
 	}
 	
-	public function getService()
+	public function getDescription()
 	{
-		return $this->_service;
+		return $this->_description;
 	}
-	public function setService($value)
+	public function setDescription($value)
 	{
-		$this->_service = $value;
-	}
-	
-	public function getAmount()
-	{
-		return $this->_amount;
-	}
-	public function setAmount($value)
-	{
-		$this->_amount = $value;
-	}
-	
-	public function getPrice()
-	{
-		return $this->_price;
-	}
-	public function setPrice($value)
-	{
-		$this->_price = $value;
+		$this->_description = $value;
 	}
 	
 	public function getTicketDate()

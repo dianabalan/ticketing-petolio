@@ -17,9 +17,7 @@ class Petolio_Model_Ticket_TicketMapper extends Petolio_Model_Ticket_DataMapperA
             'ID' => $object->getId(),
 			'item_id' => $object->getItemId(),
 			'user_id' => $object->getUserId(),
-			'service' => $object->getService(),
-			'amount' => $object->getAmount(),
-			'price' => $object->getPrice(),
+			'description' => $object->getDescription(),
 			'ticket_date' => $object->getTicketDate(),
 			'date_created' => $object->getDateCreated(),
 			'date_modified' => $object->getDateModified(),
@@ -41,9 +39,7 @@ class Petolio_Model_Ticket_TicketMapper extends Petolio_Model_Ticket_DataMapperA
         $ticket->setId($row['ID']);
         $ticket->setItemId($row['item_id']);
         $ticket->setUserId($row['user_id']);
-        $ticket->setService($row['service']);
-        $ticket->setAmount($row['amount']);
-        $ticket->setPrice($row['price']);
+        $ticket->setDescription($row['description']);
         $ticket->setTicketDate($row['ticket_date']);
         $ticket->setDateCreated($row['date_created']);
         $ticket->setDateModified($row['date_modified']);
