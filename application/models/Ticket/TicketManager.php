@@ -47,4 +47,13 @@ class Petolio_Model_Ticket_TicketManager
         
         return $paginator;
 	}
+	
+	public function getArchivedTickets($user_id, $items_per_page, $page)
+	{
+		$paginator = $this->_dataMapper->fetchTickets($user_id, 0);
+		$paginator->setItemCountPerPage((int) $items_per_page);
+		$paginator->setCurrentPageNumber((int) $page);
+	
+		return $paginator;
+	}
 }
