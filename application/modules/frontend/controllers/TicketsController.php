@@ -332,7 +332,7 @@ class TicketsController extends Zend_Controller_Action
     	
     	//fetch data and redirect if ticket with ticket_id does not exist
     	$manager = new Petolio_Model_Ticket_TicketManager();
-    	if(!$ticket = $manager->getTicket($ticket_id))
+    	if(!$ticket = $manager->getTicket($this->auth->getIdentity()->id, $ticket_id))
     		return $this->_redirectWithMessage('/tickets/my-tickets', 'No such ticket');
     	
     	if(!$this->request->isPost())
@@ -369,7 +369,7 @@ class TicketsController extends Zend_Controller_Action
     	
     	//fetch data and redirect if ticket with ticket_id does not exist
     	$manager = new Petolio_Model_Ticket_TicketManager();
-    	if(!$ticket = $manager->getTicket($ticket_id))
+    	if(!$ticket = $manager->getTicket($this->auth->getIdentity()->id, $ticket_id))
     		return $this->_redirectWithMessage('/tickets/my-tickets', 'No such ticket');
     	
     	//archive ticket
@@ -410,7 +410,7 @@ class TicketsController extends Zend_Controller_Action
     	
     	//fetch data and redirect if ticket with ticket_id does not exist
     	$manager = new Petolio_Model_Ticket_TicketManager();
-    	if(!$ticket = $manager->getTicket($ticket_id))
+    	if(!$ticket = $manager->getTicket($this->auth->getIdentity()->id, $ticket_id))
     		return $this->_redirectWithMessage('/tickets/my-tickets', 'No such ticket');
     	
     	//restore ticket

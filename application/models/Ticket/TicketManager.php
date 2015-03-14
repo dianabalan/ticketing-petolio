@@ -24,12 +24,13 @@ class Petolio_Model_Ticket_TicketManager
 	
 	/**
 	 * 
-	 * @param integer $id
+	 * @param integer $user_id
+	 * @param integer $ticket_id
 	 * @return Petolio_Model_Ticket_Ticket|NULL
 	 */
-	public function getTicket($id)
+	public function getTicket($user_id, $ticket_id)
 	{
-		return $this->_dataMapper->fetchTicket($id);
+		return $this->_dataMapper->fetchTicket($user_id, $ticket_id);
 	}
 	
 	/**

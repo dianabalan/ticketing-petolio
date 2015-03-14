@@ -20,16 +20,18 @@ class Petolio_Model_DbTable_Ticket_Tickets extends Zend_Db_Table_Abstract
 			'scope'
 	);
 	
-	public function fetchTicket($id)
+	public function fetchTicket($user_id, $ticket_id)
 	{
 		$db = $this->getAdapter();
 	
 		$query = $db->select()
 		->from($this->_name, self::$_columns)
-		->where('ID = :id');
+		->where('ID = :id')
+		->where('user_id = :user_id');
 	
 		$row = $db->fetchRow($query, array(
-				':id' => $id
+				':id' => $ticket_id,
+				':user_id' =>$user_id
 		));
 	
 		return $row;

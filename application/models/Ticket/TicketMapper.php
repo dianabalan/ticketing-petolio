@@ -52,12 +52,13 @@ class Petolio_Model_Ticket_TicketMapper extends Petolio_Model_Ticket_DataMapperA
     
     /**
      * 
-     * @param integer $id
+     * @param integer $user_id
+     * @param integer $ticket_id
      * @return Petolio_Model_Ticket_Ticket|NULL
      */
-    public function fetchTicket($id)
+    public function fetchTicket($user_id, $ticket_id)
     {
-        $row = $this->getDbTable()->fetchTicket($id);
+        $row = $this->getDbTable()->fetchTicket($user_id, $ticket_id);
         
         if ( $row )
         {
