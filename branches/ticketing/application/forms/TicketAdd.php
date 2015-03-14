@@ -63,24 +63,6 @@ class Petolio_Form_TicketAdd extends Petolio_Form_Main
 				'required' => true,
 		));
 		
-		$this->addElement('text', 'amount', array(
-				'label' => $translate->_('Amount'),
-				'required' => true,
-				'validators' => array(
-						new Zend_Validate_Int(),
-						new Zend_Validate_GreaterThan(array('min' => 0))
-				),
-		));
-		
-		$this->addElement('text', 'price', array(
-				'label' => $translate->_('Price'),
-				'required' => true,
-				'validators' => array(
-						new Zend_Validate_Float(),
-						new Zend_Validate_GreaterThan(array('min' => 0))
-				),
-		));
-		
 		$this->addElement('submit', 'submit', array(
 				'label' => '&nbsp;',
 				'value' => $translate->_('Finish')
