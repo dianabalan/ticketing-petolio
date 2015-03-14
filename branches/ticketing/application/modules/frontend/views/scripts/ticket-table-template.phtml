@@ -12,12 +12,21 @@
 			<td><?php echo Petolio_Service_Util::formatDate($ticket["ticket_date"], null, true, true); ?></td>
 			<td><?php echo $ticket["description"]; ?></td>
 			<td align="right" nowrap="nowrap">
-				<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'edit-ticket', 'ticket'=> $ticket["ID"]), 'default', true); ?>' class='icon_link edit'>
-					<span><?php echo $this->translate->_('Edit'); ?></span>
-				</a>
-				<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'archive-ticket', 'ticket'=> $ticket["ID"]), 'default', true); ?>' class='icon_link delete'>
-					<span><?php echo $this->translate->_('Archive'); ?></span>
-				</a>
+				<?php foreach($this->links as $link): ?>
+					<?php if ($link == "edit"):?>
+						<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'edit-ticket', 'ticket'=> $ticket["ID"]), 'default', true); ?>' class='icon_link edit'>
+							<span><?php echo $this->translate->_('Edit'); ?></span>
+						</a>
+					<?php elseif ($link == "archive"):?>
+						<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'archive-ticket', 'ticket'=> $ticket["ID"]), 'default', true); ?>' class='icon_link delete'>
+							<span><?php echo $this->translate->_('Archive'); ?></span>
+						</a>
+					<?php elseif ($link == "restore"):?>
+						<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'restore-ticket', 'ticket'=> $ticket["ID"]), 'default', true); ?>' class='icon_link restore'>
+							<span><?php echo $this->translate->_('Restore'); ?></span>
+						</a>
+					<?php endif; ?>
+				<?php endforeach; ?>
 			</td>
 		</tr>
 	<?php endforeach; ?>

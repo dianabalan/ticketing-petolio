@@ -387,8 +387,39 @@ class TicketsController extends Zend_Controller_Action
     public function ticketsArchivesAction()
     {
         $this->view->title = $this->translate->_("Tickets Archives");
+        
+        //get user id
+        $user_id = $this->auth->getIdentity()->id;
+        
+        // get page
+        $page = $this->request->getParam("page");
+        $page = $page ? $page : 0;
+        //TODO: add to cfg: tickets.pagination.itemsperpage = 10;
+        $items_per_page = $this->cfg["products"]["pagination"]["itemsperpage"];
+        
+        $manager = new Petolio_Model_Ticket_TicketManager();
+        
+        $this->view->list = $manager->getArchivedTickets($user_id, $items_per_page, $page);
     }
 
+ 	public function restoreTicketAction()
+    {
+    	//prevent page from loading if ticket param is not set
+    	if(!$ticket_id = $this->request->getParam("ticket"))
+    		return $this->_redirect('/tickets/my-tickets');
+    	
+    	//fetch data and redirect if ticket with ticket_id does not exist
+    	$manager = new Petolio_Model_Ticket_TicketManager();
+    	if(!$ticket = $manager->getTicket($ticket_id))
+    		return $this->_redirectWithMessage('/tickets/my-tickets', 'No such ticket');
+    	
+    	//restore ticket
+    	$ticket->setArchive(1);
+    	$manager->save($ticket);
+    	
+    	return $this->_redirectWithMessage('/tickets/my-tickets', 'Ticket restored succesfully.');
+    } 
+    
     public function usersAction()
     {
         $this->view->title = $this->translate->_("Users");
