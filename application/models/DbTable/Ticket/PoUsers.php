@@ -170,7 +170,7 @@ class Petolio_Model_DbTable_Ticket_PoUsers extends Zend_Db_Table_Abstract
         
         $defaults = $this->_getNonPetolioDefaults();
         $data = array_merge($defaults, $user_data);
-        $data['type'] = 3; 
+        $data['type'] = 3;
         
         $pk_value = $this->insert($data);
         

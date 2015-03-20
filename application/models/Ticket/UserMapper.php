@@ -77,17 +77,6 @@ class Petolio_Model_Ticket_UserMapper extends Petolio_Model_Ticket_DataMapperAbs
         
         return $user;
     }
-    
-    private function _removeNullEntries(array &$data)
-    {
-        foreach ($data as $key => $value)
-        {
-            if ( null === $value )
-            {
-                unset($data[$key]);
-            }
-        }
-    }
 
     public function fetchNonClients($sp_id, $page, $items_per_page, Petolio_Model_Ticket_SearchUserFilter $filter = null)
     {
@@ -121,7 +110,7 @@ class Petolio_Model_Ticket_UserMapper extends Petolio_Model_Ticket_DataMapperAbs
     {
         $user_data = $this->fromClassToDb($user);
         $user_data['remarks'] = $user->getRemarks();
-        $this->_removeNullEntries($user_data);
+        $this->_replaceEmptyStringsWithNullValues($user_data);
         
         return $this->getDbTable()->registerNonPetolioMember($user_data, $sp_id);
     }
@@ -130,7 +119,7 @@ class Petolio_Model_Ticket_UserMapper extends Petolio_Model_Ticket_DataMapperAbs
     {
         $user_data = $this->fromClassToDb($user);
         $user_data['remarks'] = $user->getRemarks();
-        $this->_removeNullEntries($user_data);
+        $this->_replaceEmptyStringsWithNullValues($user_data);
     
         return $this->getDbTable()->updateNonPetolioMember($user_data, $sp_id);
     }
