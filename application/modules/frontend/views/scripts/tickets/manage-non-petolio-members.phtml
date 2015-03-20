@@ -20,7 +20,7 @@
 		<th><?php echo $this->translate->_("Address"); ?></th>
 		<th><?php echo $this->translate->_("City"); ?></th>
 		<th><?php echo $this->translate->_("Zipcode"); ?></th>
-		<th><?php echo $this->translate->_("Edit"); ?></th>
+		<th></th>
 	</tr>
 <?php
 foreach ($this->users as $idx => $user):
@@ -53,13 +53,13 @@ foreach ($this->users as $idx => $user):
 		<td style="word-break: break-all">
 	       <?php echo Petolio_Service_Util::escape($user["zipcode"]); ?>
 		</td>
-	   <td style="word-break: break-all">
+	   <td style="word-break: break-all" align="right">
 	       <a href="<?php echo $this->url(array(
 	               'controller'=> 'tickets', 
 	               'action'=> 'edit-non-petolio-member', 
 	               'id' => $user["id"]
-	       ), 'default', true); ?>">
-	           <?php echo $this->translate->_("Edit"); ?>
+	       ), 'default', true); ?>" class='icon_link edit'>
+	           <span><?php echo $this->translate->_("Edit"); ?></span>
 	       </a>
 		</td>
     </tr>

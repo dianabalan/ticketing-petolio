@@ -3,6 +3,7 @@
     
     var $ = window.$,
     	$archiveForms = $('.archive-form'),
+    	$table = $('#my-clients-list'),
     	$confirmElement = $('#archive-client-dialog-confirm'),
     	userChoices = {};
     
@@ -17,7 +18,8 @@
 		      		"Yes": function() {
 		      			userChoices[id] = true;
 		      			$(this).dialog("close");
-		      			
+	      				
+		      			// performs a submit, but the browser will not emit a "submit" event
 		      			$form.get(0).submit();
 			        },
 			        Cancel: function() {
@@ -27,14 +29,19 @@
 		      	}
 			};
     		
-    		if ( !userChoices[id] ) {
-        		e.preventDefault();
-    			$confirmElement.dialog(options);
-    		}
+		if ( !userChoices[id] ) {
+    		e.preventDefault();
+			$confirmElement.dialog(options);
+		}
     }
     
-    function registerEventHandlers () { 
+    function handleArchiveLinkClick(e) {
+    	$(this).next('form').trigger('submit');
+    }
+    
+    function registerEventHandlers () {
     	$archiveForms.on('submit', handleArchiveFormSubmit);
+    	$table.on('click', 'a.delete', handleArchiveLinkClick);
     }
     
     $(window).on('load', function () {

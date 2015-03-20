@@ -4,7 +4,7 @@
 		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
 		<h1><?php echo $this->title; ?></h1>
 		
-	<table cellspacing="0" cellpadding="5" class="grid" width="800px" style="table-layout: fixed">
+	<table id="my-clients-list" cellspacing="0" cellpadding="5" class="grid" width="800px" style="table-layout: fixed">
 	<tr>
 		<th><?php echo $this->translate->_("Name"); ?></th>
 		<th><?php echo $this->translate->_("Email"); ?></th>
@@ -13,8 +13,7 @@
 		<th><?php echo $this->translate->_("Country"); ?></th>
 		<th><?php echo $this->translate->_("Zipcode"); ?></th>
 		<th><?php echo $this->translate->_("Type"); ?></th>
-		<th><?php echo $this->translate->_("Edit"); ?></th>
-		<th><?php echo $this->translate->_("Archive"); ?></th>
+		<th colspan="2"></th>
 	</tr>
 <?php
 foreach ($this->users as $idx => $user):
@@ -62,17 +61,15 @@ foreach ($this->users as $idx => $user):
 		      }
 		  ?>
 	   </td>
-	   <td style="word-break: break-all">
-	       <a href="<?php echo $this->url(array(
-	               'controller'=> 'tickets', 
-	               'action'=> 'edit-client', 
-	               'id' => $user["id"]
-	       ), 'default', true); ?>">
-	           <?php echo $this->translate->_("Edit"); ?>
-	       </a>
-		</td>
-		<td style="word-break: break-all">
-		  <form class="archive-form" method="POST" action="<?php echo $this->url(array('controller'=> 'tickets', 'action'=> 'archive-client'), 'default', true); ?>">
+	   <td align="right" nowrap="nowrap" colspan="2">
+          <a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'edit-client', 'id' => $user["id"]), 'default', true); ?>' class='icon_link edit'>
+	           <span><?php echo $this->translate->_('Edit'); ?></span>
+		  </a>
+		  <a class='icon_link delete' href="javascript:void(0);">
+		      <span><?php echo $this->translate->_('Archive'); ?></span>
+		  </a>
+		
+		  <form style="display:none" class="archive-form" method="POST" action="<?php echo $this->url(array('controller'=> 'tickets', 'action'=> 'archive-client'), 'default', true); ?>">
 	           <input name="user_id" type="hidden" value="<?php echo $user["id"]; ?>" />
 	           <input name="go" type="submit" value="X" />
 	       </form>
