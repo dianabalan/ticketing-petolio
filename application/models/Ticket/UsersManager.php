@@ -75,4 +75,9 @@ class Petolio_Model_Ticket_UsersManager
     {
     	return $this->_dataMapper->isAlreadyRegisteredAsPetolio($email);
     }
+    
+    public function isAlreadyRegisteredAsNonPetolio($email, $sp_id)
+    {
+        return $this->_dataMapper->isAlreadyRegisteredAsNonPetolio($email, $sp_id);
+    }
 }

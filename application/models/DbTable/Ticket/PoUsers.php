@@ -108,7 +108,7 @@ class Petolio_Model_DbTable_Ticket_PoUsers extends Zend_Db_Table_Abstract
         return $rows;
     }
 
-    private function _isAlreadyRegisteredAsNonPetolio($email, $sp_id)
+    public function isAlreadyRegisteredAsNonPetolio($email, $sp_id)
     {
         $db = $this->getAdapter();
         
@@ -163,7 +163,7 @@ class Petolio_Model_DbTable_Ticket_PoUsers extends Zend_Db_Table_Abstract
     {
         $email = $user_data['email'];
         
-        if ( $this->_isAlreadyRegisteredAsNonPetolio($email, $sp_id) )
+        if ( $this->isAlreadyRegisteredAsNonPetolio($email, $sp_id) )
         {
             throw new Exception('non petolio member already exists');
         }

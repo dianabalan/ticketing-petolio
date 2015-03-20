@@ -641,11 +641,13 @@ class TicketsController extends Zend_Controller_Action
     public function addNonPetolioMemberAction()
     {
         $this->view->title = $this->translate->_("Add Non-Petolio Member");
+        $sp_id = (int) $this->auth->getIdentity()->id;
         
-        $form = new Petolio_Form_Ticket_NonPetolioMember();
+        $form = new Petolio_Form_Ticket_NonPetolioMember($sp_id);
+        
         $this->view->form = $form;
         
-        if( !($this->request->isPost()) )
+        if ( !($this->request->isPost()) )
         {
             return false;
         }
@@ -657,7 +659,6 @@ class TicketsController extends Zend_Controller_Action
         
         $manager = new Petolio_Model_Ticket_UsersManager();
         $nonPetolioUser = new Petolio_Model_Ticket_NonPetolioMember();
-        $sp_id = (int) $this->auth->getIdentity()->id;
         
         $form_data = $form->getValues();
         $nonPetolioUser->setName($form_data['name']);
@@ -690,11 +691,8 @@ class TicketsController extends Zend_Controller_Action
     {
         $this->view->title = $this->translate->_("Edit Non-Petolio Member");
         
-        $form = new Petolio_Form_Ticket_NonPetolioMember();
-        $this->view->form = $form;
-        
-        $user_id = (int) $this->request->getParam('id', 0);
         $sp_id = (int) $this->auth->getIdentity()->id;
+        $user_id = (int) $this->request->getParam('id', 0);
         
         $manager = new Petolio_Model_Ticket_UsersManager();
         $nonPetolioUser = $manager->getNonPetolioMember($user_id, $sp_id);
@@ -703,6 +701,9 @@ class TicketsController extends Zend_Controller_Action
         {
             return $this->_redirectWithMessage('/tickets/manage-non-petolio-members', 'No such user');
         }
+        
+        $form = new Petolio_Form_Ticket_NonPetolioMember($sp_id, $nonPetolioUser);
+        $this->view->form = $form;
         
         if ( $this->request->isGet() )
         {
