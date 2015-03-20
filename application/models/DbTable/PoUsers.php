@@ -439,7 +439,7 @@ class Petolio_Model_DbTable_PoUsers extends Zend_Db_Table_Abstract {
 
 		return $this->fetchAll($select);
 	}
-	
+
 	public function deleteUserAsNonPetolio ($email)
 	{
 		$db = $this->getAdapter();
@@ -455,12 +455,16 @@ class Petolio_Model_DbTable_PoUsers extends Zend_Db_Table_Abstract {
 				':email' => $email
 		));
 		
-		$updateClients = "UPDATE po_clients JOIN po_users ON po_users.id = po_clients.client_id SET po_clients.client_id = ".$id." WHERE po_users.email = '".$email."' AND po_users.type = 3;";
-		$this->getAdapter()->query($updateClients);	
+		$query = "INSERT INTO po_clients (sp_id, client_id, clienttype_id, clientno, remarks, billing_interval, payment, isActive, date_created, date_modified) SELECT  sp_id, '.$id.', clienttype_id, clientno, remarks, billing_interval, payment, isActive, po_clients.date_created, po_clients.date_modified FROM po_clients JOIN po_users ON po_users.id = po_clients.client_id WHERE po_users.email = '".$email."' AND po_users.type = 3;";
+		$db->query($query);			
 		
-		$deleteNonPetolios = "DELETE FROM po_users WHERE po_users.email = '".$email."' AND po_users.type = 3;";
-		$this->getAdapter()->query($deleteNonPetolios);					
+		$query = "UPDATE po_clients  JOIN po_users ON po_users.id = po_clients.client_id SET po_clients.isActive = 0 WHERE po_users.email = '".$email."' AND po_users.type = 3;";
+		$db->query($query);	
 		
+		$query = "UPDATE po_users SET po_users.active = 0 WHERE po_users.email = '".$email."' AND po_users.type = 3;";
+		$db->query($query);					
+		
+		
+
 	}
-		
 }
