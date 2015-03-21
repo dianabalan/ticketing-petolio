@@ -47,7 +47,7 @@ abstract class Petolio_Model_Ticket_DataMapperAbstract
     abstract protected function fromClassToDb($object);
 
     abstract protected function fromDbToClass($row);
-    
+
     protected function _replaceEmptyStringsWithNullValues(array &$data)
     {
         foreach ($data as $key => $value)
@@ -61,15 +61,15 @@ abstract class Petolio_Model_Ticket_DataMapperAbstract
         }
     }
 
-    public function save(Petolio_Model_Ticket_Entity $entity, $ignoreNullValues = true, $escapeValues = false)
+    public function save(Petolio_Model_Ticket_Entity $entity, $escapeValues = false)
     {
         $data = $this->fromClassToDb($entity);
         
         $this->_replaceEmptyStringsWithNullValues($data);
         
-        foreach ($data as $key => $value)
+        if ( $escapeValues )
         {
-            if ( $escapeValues )
+            foreach ($data as $key => $value)
             {
                 if ( !($value instanceof Zend_Db_Expr) )
                 {

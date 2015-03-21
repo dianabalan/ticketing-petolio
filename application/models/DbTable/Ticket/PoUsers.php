@@ -99,7 +99,34 @@ class Petolio_Model_DbTable_Ticket_PoUsers extends Zend_Db_Table_Abstract
                     ->from(array('u' => $this->_name), $columns)
                     ->joinInner(array('c' => 'po_clients'), 'u.id = c.client_id', array())
                     ->where('c.sp_id = :sp_id')
-                    ->where('c.isActive = 1');
+                    ->where('c.isActive = 1')
+                    ->order('c.date_modified DESC');
+        
+        $rows = $db->fetchAll($query, array(
+            ':sp_id' => $sp_id
+        ));
+        
+        return $rows;
+    }
+    
+    public function fetchInactiveClients($sp_id)
+    {
+        $db = $this->getAdapter();
+        
+        $columns = array(
+            'u.id',
+            'u.name',
+            'u.email',
+            'u.avatar',
+            'c.date_modified'
+        );
+        
+        $query = $db->select()
+                    ->from(array('u' => $this->_name), $columns)
+                    ->joinInner(array('c' => 'po_clients'), 'u.id = c.client_id', array())
+                    ->where('c.sp_id = :sp_id')
+                    ->where('c.isActive = 0')
+                    ->order('c.date_modified DESC');
         
         $rows = $db->fetchAll($query, array(
             ':sp_id' => $sp_id

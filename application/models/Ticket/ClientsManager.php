@@ -16,7 +16,7 @@ class Petolio_Model_Ticket_ClientsManager
         
         try
         {
-            $this->_dataMapper->save($client, true, true);
+            $this->_dataMapper->save($client);
         }
         catch (Exception $e)
         {

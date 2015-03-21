@@ -42,8 +42,8 @@ if ($this->auth->hasIdentity()) {
 					'class' => 'lm-products_sm'
 				),
 				array(
-						'link' => $this->url(array('controller'=>'tickets', 'action'=>'tickets-archives'), 'default', true),
-						'name' => $this->translate->_("Tickets Archives"),
+						'link' => $this->url(array('controller'=>'tickets', 'action'=>'tickets-archive'), 'default', true),
+						'name' => $this->translate->_("Tickets Archive"),
 						'class' => 'lm-products_sm'
 				)
 			);
@@ -71,8 +71,8 @@ if ($this->auth->hasIdentity()) {
 						'class' => 'lm-friends_sm'
 				),
 				array(
-						'link' => $this->url(array('controller'=>'tickets', 'action'=>'clients-archives'), 'default', true),
-						'name' => $this->translate->_("Clients Archives"),
+						'link' => $this->url(array('controller'=>'tickets', 'action'=>'clients-archive'), 'default', true),
+						'name' => $this->translate->_("Clients Archive"),
 						'class' => 'lm-friends_sm'
 				)
 		);

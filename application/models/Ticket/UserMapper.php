@@ -25,7 +25,8 @@ class Petolio_Model_Ticket_UserMapper extends Petolio_Model_Ticket_DataMapperAbs
             'avatar' => $object->getAvatar(), 
             'phone' => $object->getPhone(), 
             'private_phone' => $object->getPrivatePhone(), 
-            'gender' => $object->getGender()
+            'gender' => $object->getGender(),
+            'date_modified' => $object->getDateModified()
         );
         
         return $data;
@@ -50,6 +51,7 @@ class Petolio_Model_Ticket_UserMapper extends Petolio_Model_Ticket_DataMapperAbs
         $user->setPhone($row['phone']);
         $user->setPrivatePhone($row['private_phone']);
         $user->setGender($row['gender']);
+        $user->setDateModified($row['date_modified']);
         
         return $user;
     }
@@ -103,6 +105,19 @@ class Petolio_Model_Ticket_UserMapper extends Petolio_Model_Ticket_DataMapperAbs
             $users[] = $this->fromDbToClass($row);
         }
         
+        return $users;
+    }
+    
+    public function fetchInactiveClients($sp_id)
+    {
+        $rows = $this->getDbTable()->fetchInactiveClients($sp_id);
+    
+        $users = array();
+        foreach ($rows as $row)
+        {
+            $users[] = $this->fromDbToClass($row);
+        }
+    
         return $users;
     }
 

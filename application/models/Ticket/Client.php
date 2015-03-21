@@ -7,10 +7,6 @@ class Petolio_Model_Ticket_Client extends Petolio_Model_Ticket_Entity
 
     private $_clientId;
 
-    private $_clientTypeId;
-
-    private $_clientNo;
-
     private $_remarks;
 
     private $_billingInterval;
@@ -47,28 +43,6 @@ class Petolio_Model_Ticket_Client extends Petolio_Model_Ticket_Entity
     public function setClientId($clientId)
     {
         $this->_clientId = $clientId;
-        return $this;
-    }
-
-    public function getClientTypeId()
-    {
-        return $this->_clientTypeId;
-    }
-
-    public function setClientTypeId($clientTypeId)
-    {
-        $this->_clientTypeId = $clientTypeId;
-        return $this;
-    }
-
-    public function getClientNo()
-    {
-        return $this->_clientNo;
-    }
-
-    public function setClientNo($clientNo)
-    {
-        $this->_clientNo = $clientNo;
         return $this;
     }
 

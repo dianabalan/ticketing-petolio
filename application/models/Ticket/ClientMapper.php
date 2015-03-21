@@ -19,9 +19,7 @@ class Petolio_Model_Ticket_ClientMapper extends Petolio_Model_Ticket_DataMapperA
         $data = array(
             'ID' => $object->getId(), 
             'sp_id' => $object->getSpId(), 
-            'client_id' => $object->getClientId(), 
-            'clienttype_id' => $object->getClientTypeId(), 
-            'clientno' => $object->getClientNo(), 
+            'client_id' => $object->getClientId(),
             'remarks' => $object->getRemarks(), 
             'billing_interval' => $object->getBillingInterval(), 
             'payment' => $object->getPayment(), 
@@ -45,8 +43,6 @@ class Petolio_Model_Ticket_ClientMapper extends Petolio_Model_Ticket_DataMapperA
         $client->setId($row['ID']);
         $client->setSpId($row['sp_id']);
         $client->setClientId($row['client_id']);
-        $client->setClientTypeId($row['clienttype_id']);
-        $client->setClientNo($row['clientno']);
         $client->setRemarks($row['remarks']);
         $client->setBillingInterval($row['billing_interval']);
         $client->setPayment($row['payment']);
@@ -69,9 +65,9 @@ class Petolio_Model_Ticket_ClientMapper extends Petolio_Model_Ticket_DataMapperA
         return null;
     }
 
-    public function save(Petolio_Model_Ticket_Client $client, $ignoreNullValues = true, $escapeValues = false)
+    public function save(Petolio_Model_Ticket_Client $client, $escapeValues = false)
     {
-        parent::save($client, $ignoreNullValues, $escapeValues);
+        parent::save($client, $escapeValues);
     }
 
 }

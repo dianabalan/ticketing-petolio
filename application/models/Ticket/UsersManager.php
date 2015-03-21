@@ -41,6 +41,11 @@ class Petolio_Model_Ticket_UsersManager
         return $this->_dataMapper->fetchClients($sp_id);
     }
     
+    public function getInactiveClients($sp_id)
+    {
+        return $this->_dataMapper->fetchInactiveClients($sp_id);
+    }
+    
     public function registerNonPetolioMember(Petolio_Model_Ticket_NonPetolioMember $user, $sp_id)
     {
         return $this->_dataMapper->registerNonPetolioMember($user, $sp_id);

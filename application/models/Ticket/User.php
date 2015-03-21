@@ -28,14 +28,16 @@ class Petolio_Model_Ticket_User extends Petolio_Model_Ticket_Entity
     private $_phone;
 
     private $_privatePhone;
-    
+
     private $_gender;
+
+    private $_dateModified;
 
     public function __construct()
     {
         parent::__construct();
     }
-    
+
     public function getName()
     {
         return $this->_name;
@@ -183,15 +185,26 @@ class Petolio_Model_Ticket_User extends Petolio_Model_Ticket_Entity
         $this->_privatePhone = $privatePhone;
         return $this;
     }
-    
+
     public function getGender()
     {
         return $this->_gender;
     }
-    
+
     public function setGender($gender)
     {
         $this->_gender = $gender;
+        return $this;
+    }
+
+    public function getDateModified()
+    {
+        return $this->_dateModified;
+    }
+
+    public function setDateModified($dateModified)
+    {
+        $this->_dateModified = $dateModified;
         return $this;
     }
 
