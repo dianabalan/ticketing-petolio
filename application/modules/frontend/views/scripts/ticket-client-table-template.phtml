@@ -1,0 +1,55 @@
+<table cellspacing="0" cellpadding="5" class="grid">
+	<col /><col width="200" /><col width="300" /><col width="100" />
+	<tr>
+		<th><?php echo $this->translate->_("Ticket No."); ?></th>
+		<th><?php echo $this->translate->_("Date"); ?></th>
+		<th><?php echo $this->translate->_("Amount"); ?></th>
+		<th><?php echo $this->translate->_("Price"); ?></th>
+		<th></th>
+	</tr>
+	<?php foreach($this->data as $ticketsClient): ?>
+		<tr>
+			<td><?php echo $ticketsClient["ticket_id"]; ?></td>
+			<td><?php echo Petolio_Service_Util::formatDate($ticketsClient["date"], null, true, true); ?></td>
+			<td><?php echo $ticketsClient["amount"]; ?></td>
+			<td><?php echo $ticketsClient["price"]; ?></td>
+			<td align="right" nowrap="nowrap">
+				<?php if($ticketsClient['flgworkflow'] == 'cancelled'):?>
+					<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'reactivate-client-ticket', 'ticket'=> $ticketsClient["ID"]), 'default', true); ?>' class='icon_link restore'>
+						<span><?php echo $this->translate->_('Reactivate'); ?></span>
+					</a>					
+				<?php else:?>
+					<?php foreach($this->links as $link): ?>
+						<?php if ($link == "pay now"):?>
+							<?php if($ticketsClient['flgworkflow'] == 'instructed'):?>
+								<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'refresh-client-ticket', 'ticket'=> $ticketsClient["ID"]), 'default', true); ?>' class='icon_link restore'>
+									<span><?php echo $this->translate->_('Refresh'); ?></span>
+								</a>					
+							<?php else:?>
+								<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'pay-now-client-ticket', 'ticket'=> $ticketsClient["ID"]), 'default', true); ?>' class='icon_link restore'>
+									<span><?php echo $this->translate->_('Pay now'); ?></span>
+								</a>
+							<?php endif;?>
+						<?php elseif ($link == "edit"):?>
+							<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'edit-client-ticket', 'ticket'=> $ticketsClient["ID"]), 'default', true); ?>' class='icon_link edit'>
+								<span><?php echo $this->translate->_('Edit'); ?></span>
+							</a>
+						<?php elseif ($link == "cancel"):?>
+							<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'cancel-client-ticket', 'ticket'=> $ticketsClient["ID"]), 'default', true); ?>' class='icon_link delete'>
+								<span><?php echo $this->translate->_('Cancel'); ?></span>
+							</a>
+						<?php elseif ($link == "reactivate"):?>
+							<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'reactivate-client-ticket', 'ticket'=> $ticketsClient["ID"]), 'default', true); ?>' class='icon_link restore'>
+								<span><?php echo $this->translate->_('Reactivate'); ?></span>
+							</a>
+						<?php elseif ($link == "save"):?>
+							<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'save-client-ticket', 'ticket'=> $ticketsClient["ID"]), 'default', true); ?>' class='icon_link restore'>
+								<span><?php echo $this->translate->_('Save'); ?></span>
+							</a>
+						<?php endif; ?>			
+					<?php endforeach; ?>
+				<?php endif; ?>
+			</td>
+		</tr>
+	<?php endforeach; ?>
+</table>

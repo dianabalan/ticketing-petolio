@@ -25,7 +25,11 @@
 						<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'restore-ticket', 'ticket'=> $ticket["ID"]), 'default', true); ?>' class='icon_link restore'>
 							<span><?php echo $this->translate->_('Restore'); ?></span>
 						</a>
-					<?php endif; ?>
+					<?php elseif ($link == "accept"):?>
+						<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'accept-ticket', 'ticket'=> $ticket["ID"]), 'default', true); ?>' class='icon_link restore'>
+							<span><?php echo $this->translate->_('Accept'); ?></span>
+						</a>
+					<?php endif; ?>					
 				<?php endforeach; ?>
 			</td>
 		</tr>

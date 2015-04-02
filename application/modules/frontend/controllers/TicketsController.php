@@ -13,6 +13,9 @@ class TicketsController extends Zend_Controller_Action
 
     private $msg = null;
     
+    private $links = null;
+    private $outsideLinks = FALSE;
+    
     /**
      * Maps each user type to a role name.
      *
@@ -33,6 +36,14 @@ class TicketsController extends Zend_Controller_Action
             'sp', 
             'po'
         ), 
+    	'my-tickets-client' => array(
+    		'sp',
+    		'po'
+    	),
+    	'offered-tickets' => array(
+	    	'sp',
+	    	'po'
+    	),
         'add-ticket' => array(
             'sp'
         ), 
@@ -217,7 +228,139 @@ class TicketsController extends Zend_Controller_Action
         
         $manager = new Petolio_Model_Ticket_TicketManager();
         
+        //TBD
+        $this->view->links = array('edit','archive','accept');
+        //$this->view->list = $manager->getClientTickets($user_id, $items_per_page, $page);
         $this->view->list = $manager->getTickets($user_id, $items_per_page, $page);
+    }
+    
+    public function myTicketsClientAction()
+    {
+    	$this->view->title = $this->translate->_("My Tickets Client");
+    
+    	//get user id
+    	$user_id = $this->auth->getIdentity()->id;
+    
+    	// get page
+    	$page = $this->request->getParam("page");
+    	$page = $page ? $page : 0;
+    	//TODO: add to cfg: tickets.pagination.itemsperpage = 10;
+    	$items_per_page = $this->cfg["products"]["pagination"]["itemsperpage"];
+    
+    	$manager = new Petolio_Model_Ticket_TicketsClientsManager();
+    
+    	$this->view->links = array('pay now','edit','cancel');//,'reactivate','save'
+    	$this->view->list = $manager->getClientTickets($user_id, $items_per_page, $page);
+    }
+    
+    public function offeredTicketsAction()
+    {
+    	$this->view->title = $this->translate->_("Offered Tickets");
+    
+    	//get user id
+    	$user_id = $this->auth->getIdentity()->id;
+    	 
+    	// get page
+    	$page = $this->request->getParam("page");
+    	$page = $page ? $page : 0;
+    	//TODO: add to cfg: tickets.pagination.itemsperpage = 10;
+    	$items_per_page = $this->cfg["products"]["pagination"]["itemsperpage"];
+    
+    	$manager = new Petolio_Model_Ticket_TicketManager();
+    
+    	$this->view->links = array('accept');
+    	$this->view->list = $manager->getClientTickets($user_id, $items_per_page, $page);
+    }
+        
+    public function payNowClientTicketAction()
+    {   	
+    	$user_id = $this->auth->getIdentity()->id;
+    	
+    	$ticket_id = $this->request->getParam('ticket');
+    	
+    	$ticketsClient = new Petolio_Model_Ticket_TicketsClient();
+    	
+    	$ticketsClient->setTicketId($ticket_id);
+    	$ticketsClient->setClientId($user_id);
+    	
+    	$manager = new Petolio_Model_Ticket_TicketsClientsManager(); 
+    	$manager->payTicketsClient($ticket_id);
+
+    	return $this->_redirectWithMessage('/tickets/my-tickets-client', 'Payed succesfully.');  	
+    }
+    
+    public function editClientTicketAction()
+    {
+    	
+    }
+    
+    public function cancelClientTicketAction()
+    {
+    	$user_id = $this->auth->getIdentity()->id;
+    	 
+    	$ticket_id = $this->request->getParam('ticket');
+    	 
+    	$ticketsClient = new Petolio_Model_Ticket_TicketsClient();
+    	 
+    	$ticketsClient->setTicketId($ticket_id);
+    	$ticketsClient->setClientId($user_id);
+    	 
+    	$manager = new Petolio_Model_Ticket_TicketsClientsManager();
+    	$manager->cancelTicketsClient($ticket_id);
+    	 
+    	//$manager->reactivateTicketsClient(33);
+    	//$manager->modifyAmount(33,3);
+    	
+    	return $this->_redirectWithMessage('/tickets/my-tickets-client', 'Ticket canceled.');    	
+    }
+    
+    public function reactivateClientTicketAction()
+    {
+    	$user_id = $this->auth->getIdentity()->id;
+    	
+    	$ticket_id = $this->request->getParam('ticket');
+    	
+    	$ticketsClient = new Petolio_Model_Ticket_TicketsClient();
+    	
+    	$ticketsClient->setTicketId($ticket_id);
+    	$ticketsClient->setClientId($user_id);
+    	
+    	$manager = new Petolio_Model_Ticket_TicketsClientsManager();
+    	$manager->reactivateTicketsClient($ticket_id);
+    	 
+    	return $this->_redirectWithMessage('/tickets/my-tickets-client', 'Ticket canceled.');    	
+    }
+    
+    public function saveClientTicketAction()
+    {
+    	
+    }   
+    
+    public function refreshClientTicketAction()
+    {
+    	return $this->_redirectWithMessage('/tickets/my-tickets-client','');
+    }
+    
+    public function acceptTicketAction()
+    {    	
+    	$user_id = $this->auth->getIdentity()->id;
+    	
+    	$ticket_id = $this->request->getParam('ticket');
+    	
+    	$ticketsClient = new Petolio_Model_Ticket_TicketsClient();
+    	
+    	$ticketsClient->setTicketId($ticket_id);
+    	$ticketsClient->setClientId($user_id);
+    	
+    	$manager = new Petolio_Model_Ticket_TicketsClientsManager();  
+    	$manager->addTicketsClient($ticketsClient);
+    	
+    	//$manager->cancelTicketsClient(33);
+    	//$manager->payTicketsClient(33);
+    	//$manager->reactivateTicketsClient(33);
+    	//$manager->modifyAmount(33,3);
+    	 
+    	return $this->_redirectWithMessage('/tickets/offered-tickets', 'Ticket accepted succesfully.');
     }
 
     public function addTicketAction()

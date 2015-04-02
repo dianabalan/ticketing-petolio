@@ -81,9 +81,15 @@ class Petolio_Model_Ticket_TicketMapper extends Petolio_Model_Ticket_DataMapperA
     	return new Zend_Paginator($adapter);
     }
     
+    public function fetchClientTickets($user_id)
+    {
+    	$rows = $this->getDbTable()->fetchClientTickets($user_id);
+    	$adapter = new Zend_Paginator_Adapter_Array($rows);
+    	return new Zend_Paginator($adapter);
+    }    
+    
     public function save(Petolio_Model_Ticket_Ticket $ticket, $ignoreNullValues = true, $escapeValues = false)
     {
         parent::save($ticket, $ignoreNullValues, $escapeValues);
     }
-
 }

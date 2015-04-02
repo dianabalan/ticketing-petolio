@@ -54,6 +54,26 @@ class Petolio_Model_DbTable_Ticket_Tickets extends Zend_Db_Table_Abstract
 		return $rows;
 	}
 	
+	public function fetchClientTickets($client_id)
+	{
+		$db = $this->getAdapter();
+		
+		foreach(self::$_columns as $column)
+		{
+			$decriptiveColumns[] = $this->_name.'.'.$column;
+		}
+		
+		$query = $db->select()
+			->from($this->_name, $decriptiveColumns)
+			->join(po_clients,'user_id = sp_id','','petolio')
+			->where('client_id = :client_id');
+		
+		$rows = $db->fetchAll($query, array(
+				':client_id' => $client_id));		
+		
+		return $rows;
+	}
+	
 	public function insert(array $data)
 	{
 		date_default_timezone_set("UTC");

@@ -7,6 +7,16 @@ if ($this->auth->hasIdentity()) {
 						'link' => $this->url(array('controller'=>'tickets', 'action'=>'my-tickets'), 'default', true),
 						'name' => $this->translate->_("My Tickets"),
 						'class' => 'lm-products_sm'
+				),
+				array(
+						'link' => $this->url(array('controller'=>'tickets', 'action'=>'my-tickets-client'), 'default', true),
+						'name' => $this->translate->_("My Client Tickets"),
+						'class' => 'lm-products_sm'
+				),
+				array(
+						'link' => $this->url(array('controller'=>'tickets', 'action'=>'offered-tickets'), 'default', true),
+						'name' => $this->translate->_("Offered Tickets"),
+						'class' => 'lm-products_sm'
 				)
 		);
 		// add buttons on the right side combo-box
@@ -45,7 +55,17 @@ if ($this->auth->hasIdentity()) {
 						'link' => $this->url(array('controller'=>'tickets', 'action'=>'tickets-archive'), 'default', true),
 						'name' => $this->translate->_("Tickets Archive"),
 						'class' => 'lm-products_sm'
-				)
+				),
+				array(
+						'link' => $this->url(array('controller'=>'tickets', 'action'=>'my-tickets-client'), 'default', true),
+						'name' => $this->translate->_("My Client Tickets"),
+						'class' => 'lm-products_sm'
+				),				
+				array(
+						'link' => $this->url(array('controller'=>'tickets', 'action'=>'offered-tickets'), 'default', true),
+						'name' => $this->translate->_("Offered Tickets"),
+						'class' => 'lm-products_sm'
+				)				
 			);
 		
 		// links to client management

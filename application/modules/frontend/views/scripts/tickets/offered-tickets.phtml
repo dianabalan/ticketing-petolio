@@ -1,0 +1,26 @@
+<?php
+	include "menu.phtml"; ?>
+<div id="right">
+	<div class="rightbox">
+		<div class="context"><div class="in"><a href="javascript:void(0);" id="context_menu" class="icon_link the_down"><span></span></a></div></div>
+		<h1><?php echo $this->title; ?></h1>
+		<br/>
+		<?php if(isset($this->list) && count($this->list) > 0): ?>
+			<?php echo $this->paginationControl($this->list, 'Elastic', 'pagination-controls.phtml', array('pos' => 'top')); ?>
+			<?php
+				echo $this->partial('ticket-table-template.phtml', array(
+						'translate' => $this->translate,
+						'data' => $this->list,
+						'links' => $this->links
+				));
+			?>
+			<?php echo $this->paginationControl($this->list, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot')); ?>
+		<?php else: ?>
+			<b class="red bigger">
+				<?php 
+					echo $this->translate->_("No tickets found.");
+				?>
+			</b>
+		<?php endif; ?>
+	</div>
+</div>

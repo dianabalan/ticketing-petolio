@@ -11,7 +11,7 @@
 				echo $this->partial('ticket-table-template.phtml', array(
 						'translate' => $this->translate,
 						'data' => $this->list,
-						'links' => array('edit','archive')
+						'links' => $this->links
 				));
 			?>
 			<?php echo $this->paginationControl($this->list, 'Elastic', 'pagination-controls.phtml', array('pos' => 'bot')); ?>
