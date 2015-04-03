@@ -1,0 +1,43 @@
+<table cellspacing="0" cellpadding="5" class="grid">
+	<col /><col width="200" /><col width="100" /><col width="50" /><col width="100"/><col width="50"/>
+	<tr>
+		<th><?php echo $this->translate->_("Ticket No."); ?></th>
+		<th><?php echo $this->translate->_("Date"); ?></th>
+		<th><?php echo $this->translate->_("Amount"); ?></th>
+		<th><?php echo $this->translate->_("Price"); ?></th>
+		<th></th>
+		<th></th>
+	</tr>
+	<?php foreach($this->forms as $form):
+		$ticketsClient = $form->data; ?>
+		<?php echo $form; ?>
+		<tr>
+			<?php echo $form->getElement('ticket');?>
+			<td><?php echo $ticketsClient["ticket_id"]; ?></td>
+			<td><?php echo Petolio_Service_Util::formatDate($ticketsClient["date"], null, true, true); ?></td>
+			<?php if($ticketsClient['flgworkflow'] == 'cancelled'):?>
+				<td><?php echo $ticketsClient["amount"]; ?></td>
+				<td><?php echo $ticketsClient["price"]; ?></td>
+				<td align="right" nowrap="nowrap">
+				<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'reactivate-client-ticket', 'ticket'=> $ticketsClient["ID"]), 'default', true); ?>' class='icon_link restore'>
+					<span><?php echo $this->translate->_('Reactivate'); ?></span>
+				</a>
+				</td>
+			<?php else:?>
+				<td><?php echo $form->getElement('amount');?></td>
+				<td><?php echo $ticketsClient["price"]; ?></td>
+				<td align="right" nowrap="nowrap">
+					<?php foreach($this->links as $link): ?>
+						<?php if ($link == "save"):?>
+							<?php echo $form->getElement('save'.$form->ticket_id);?>
+						<?php elseif ($link == "cancel"):?>
+							<a href='<?php echo $this->url(array('controller'=>'tickets', 'action'=>'cancel-client-ticket', 'ticket'=> $ticketsClient["ID"]), 'default', true); ?>' class='icon_link delete'>
+								<span><?php echo $this->translate->_('Cancel'); ?></span>
+							</a>	
+						<?php endif;?>
+					<?php endforeach; ?>
+				</td>
+			<?php endif; ?>
+		</tr>
+	<?php endforeach; ?>
+</table>

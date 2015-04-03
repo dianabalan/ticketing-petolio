@@ -14,7 +14,6 @@ class TicketsController extends Zend_Controller_Action
     private $msg = null;
     
     private $links = null;
-    private $outsideLinks = FALSE;
     
     /**
      * Maps each user type to a role name.
@@ -228,9 +227,7 @@ class TicketsController extends Zend_Controller_Action
         
         $manager = new Petolio_Model_Ticket_TicketManager();
         
-        //TBD
         $this->view->links = array('edit','archive','accept');
-        //$this->view->list = $manager->getClientTickets($user_id, $items_per_page, $page);
         $this->view->list = $manager->getTickets($user_id, $items_per_page, $page);
     }
     
@@ -249,7 +246,9 @@ class TicketsController extends Zend_Controller_Action
     
     	$manager = new Petolio_Model_Ticket_TicketsClientsManager();
     
-    	$this->view->links = array('pay now','edit','cancel');//,'reactivate','save'
+    	$this->view->links = array('pay now','edit','cancel');
+    	$this->view->editTicket = $this->request->getParam("ticket");
+    	
     	$this->view->list = $manager->getClientTickets($user_id, $items_per_page, $page);
     }
     
@@ -271,7 +270,7 @@ class TicketsController extends Zend_Controller_Action
     	$this->view->links = array('accept');
     	$this->view->list = $manager->getClientTickets($user_id, $items_per_page, $page);
     }
-        
+            
     public function payNowClientTicketAction()
     {   	
     	$user_id = $this->auth->getIdentity()->id;
@@ -289,11 +288,34 @@ class TicketsController extends Zend_Controller_Action
     	return $this->_redirectWithMessage('/tickets/my-tickets-client', 'Payed succesfully.');  	
     }
     
+
     public function editClientTicketAction()
     {
+    	$this->view->title = $this->translate->_("Edit Tickets Client");
     	
+    	$ticket_id = $this->request->getParam('ticket');
+    	
+    	return $this->_redirectWithMessage('/tickets/my-tickets-client/ticket/'.$ticket_id.'','');
     }
-    
+
+    public function saveClientTicketAction()
+    {	
+    	$price = $this->request->getParam('price');
+    	$ticket_id = $this->request->getParam('ticket');
+    	
+    	$user_id = $this->auth->getIdentity()->id;    	    	
+    	
+    	$ticketsClient = new Petolio_Model_Ticket_TicketsClient();
+    	
+    	$ticketsClient->setTicketId($ticket_id);
+    	$ticketsClient->setClientId($user_id);
+    	
+    	$manager = new Petolio_Model_Ticket_TicketsClientsManager();
+    	$manager->modifyAmount($ticket_id,$price);
+
+    	return $this->_redirectWithMessage('/tickets/my-tickets-client', 'Updated succesfully.');
+    }    
+
     public function cancelClientTicketAction()
     {
     	$user_id = $this->auth->getIdentity()->id;
@@ -328,13 +350,9 @@ class TicketsController extends Zend_Controller_Action
     	$manager = new Petolio_Model_Ticket_TicketsClientsManager();
     	$manager->reactivateTicketsClient($ticket_id);
     	 
-    	return $this->_redirectWithMessage('/tickets/my-tickets-client', 'Ticket canceled.');    	
+    	return $this->_redirectWithMessage('/tickets/my-tickets-client', 'Ticket reactivated.');    	
     }
-    
-    public function saveClientTicketAction()
-    {
-    	
-    }   
+
     
     public function refreshClientTicketAction()
     {
@@ -355,11 +373,6 @@ class TicketsController extends Zend_Controller_Action
     	$manager = new Petolio_Model_Ticket_TicketsClientsManager();  
     	$manager->addTicketsClient($ticketsClient);
     	
-    	//$manager->cancelTicketsClient(33);
-    	//$manager->payTicketsClient(33);
-    	//$manager->reactivateTicketsClient(33);
-    	//$manager->modifyAmount(33,3);
-    	 
     	return $this->_redirectWithMessage('/tickets/offered-tickets', 'Ticket accepted succesfully.');
     }
 
@@ -463,10 +476,10 @@ class TicketsController extends Zend_Controller_Action
 	    	$manager = new Petolio_Model_Ticket_TicketManager();
 	    	$manager->save($ticket);
     		
-	    	return $this->_redirectWithMessage('/tickets/my-clients', 'You succesfully added ticket.');
+	    	return $this->_redirectWithMessage('/tickets/my-tickets', 'You succesfully added ticket.');
     	}
     }
-    
+
     public function editTicketAction()
     {
     	$this->view->title = $this->translate->_("Edit Ticket");

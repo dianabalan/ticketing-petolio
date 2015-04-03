@@ -60,16 +60,22 @@ class Petolio_Model_DbTable_Ticket_Tickets extends Zend_Db_Table_Abstract
 		
 		foreach(self::$_columns as $column)
 		{
-			$decriptiveColumns[] = $this->_name.'.'.$column;
+			$descriptiveColumns[] = $this->_name.'.'.$column;
 		}
 		
+		$subQuery = $db->select()
+					->from('po_tickets_clients', array('COUNT(*)'))
+					->where('po_tickets_clients.ticket_id = po_tickets.id');		
+		
+		$descriptiveColumns["status"] = "IF((".$subQuery.") = 0,'available','taken')";
+		
 		$query = $db->select()
-			->from($this->_name, $decriptiveColumns)
-			->join(po_clients,'user_id = sp_id','','petolio')
+			->from($this->_name, $descriptiveColumns)
+			->join('po_clients','user_id = sp_id','','petolio')
 			->where('client_id = :client_id');
 		
 		$rows = $db->fetchAll($query, array(
-				':client_id' => $client_id));		
+				':client_id' => $client_id));
 		
 		return $rows;
 	}

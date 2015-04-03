@@ -19,8 +19,8 @@ class Petolio_Model_DbTable_Ticket_PoTicketsClientWf extends Zend_Db_Table_Abstr
 		);
 
 		$query = $db->select()
-		->from($this->_name, $columns)
-		->where('tickets_clients_id = :tickets_clients_id');
+			->from($this->_name, $columns)
+			->where('tickets_clients_id = :tickets_clients_id');
 
 		$row = $db->fetchRow($query, array(
 				':tickets_clients_id' => $tickets_clients_id
@@ -69,8 +69,8 @@ class Petolio_Model_DbTable_Ticket_PoTicketsClientWf extends Zend_Db_Table_Abstr
 		);
 		
 		$query = $db->select()
-		->from($this->_name, $columns)
-		->where('tickets_clients_id = :tickets_clients_id');
+			->from($this->_name, $columns)
+			->where('tickets_clients_id = :tickets_clients_id');
 		
 		$flg = $db->fetchOne($query, array(
 				':tickets_clients_id' => $tickets_clients_id

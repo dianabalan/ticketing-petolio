@@ -8,10 +8,10 @@
 		<?php if(isset($this->list) && count($this->list) > 0): ?>
 			<?php echo $this->paginationControl($this->list, 'Elastic', 'pagination-controls.phtml', array('pos' => 'top')); ?>
 			<?php
-				echo $this->partial('ticket-client-table-template.phtml', array(
+				echo $this->partial('edit-ticket-client-table-template.phtml', array(
 						'translate' => $this->translate,
 						'data' => $this->list,
-						'editTicket' => $this->editTicket,
+						'forms' => $this->forms,
 						'links' => $this->links
 				));
 			?>
