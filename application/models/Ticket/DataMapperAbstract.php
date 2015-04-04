@@ -60,12 +60,28 @@ abstract class Petolio_Model_Ticket_DataMapperAbstract
             }
         }
     }
+    
+    private function _removeNullEntries(array &$data)
+    {
+    	foreach ($data as $key => $value)
+    	{
+    		if ( null === $value )
+    		{
+    			unset($data[$key]);
+    		}
+    	}
+    }
 
-    public function save(Petolio_Model_Ticket_Entity $entity, $escapeValues = false)
+    public function save(Petolio_Model_Ticket_Entity $entity, $ignoreNullValues = true, $escapeValues = false)
     {
         $data = $this->fromClassToDb($entity);
         
         $this->_replaceEmptyStringsWithNullValues($data);
+        
+        if ( $ignoreNullValues )
+        {
+        	$this->_removeNullEntries($data);
+        }
         
         if ( $escapeValues )
         {

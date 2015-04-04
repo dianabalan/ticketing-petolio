@@ -65,9 +65,9 @@ class Petolio_Model_Ticket_ClientMapper extends Petolio_Model_Ticket_DataMapperA
         return null;
     }
 
-    public function save(Petolio_Model_Ticket_Client $client, $escapeValues = false)
+    public function save(Petolio_Model_Ticket_Client $client, $ignoreNullValues = true, $escapeValues = false)
     {
-        parent::save($client, $escapeValues);
+        parent::save($client, $ignoreNullValues, $escapeValues);
     }
 
 }
