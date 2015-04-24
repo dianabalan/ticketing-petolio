@@ -27,6 +27,11 @@ if($this->auth->getIdentity()->id == $this->user->getId()) {
 			'link' => $this->url(array('controller'=>'accounts', 'action'=>'email'), 'default', true),
 			'name' => $this->translate->_("Edit Email Notifications"),
 			'class' => 'lm-user_sm'
+		),
+		array(
+			'link' => 'javascript:;',
+			'name' => $this->translate->_("Deactivate Account"),
+			'class' => 'lm-user_sm deactivate-account-button'
 		)
 	);
 } else {
