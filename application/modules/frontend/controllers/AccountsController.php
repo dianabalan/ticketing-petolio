@@ -1488,4 +1488,59 @@ class AccountsController extends Zend_Controller_Action
 		}
 		
 	}
+
+	public function deactivateAction() {
+
+		// not logged in ?
+		if (!$this->auth->hasIdentity()) {
+			Petolio_Service_Util::saveRequest();
+			$this->msg->messages[] = $this->translate->_("Please log in or sign up to access this page.");
+			return $this->_helper->redirector('index', 'site');
+		}
+
+		$content = $this->translate->_('Are you sure you want to deactivate your account?');
+
+		// Redirect to logout
+		$redirect_url = $this->_helper->url('deactivate-submit', 'accounts');
+
+		while(substr($redirect_url, 0, 1) == '/') {
+			$redirect_url = substr($redirect_url, 1, strlen($redirect_url) - 1);
+		}
+
+		return Petolio_Service_Util::json(array('success' => true, 'content' => $content, 'redirect_url' => $redirect_url));
+
+	}
+
+	public function deactivateSubmitAction() {
+
+		// not logged in ?
+		if (!$this->auth->hasIdentity()) {
+			Petolio_Service_Util::saveRequest();
+			$this->msg->messages[] = $this->translate->_("Please log in or sign up to access this page.");
+			return $this->_helper->redirector('index', 'site');
+		}
+
+		// Add the user into the non-petolio members list
+		/*
+		$non_petolio_member_data = array(
+			'name' => $this->user->name,
+			'email' => $this->user->email,
+			'password' => '',
+			'active' => 1,
+			'type' => 3
+		);
+		$non_petolio_member = new Petolio_Model_PoUsers();
+		$non_petolio_member->setOptions($non_petolio_member_data)->save(true, true);
+		*/
+
+		// set the user as inactive
+		$this->user->setActive(0);
+		$this->user->save();
+
+		// redirect to logout
+		$redirect_url = $this->_helper->url('logout', 'accounts');
+		return $this->_helper->redirector('logout', 'accounts');
+
+	}
+
 }
