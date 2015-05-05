@@ -22,7 +22,7 @@ class AccountsController extends Zend_Controller_Action
 	private $pfru = null;
 
 	private $flag = null;
-	
+
 	private $europe = array(48.690832999999998, 9.140554999999949);
 
 	public function preDispatch()
@@ -32,13 +32,13 @@ class AccountsController extends Zend_Controller_Action
 		$this->view->auth = $this->auth;
 
 		// load $this->user object for the following actions
-		$actions = array('view', 'view-info'); 
-		
+		$actions = array('view', 'view-info');
+
 		// load $this->user object here and send it to template (if action is view, we load from parameter user, else we load from identity)
 		if (in_array($this->getRequest()->getActionName(), $actions)
-			//$this->request->getActionName() == 'view' || $this->request->getActionName() == 'view-info' 
+			//$this->request->getActionName() == 'view' || $this->request->getActionName() == 'view-info'
 				|| $this->auth->hasIdentity()) {
-			
+
 			$this->user->getMapper()->find(in_array($this->getRequest()->getActionName(), $actions) ? $this->request->getParam('user') : $this->auth->getIdentity()->id, $this->user);
 			$this->view->user = $this->user;
 		}
@@ -114,14 +114,14 @@ class AccountsController extends Zend_Controller_Action
 	 * User list
 	 */
 	public function indexAction() {
-		
+
 		// not logged in ?
 		if (!$this->auth->hasIdentity()) {
 			Petolio_Service_Util::saveRequest();
 			$this->msg->messages[] = $this->translate->_("Please log in or sign up to access this page.");
 			return $this->_helper->redirector('index', 'site');
 		}
-		
+
 		// see if list or grid
 		$this->view->list = $this->request->getParam('list') ? 'list' : 'grid';
 
@@ -153,17 +153,17 @@ class AccountsController extends Zend_Controller_Action
 
 		$cache = Zend_Registry::get('Zend_Cache');
 		$cacheID = Petolio_Service_Util::createCacheID("Accounts_".$filters."_".$sort."_".$page);
-		
+
 		if (false === ($accounts = $cache->load($cacheID))) {
 			// load users
 			$accounts = $this->user->fetchListToPaginator($filters, $sort);
 			$accounts->setItemCountPerPage(($this->view->search || $this->view->filtered) ? $this->cfg["users"]["pagination"]["itemsperpage"] : 10);
 			$accounts->setCurrentPageNumber($page);
-	
+
 			// assign user info
 			foreach($accounts as &$data)
 				$data = $this->_helper->userinfo($data['id']);
-			
+
 			$cache->save($accounts, $cacheID);
 		}
 
@@ -447,7 +447,7 @@ class AccountsController extends Zend_Controller_Action
 
 		// is admin
 		$this->view->admin = ($this->auth->hasIdentity() && $this->user->getId() == $this->auth->getIdentity()->id);
-		
+
 		// load profile
 		$this->view->data = $this->_helper->userinfo($this->user->getId());
 		if(isset($this->view->data['micro']))
@@ -517,7 +517,7 @@ class AccountsController extends Zend_Controller_Action
 		list($results, $more) = $this->dash->load($this->user->getId());
 
 		$this->view->profile_user = json_encode($this->user->toArray());
-		
+
 		// output results
 		$this->view->results = $results;
 		$this->view->more = $more;
@@ -692,7 +692,7 @@ class AccountsController extends Zend_Controller_Action
 		$paginator = $galleries->fetchListToPaginator($filter, "date_created DESC");
 		$paginator->setItemCountPerPage($this->cfg["shared_pets"]["pagination"]["itemsperpage"]);
 		$paginator->setCurrentPageNumber(0);
-		
+
 		// go through each item to add picture
 		$files = new Petolio_Model_PoFiles();
 		foreach($paginator as &$item) {
@@ -701,27 +701,27 @@ class AccountsController extends Zend_Controller_Action
 			$item['picture'] = !count($picture) > 0 ? null : reset($picture)->getFile();
 			$item['pictures_count'] = count($picture);
 		}
-		
+
 		// output galleries
 		$this->view->yourGalleries = $paginator;
 	}
-	
+
 	/*
 	 * Load User's Products
 	 */
 	private function loadUserProducts($id) {
     	$filter = "a.archived = 0 AND a.user_id = {$id}";
-    	
+
 		// get products
 		$products = new Petolio_Model_PoProducts();
 		$paginator = $products->getProducts('paginator', $filter, "date_created DESC");
 		$paginator->setItemCountPerPage($this->cfg["shared_pets"]["pagination"]["itemsperpage"]);
 		$paginator->setCurrentPageNumber(0);
-		
+
 		// output products
 		$this->view->yourProducts = $products->formatProducts($paginator);
 	}
-	
+
 	/*
 	 * Activate user's account action
 	 */
@@ -866,10 +866,10 @@ class AccountsController extends Zend_Controller_Action
 
 		// load profile
 		$this->view->data = $this->_helper->userinfo($this->user->getId());
-		
+
 		// is admin
 		$this->view->admin = true;
-		
+
 		// active or banned
 		if(!($this->view->data['active'] == 1 && $this->view->data['is_banned'] != 1)) {
 			$this->msg->messages[] = $this->translate->_("Your account is inactive or has been banned.");
@@ -884,7 +884,7 @@ class AccountsController extends Zend_Controller_Action
 			// init map
 			$this->initMap();
 		}
-		
+
 		// load types, colors, countries and is service
 		$this->view->c_types = json_encode(Petolio_Service_Calendar::getTypes());
 		$this->view->c_colors = json_encode(Petolio_Service_Calendar::getColors());
@@ -894,10 +894,10 @@ class AccountsController extends Zend_Controller_Action
 		$this->view->c_users = json_encode(Petolio_Service_Calendar::getUsers());
 		$this->view->c_pets = json_encode(Petolio_Service_Calendar::getPets());
 		$this->view->c_error = $this->auth->hasIdentity() ? $this->auth->getIdentity()->type : 0;
-		
+
 		// get your upcoming events
 		list($this->view->your_events, $this->view->your_events_json) = $this->loadUserEvents($this->request->getParam('your-event-page'));
-		
+
 		// load dashboard
 		$this->loadDashboard();
 	}
@@ -907,28 +907,28 @@ class AccountsController extends Zend_Controller_Action
 	 */
 	private function initMap() {
 		$filter = array();
-		
+
 		if ($this->user && $this->user->getId() > 0) {
 			$filter[] = "a.user_id = ".Zend_Db_Table_Abstract::getDefaultAdapter()->quote($this->user->getId());
 		}
-		
+
 		// build filter
 		$filter[] = "a.gps_latitude IS NOT NULL";
 		$filter[] = "a.gps_longitude IS NOT NULL";
 		$filters = implode(' AND ', $filter);
-		
+
 		$sort = "RAND(".date("Ymd").")";
-		
+
 		$cache = Zend_Registry::get('Zend_Cache');
 		$cacheID = Petolio_Service_Util::createCacheID("Accounts_Services_".$filters."_".$sort."_".$page);
-		
+
 		if (false === ($services = $cache->load($cacheID))) {
 			$po_services = new Petolio_Model_PoServices();
 			$services = $po_services->getServices('array', $filters, $sort, 100, false);
-			
+
 			$cache->save($services, $cacheID);
 		}
-		
+
 		// return services
 		if($services && count($services) > 0) {
 			$this->view->show_map = true;
@@ -1032,19 +1032,19 @@ class AccountsController extends Zend_Controller_Action
 			$this->msg->messages[] = $this->translate->_("Please log in or sign up to access this page.");
 			return $this->_helper->redirector('index', 'site');
 		}
-	
+
 		// needed upfront
 		$ds = DIRECTORY_SEPARATOR;
 		$upload_dir = "..{$ds}data{$ds}userfiles{$ds}avatars{$ds}{$this->auth->getIdentity()->id}{$ds}";
-	
+
 		// create form
 		$form = new Petolio_Form_Avatar();
 		$this->view->form = $form;
-	
+
 		// did we submit form ? if not just return here
 		if(!$this->request->isPost())
 			return false;
-	
+
 		// create the users id directory
 		if (!file_exists($upload_dir)) {
 			if (!mkdir($upload_dir)) {
@@ -1052,17 +1052,17 @@ class AccountsController extends Zend_Controller_Action
 				return $this->_redirect('accounts/picture');
 			}
 		}
-	
+
 		// get adapter
 		$adapter = new Zend_File_Transfer_Adapter_Http();
 		$adapter->setDestination($upload_dir);
 		$adapter->addValidator('IsImage', false);
-	
+
 		// getting the max filesize
 		$config = Zend_Registry::get('config');
 		$size = $config['max_filesize'];
 		$adapter->addValidator('Size', false, $size);
-	
+
 		// check if files have exceeded the limit
 		if (!$adapter->isValid()) {
 			$msg = $adapter->getMessages();
@@ -1071,36 +1071,36 @@ class AccountsController extends Zend_Controller_Action
 				return $this->_redirect('accounts/picture');
 			}
 		}
-	
+
 		// no file ?
 		if(!$adapter->getFileName()) {
 			$this->msg->messages[] = $this->translate->_("Please select a picture file to upload.");
 			return $this->_redirect('accounts/picture');
 		}
-	
+
 		// pre-process file
 		$file = $adapter->getFileName();
 		$new_filename = md5(time()) . '.' . pathinfo(strtolower($file), PATHINFO_EXTENSION);
 		$adapter->clearFilters();
 		$adapter->addFilter('Rename', array('target' => $upload_dir . $new_filename, 'overwrite' => true));
-	
+
 		// error on upload ?
 		if(!$adapter->receive(pathinfo($file, PATHINFO_BASENAME))) {
 			$this->msg->messages[] = reset($adapter->getMessages());
 			return $this->_redirect('accounts/picture');
 		}
-	
+
 		// process uploaded picture
 		$pic = pathinfo($file, PATHINFO_DIRNAME) . $ds . $new_filename;
-	
+
 		// delete previous picture
 		if(!is_null($this->user->getAvatar())) {
 			@unlink($upload_dir . $this->user->getAvatar());
 			@unlink($upload_dir . 'thumb_' . $this->user->getAvatar());
 		}
-	
+
 		$props = @getimagesize($pic);
-	
+
 		// make thumbnail
 		list($w, $h) = explode('x', $this->cfg["thumbnail"]["account"]["small"]);
 		Petolio_Service_Image::output($pic, pathinfo($pic, PATHINFO_DIRNAME) . $ds . 'thumb_' . pathinfo($pic, PATHINFO_BASENAME), array(
@@ -1124,10 +1124,10 @@ class AccountsController extends Zend_Controller_Action
 				'halign'  => THUMBNAIL_ALIGN_CENTER
 				));
 		}
-		
+
 		// save avatar
 		$this->user->setAvatar(pathinfo($pic, PATHINFO_BASENAME))->save();
-	
+
 		// redirect
 		$this->msg->messages[] = $this->translate->_("Your profile picture has been uploaded successfully.");
 		return $this->_redirect('accounts/profile');
@@ -1144,19 +1144,19 @@ class AccountsController extends Zend_Controller_Action
 			$this->msg->messages[] = $this->translate->_("Please log in or sign up to access this page.");
 			return $this->_helper->redirector('index', 'site');
 		}
-	
+
 		// needed upfront
 		$ds = DIRECTORY_SEPARATOR;
 		$upload_dir = "..{$ds}data{$ds}userfiles{$ds}avatars{$ds}{$this->auth->getIdentity()->id}{$ds}";
-	
+
 		// create form
 		$form = new Petolio_Form_Cover();
 		$this->view->form = $form;
-	
+
 		// did we submit form ? if not just return here
 		if(!$this->request->isPost())
 			return false;
-	
+
 		// create the users id directory
 		if (!file_exists($upload_dir)) {
 			if (!mkdir($upload_dir)) {
@@ -1164,17 +1164,17 @@ class AccountsController extends Zend_Controller_Action
 				return $this->_redirect('accounts/cover');
 			}
 		}
-	
+
 		// get adapter
 		$adapter = new Zend_File_Transfer_Adapter_Http();
 		$adapter->setDestination($upload_dir);
 		$adapter->addValidator('IsImage', false);
-	
+
 		// getting the max filesize
 		$config = Zend_Registry::get('config');
 		$size = $config['max_filesize'];
 		$adapter->addValidator('Size', false, $size);
-	
+
 		// check if files have exceeded the limit
 		if (!$adapter->isValid()) {
 			$msg = $adapter->getMessages();
@@ -1189,7 +1189,7 @@ class AccountsController extends Zend_Controller_Action
 			if (intval($this->getRequest()->getParam("selected_cover", "0")) > 0) {
 				// save selected cover
 				$this->user->setCover($this->getRequest()->getParam("selected_cover"))->save();
-				
+
 				// redirect
 				$this->msg->messages[] = $this->translate->_("Your cover picture has been updated successfully.");
 				return $this->_redirect('accounts/profile');
@@ -1198,27 +1198,27 @@ class AccountsController extends Zend_Controller_Action
 				return $this->_redirect('accounts/cover');
 			}
 		}
-	
+
 		// pre-process file
 		$file = $adapter->getFileName();
 		$new_filename = md5(time()) . '.' . pathinfo(strtolower($file), PATHINFO_EXTENSION);
 		$adapter->clearFilters();
 		$adapter->addFilter('Rename', array('target' => $upload_dir . $new_filename, 'overwrite' => true));
-	
+
 		// error on upload ?
 		if(!$adapter->receive(pathinfo($file, PATHINFO_BASENAME))) {
 			$this->msg->messages[] = reset($adapter->getMessages());
 			return $this->_redirect('accounts/cover');
 		}
-	
+
 		// process uploaded picture
 		$pic = pathinfo($file, PATHINFO_DIRNAME) . $ds . $new_filename;
-	
+
 		// delete previous picture
 		if(!is_null($this->user->getCover())) {
 			@unlink($upload_dir . $this->user->getCover());
 		}
-	
+
 		// resize picture
 		$props = @getimagesize($pic);
 		list($w, $h) = explode('x', $this->cfg["thumbnail"]["account"]["cover"]);
@@ -1230,15 +1230,15 @@ class AccountsController extends Zend_Controller_Action
 			'method'  => THUMBNAIL_METHOD_SCALE_MAX
 			));
 		}
-	
+
 		// save cover
 		$this->user->setCover(pathinfo($pic, PATHINFO_BASENAME))->save();
-	
+
 		// redirect
 		$this->msg->messages[] = $this->translate->_("Your cover picture has been uploaded successfully.");
 		return $this->_redirect('accounts/profile');
 	}
-	
+
 	/*
 	 * Change password action
 	 */
@@ -1448,7 +1448,7 @@ class AccountsController extends Zend_Controller_Action
 		// return json
 		return Petolio_Service_Util::json(array('success' => true));
 	}
-	
+
 	/**
 	 * View user info details
 	 */
@@ -1456,20 +1456,20 @@ class AccountsController extends Zend_Controller_Action
 		// no user id ? STOP LOOKING AT ME!!!
 		if(!$this->user->getId())
 			return $this->_helper->redirector('index', 'site');
-		
+
 		// is admin
 		$this->view->admin = ($this->auth->hasIdentity() && $this->user->getId() == $this->auth->getIdentity()->id);
-		
+
 		// load profile
 		$this->view->data = $this->_helper->userinfo($this->user->getId());
-		
+
 		// active or banned
 		if(!($this->view->data['active'] == 1 && $this->view->data['is_banned'] != 1)) {
 			$this->msg->messages[] = $this->translate->_("That account is inactive or has been banned.");
 			return $this->_helper->redirector('index', 'site');
 		}
 	}
-	
+
 	public function welcomeAction() {
 		// not logged in ?
 		if (!$this->auth->hasIdentity()) {
@@ -1486,7 +1486,7 @@ class AccountsController extends Zend_Controller_Action
 			$files = new Petolio_Model_PoFiles();
 			$this->view->example_files = $files->fetchList("folder_id = {$folder->getId()}", "date_created DESC");
 		}
-		
+
 	}
 
 	public function deactivateAction() {
@@ -1521,7 +1521,6 @@ class AccountsController extends Zend_Controller_Action
 		}
 
 		// Add the user into the non-petolio members list
-		/*
 		$non_petolio_member_data = array(
 			'name' => $this->user->name,
 			'email' => $this->user->email,
@@ -1531,7 +1530,6 @@ class AccountsController extends Zend_Controller_Action
 		);
 		$non_petolio_member = new Petolio_Model_PoUsers();
 		$non_petolio_member->setOptions($non_petolio_member_data)->save(true, true);
-		*/
 
 		// set the user as inactive
 		$this->user->setActive(0);
